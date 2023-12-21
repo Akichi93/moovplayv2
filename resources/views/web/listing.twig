@@ -1,0 +1,117 @@
+{% extends "layouts.front.app" %}
+
+
+{% block content %}
+<!-- ======= Hero Section ======= -->
+<section id="hero" class="">
+	<div class="container">
+		<div class="row content">
+			
+				{% include 'layouts.front.search' %}
+				
+
+			</div>
+			<div class="col-md-12">
+				<div class="m-t-10">
+					<a href="{{ url('/') }}" class="" style="color: #005BA4;">Accueil »</a> {{ title.nom_categorie }}
+				</div>
+
+			</div>
+
+			<div class="col-md-12">
+				<div class="m-t-30">
+					<img src="assets/img/moov-music-1-2048x655.jpg" class="img-fluid img-responsive"
+						style="border-radius: 25px;">
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+{# {% include 'layouts.front.slider' %} #}
+
+<!-- End Hero -->
+<main id="main" style="margin-top: 1%;">
+	<!-- ======= About Section ======= -->
+	<section id="about" class="about">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12 text-center m-t-30">
+					<h2 class="up_text" style="color:#005BA4; font-size: 26px; font-weight: 600;"><i
+							class="icofont-song-notes"></i> Services {{ title.nom_categorie }}</h2>
+					<hr class="hr_mate">
+
+				</div>
+
+			</div>
+
+
+			<div class="row">
+
+				<div class="col-md-12" style="margin-bottom:40px;">
+					<div class="row">
+						{% for menu in categoryServices %}
+						<div class="col-md-3 m-t-10 col-sm-6">
+							<div class="member">
+								<a href="{{ url('detailservice', menu['service_url']) }}">
+									<img src="/image/service_images/{{ menu.image }}" style="height:10%"
+										class="img-responsive img-fluid img-selection" alt="" title="">
+								</a>
+							</div>
+							<div class="type_vod">
+								<div class="row content">
+									<div class="col-md-8">
+										<p style="margin-top:5px; font-weight:bold; color:#fff; font-size:12px;">
+											{{ menu.nom_service | slice(0, 18)  }}</p>
+									</div>
+									<div class="col-md-4">
+										<a href="{{ url('detailservice', menu['service_url']) }}" class="btn btn-sucrib"
+											style="float:right;">Souscrire</a>
+									</div>
+
+								</div>
+							</div>
+						</div>
+						{% endfor %}
+
+
+
+					</div>
+				</div>
+				<div class="row" style="margin-left: 3%;">
+					{{ categoryServices.links()|raw }}
+				</div>
+
+			</div>
+		</div>
+
+		</div>
+	</section>
+
+
+
+
+
+	{# <section id="social_bloc" class="d-none d-lg-block">
+		<div class="container">
+			<div class="row animated fadeInUp visible" data-animation="fadeInUp">
+				<div class="col-md-12 text-center">
+					<h2 class="up_text" style="color:#005BA4; font-size: 26px; font-weight: 600;">SUIVEZ NOUS SUR
+						LES RÉSEAUX SOCIAUX</h2>
+					<hr class="hr_mate">
+					<p class=""><a href="#" class="link_social"><i class="icofont-facebook" style="color: #fff;"></i>
+						</a> <a href="#" class="link_social2"><i class="icofont-twitter" style="color: #fff;"></i> </a>
+						<a href="#" class="link_social3"><i class="icofont-youtube" style="color: #fff;"></i> </a> <a
+							href="#" class="link_social4"><i class="icofont-linkedin" style="color: #fff;"></i> </a>
+						<a href="#" class="link_social5"><i class="icofont-instagram" style="color: #fff;"></i> </a>
+					</p>
+				</div>
+
+
+			</div>
+		</div>
+	</section> #}
+
+</main>
+<!-- End #main -->
+{% endblock %}

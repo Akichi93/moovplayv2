@@ -1,0 +1,224 @@
+{% extends "layouts.admin.app" %}
+
+
+{% block content %}
+
+	<!-- Content Wrapper. Contains page content -->
+	<div
+		class="content-wrapper">
+
+		<!-- Content Header (Page header) -->
+		<section class="content-header">
+			<div class="container-fluid">
+				<div class="row mb-2">
+					<div class="col-sm-6">
+						<h1>Services</h1>
+					</div>
+					<div class="col-sm-6">
+						<ol class="breadcrumb float-sm-right">
+							<li class="breadcrumb-item">
+								<a href="#">Accueil</a>
+							</li>
+							<li class="breadcrumb-item active">Services</li>
+						</ol>
+					</div>
+				</div>
+			</div>
+			<!-- /.container-fluid -->
+		</section>
+
+
+		<hr/>
+
+		<!-- Main content -->
+		<!-- Main content -->
+			<section class="content"> <div class="container-fluid">
+				<div
+					class="row">
+					<!-- left column -->
+					<div
+						class="col-md-12">
+						<!-- general form elements -->
+						<div class="card card-primary">
+							<div class="card-header">
+								<h3 class="card-title">{{ title }}</h3>
+							</div>
+							<!-- /.card-header -->
+
+							{% if errors.any() %}
+								<div class="alert alert-danger">
+									<ul>
+										{% for error in errors.all() %}
+											<li>{{ error }}</li>
+										{% endfor %}
+									</ul>
+								</div>
+							{% endif %}
+
+							
+							<!-- form start -->
+							<form {% if servicedata['id'] is empty %} action="{{ url('add-edit-service') }}" {% else %} action="{{ url('add-edit-service' , servicedata['id']) }}" {% endif %} method="POST" enctype="multipart/form-data">
+								{{csrf_field()}}
+
+								<div class="card-body">
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="exampleInputEmail1">Partenaire</label>
+												<select name="partenaire_id" id="partenaire_id" class="single-select form-control" style="width: 100%;">
+													<option value="">Selectionnez un partenaire</option>
+													{% for partenaire in getPartenaires %}
+
+														<option value="{{ partenaire['id'] }}">{{ partenaire['nom_partenaire'] }}</option>
+
+													{% endfor %}
+												</select>
+												<p style="color: red">
+													{{ errors.first('partenaire_id') }}
+												</p>
+
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="exampleInputEmail1">Catégorie</label>
+												<select name="categorie_id" id="categorie_id" class="single-select form-control" style="width: 100%;">
+													<option value="">Selectionnez une catégorie</option>
+													{% for categorie in getCategories %}
+
+														<option value="{{ categorie['id'] }}">{{ categorie['nom_categorie'] }}</option>
+
+													{% endfor %}
+												</select>
+												<p style="color: red">
+													{{ errors.first('categorie_id') }}
+												</p>
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="exampleInputEmail1">Nom du service</label>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez l'email du correspondant" name="nom_service" {% if servicedata['nom_service'] is not empty %} value="{{ servicedata['nom_service'] }}" {% else %} value="{{ old('nom_service ') }}" {% endif %}>
+												<p style="color: red">
+													{{ errors.first('nom_service') }}
+												</p>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="file">Image</label>
+												<input type="file" class="form-control" id="file" name="file">
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="exampleInputEmail1">Code de souscription</label>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez le code de souscription" name="code_souscription" {% if servicedata['code_souscription'] is not empty %} value="{{ servicedata['code_souscription'] }}" {% else %} value="{{ old('code_souscription ') }}" {% endif %}>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="exampleInputEmail1">Code de desouscription</label>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez le code de desouscription" name="code_desouscription" {% if servicedata['code_desouscription'] is not empty %} value="{{ servicedata['code_desouscription'] }}" {% else %} value="{{ old('code_desouscription ') }}" {% endif %}>
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="exampleInputEmail1">Url de demande d'abonnement</label>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez l'url de demande d'abonnement" name="url_demande_abonnement" {% if servicedata['url_demande_abonnement'] is not empty %} value="{{ servicedata['url_demande_abonnement'] }}" {% else %} value="{{ old('url_demande_abonnement ') }}" {% endif %}>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="exampleInputEmail1">Url de confirmation d'abonnement</label>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez l'url de confirmation d'abonnement" name="url_confirmation_abonnement" {% if servicedata['url_confirmation_abonnement'] is not empty %} value="{{ servicedata['url_confirmation_abonnement'] }}" {% else %} value="{{ old('url_confirmation_abonnement ') }}" {% endif %}>
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="exampleInputEmail1">Code de service</label>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez le code du service" name="service_name" {% if servicedata['service_name'] is not empty %} value="{{ servicedata['service_name'] }}" {% else %} value="{{ old('service_name') }}" {% endif %}>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="exampleInputEmail1">Url de desabonnement</label>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez le'url de desabonnement" name="url_desabonnement" {% if servicedata['url_desabonnement'] is not empty %} value="{{ servicedata['url_desabonnement'] }}" {% else %} value="{{ old('url_desabonnement ') }}" {% endif %}>
+											</div>
+										</div>
+									</div>
+
+
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<label for="exampleInputEmail1">Description</label>
+												<textarea class="form-control" name="description" rows="3" placeholder="Entrez la description ..."></textarea>
+											</div>
+										</div>
+
+									</div>
+
+									<div class="row">
+									<div class="col-md-12">
+										<div class="form-group">
+											<div class="field_wrapper">
+												<div class="row mt-2 mb-2">
+													<input style="width: 10%;" class="form-control m-1 col-md-2" id="periode" type="text" name="periode[]" value="" placeholder="Période" required=""/>
+													<input style="width: 10%;" class="form-control m-1 col-md-2" id="tarif" type="number" name="tarif[]" value="" placeholder="Tarif" required=""/>
+
+													<textarea id="avantage" name="avantage[]" rows="4" cols="50" placeholder=""></textarea>
+													<a href="javascript:void(0);" class="add_button col-md-1" title="Ajouter">
+														<i class="fa fa-plus-circle" style="font-size: 25px;"></i>
+													</a>
+												</div>
+											</div>
+										</div>
+
+									</div>
+									<hr/>
+
+
+								</div>
+
+
+								</div>
+								<!-- /.card-body -->
+
+								<div class="card-footer">
+									<button type="submit" class="btn btn-primary">{{ title}}</button>
+								</div>
+							</form>
+						</div>
+						<!-- /.card -->
+
+						<!-- general form elements -->
+
+
+					</div>
+					<!--/.col (left) -->
+
+				</div>
+				<!-- /.row -->
+			</div>
+			<!-- /.container-fluid -->
+		</section>
+		<!-- /.content -->
+		<!-- /.container-fluid -->
+	</section>
+	<!-- /.content -->
+</div><!-- /.content-wrapper -->{% endblock %}

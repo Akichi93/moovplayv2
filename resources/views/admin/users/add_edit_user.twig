@@ -1,0 +1,183 @@
+{% extends "layouts.admin.app" %}
+
+
+{% block content %}
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Administrateurs</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">
+                            <a href="#">Accueil</a>
+                        </li>
+                        <li class="breadcrumb-item active">Administrateurs</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+    </section>
+
+
+    <hr />
+
+    {% if errors.any() %}
+    <div class="alert alert-danger">
+        <ul>
+            {% for error in errors.all() %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- Main content -->
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- left column -->
+                <div class="col-md-12">
+                    <!-- general form elements -->
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">{{ title }}</h3>
+                        </div>
+                        <!-- /.card-header -->
+                        <!-- form start -->
+                        <form {% if admindata['id'] is empty %} action="{{ url('add-edit-admin') }}" {% else %}
+                            action="{{ url('add-edit-admin' , admindata['id']) }}" {% endif %} method="POST">
+                            {{csrf_field()}}
+
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Nom de l'administrateur</label>
+                                            <input type="text" class="form-control" id="exampleInputEmail1"
+                                                placeholder="Entrez le nom" name="name" {% if
+                                                admindata['name'] is not empty %}
+                                                value="{{ admindata['name'] }}" {% else %}
+                                                value="{{ old('name ') }}" {% endif %}>
+                                            <p style="color: red">
+                                                {{ errors.first('name') }}
+                                            </p>
+
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Prénom de l'administrateur</label>
+                                            <input type="text" class="form-control" id="exampleInputEmail1"
+                                                placeholder="Entrez le prénom" name="prenom" {% if
+                                                admindata['prenom'] is not empty %}
+                                                value="{{ admindata['prenom'] }}" {% else %}
+                                                value="{{ old('prenom ') }}" {% endif %}>
+                                            <p style="color: red">
+                                                {{ errors.first('prenom') }}
+                                            </p>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Rôle</label>
+                                            <select name="role" id="partenaire_id" class="single-select form-control" style="width: 100%;">
+                                                <option value="">Selectionnez un rôle</option>
+                                                    <option value="PROPRIETAIRE">PROPRIETAIRE</option>
+                                                    <option value="CONTRIBUTEUR">CONTRIBUTEUR</option>
+                                                    <option value="VISITEUR">VISITEUR</option>
+                                            </select>
+                                            <p style="color: red">
+                                                {{ errors.first('role') }}
+                                            </p>
+
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Email de l'administrateur</label>
+                                            <input type="text" class="form-control" id="exampleInputEmail1"
+                                                placeholder="Entrez l'email" name="email" {% if
+                                                admindata['email'] is not empty %}
+                                                value="{{ admindata['email'] }}" {% else %}
+                                                value="{{ old('email ') }}" {% endif %}>
+                                            <p style="color: red">
+                                                {{ errors.first('email') }}
+                                            </p>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Mot de passe</label>
+                                            <input type="password" class="form-control" id="exampleInputEmail1" name="password"
+                                                value="{{ old('password ') }}">
+                                            <p style="color: red">
+                                                {{ errors.first('password') }}
+                                            </p>
+
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Rétapez le mot de passe</label>
+                                            <input type="password" class="form-control" id="exampleInputEmail1" name="password_confirmation"     
+                                                value="{{ old('password_confirmation ') }}">
+                                            <p style="color: red">
+                                                {{ errors.first('password_confirmation') }}
+                                            </p>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                              
+                              
+
+                            </div>
+                            <!-- /.card-body -->
+
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-primary">{{ title}}</button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- /.card -->
+
+                    <!-- general form elements -->
+
+
+                </div>
+                <!--/.col (left) -->
+
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+    <!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->{% endblock %}

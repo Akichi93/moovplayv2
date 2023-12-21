@@ -1,0 +1,90 @@
+{% extends "layouts.front.app" %}
+
+
+{% block content %}
+
+	<!-- ======= Hero Section ======= -->
+	<section id="hero" class="">
+		<div class="container">
+
+
+			<form action="{{ route('otp.getreset') }}" method="POST">
+				{{csrf_field()}}
+
+				<div class="row content">
+					<div class="col-md-12">
+						<div class="">
+							<img src="{{ asset('assets/img/moov-folie1-1-2048x655.jpg')}}" class="img-fluid img-responsive img_portail1">
+						</div>
+					</div>
+
+
+					<div class="col-md-12 text-center m-t-30" style="">
+						<h2 class="up_text" style="color:#005BA4;">
+							<i class="icofont-user"></i>
+							Réinitialiser votre mot de passe
+						</h2>
+						<hr class="hr_mate">
+
+						{% if app.session.has('message') %}
+							<div class="alert alert-danger alert-block">
+								<button type="button" class="close" data-dismiss="alert">×</button>
+								<strong>{{ app.session.get('message') }}</strong>
+							</div>
+						{% endif %}
+
+						{% if errors.any() %}
+							<div class="alert alert-danger">
+								<ul>
+									{% for error in errors.all() %}
+										<li>{{ error }}</li>
+									{% endfor %}
+								</ul>
+							</div>
+						{% endif %}
+					</div>
+
+
+					<div class="col-md-6 m-t-10">
+						<label>Numéro de téléphone
+							<span style="color:red;">*</span>
+						</label>
+						<input class="form-control" name="contact" value="{{ numero.contact }}" required placeholder="Entrez votre numero de telephone" type="tel" readonly>
+						<p style="color: red">
+							{{ errors.first('contact') }}
+						</p>
+					</div>
+					<div class="col-md-6 m-t-10">
+						<label>Code SMS
+							<span style="color:red;">*</span>
+						</label>
+						<input class="form-control" name="otp"  required placeholder="Entrez le code otp" type="number">
+						<p style="color: red">
+							{{ errors.first('otp') }}
+						</p>
+					</div>
+
+					<div class="col-md-6 m-t-10">
+						<label>Mot de passe</label>
+						<input class="form-control" name="password" required placeholder="Entrez votre mot de passe" type="password">
+						<p style="color: red">
+							{{ errors.first('password') }}
+						</p>
+					</div>
+					<div class="col-md-6 m-t-10">
+						<label>Confirmation de mot de passe</label>
+						<input class="form-control" name="password_confirmation" required placeholder="Confirmez votre mot de passe" type="password">
+					</div>
+
+					<div class="col-md-12 text-center m-t-30">
+						<button type="submit" class="btn btn-primary">Réinitialiser</button>
+					</div>
+
+
+				</div>
+			</form>
+		</div>
+	</section>
+
+	<br/>
+{% endblock %}

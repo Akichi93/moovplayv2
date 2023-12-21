@@ -1,0 +1,105 @@
+{% extends "layouts.front.app" %}
+
+{% block content %}
+
+<!-- End Hero -->
+
+<section id="hero" class="">
+	<div class="container">
+		<div class="row content">
+			<div class="col-md-12">
+				<div class="input-group">
+					<input type="search" class="form-control" placeholder="Rechercher ici"
+						style="border-bottom-left-radius: 25px;">
+					<button id="search-button" type="button" class="btn_submssion"
+						style="border-bottom-right-radius: 25px;">
+						<i class="icofont-search"></i>
+						Rechercher
+					</button>
+				</div>
+			</div>
+			<div class="col-md-12">
+				<div class="m-t-10">
+					<a href="#" class="" style="color: #005BA4;">Accueil »</a>
+					Validation de l'inscription
+				</div>
+
+			</div>
+
+			<div class="col-md-5 d-none d-lg-block">
+				<div class="m-t-30">
+					<img src="{{ asset('assets/img/img_left.jpeg')}}" class="img-fluid img-reponsive">
+				</div>
+			</div>
+
+		
+
+			<div class="col-md-7">
+				<div class="m-t-30"
+					style="background: #f2f2f2; padding: 15px; border-radius: 25px; margin-bottom: 30px;">
+					<h2 class="up_text text-center m-t-20" style="color:#005BA4;">
+						<i class="icofont-touchpad"></i>
+						CODE OTP
+					</h2>
+					{% if session_get('envoie') %}
+					<div class="alert alert-primary">
+						<a href="#close" class="close" data-dismiss="alert">&times;</a>
+						{{ session_get('envoie') }}
+					</div>
+					{% endif %}
+
+					{% if session_get('error') %}
+					<div class="alert alert-danger">
+						<a href="#close" class="close" data-dismiss="alert">&times;</a>
+						{{ session_get('error') }}
+					</div>
+					{% endif %}
+
+					<hr class="hr_mate">
+					<div class="d-flex m justify-content-center align-items-center continer">
+						<div class="card py-5 px-3" style="height:20%;">
+							<h5 class="m-0">Saisir le code OTP</h5>
+
+							<span class="mobile-text m-t-10">
+								<b>Veuillez saisir le code de connexion à 4 chiffres reçu par SMS 
+								</b>
+								{# <b class="text-color">{{ numero.contact}}</b> #}
+							</span>
+							<form method="post" action="{{ route('otp.getlogin') }}">
+								{{csrf_field()}}
+								<input type="hidden" class="form-control" name="contact" value="{{ numero.contact }}" />
+								<input type="hidden" class="form-control" id="otp" name="otp" value="" />
+								{# <div class="inputfield m-t-30"> #}
+
+									<input type="number" maxlength="1" name="digit-1" class="input" />
+									<input type="number" maxlength="1" name="two" id="two" class="input" disabled />
+									<input type="number" maxlength="1" name="three" class="input" disabled />
+									<input type="number" maxlength="1" name="four" class="input" disabled />
+									{#
+								</div> #}
+								<button class="hide m-t-20" type="submit" id="submit"
+									onclick="validateOTP()">Valider</button>
+							</form>
+
+
+
+						</div>
+					</div>
+					<form method="post" action="{{ route('otp.resendotp') }}">
+						{{csrf_field()}}
+						<input type="hidden" name="etape" value="Inscription">
+						<input type="hidden" name="contact" value="{{numero.contact}}">
+						<button type="submit" id="submit">Renvoyez le code</button>
+					</form>
+				</div>
+			</div>
+
+
+		</div>
+	</div>
+</section>
+
+
+<!-- End #main -->
+
+{% endblock %}

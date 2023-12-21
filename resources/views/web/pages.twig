@@ -1,0 +1,65 @@
+{% extends "layouts.front.app" %}
+
+
+{% block content %}
+
+<section id="srch" class="banner-area">
+</section>
+
+{% if result is empty %}
+<section class="">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <form action="/search" method="POST" role="search">
+                    {{ csrf_field() }}
+                    <div class="input-group">
+                        <input type="search" class="form-control" placeholder="Rechercher ici">
+                        <button id="search-button" type="submit" class="btn_submssion">
+                            <i class="icofont-search"></i> Rechercher
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-12">
+                <div class="m-t-30">
+                    <h2 class="text_search2">Oups !!! Aucun résultat ne correspond à votre recherche</h2>
+                </div>
+                <div class="m-t-20" style="font-size: 16px !important;">
+                    <ul>
+                        <li>Vérifiez l’orthographe des termes de recherche.</li>
+                        <li>Essayez dautres mots.</li>
+                        <li>Utilisez des mots clés plus généraux.</li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</section>
+{% else %}
+<section class="">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h2 class="text_search">RESULTAT DE LA RECHERCHE : {{ q }}</h2>
+            </div>
+            <div class="col-md-12">
+                {% for resultat in result %}
+                <div class="m-t-30 search-body">
+                    <h2 class="text_res_search">
+                        <a href="{{ url('detailservice', resultat['service_url']) }}">{{ resultat.nom_service }}</a>
+                    </h2>
+                    <p>{{ resultat.description }}. <br>
+                        Code de souscription : {{ resultat.code_souscription }} <br>
+                        Code de désabonnement : {{ resultat.code_desouscription }}
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

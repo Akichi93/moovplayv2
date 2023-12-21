@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+	<meta charset="utf-8">
+	<meta content="width=device-width, initial-scale=1.0" name="viewport">
+	<title>Accueil || MoovPlay - MOOV AFRICA CÔTE D'IVOIRE</title>
+	<meta content="" name="descriptison">
+	<meta content="" name="keywords">
+	 <meta name="author" content="AKICHI JEAN-PHILIPPE">
+	<!-- Favicons -->
+	<link href="{{ asset('assets/img/favicon.png')}}" rel="icon">
+	<!-- Google Fonts -->
+
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
+		rel="stylesheet">
+	<!-- Vendor CSS Files -->
+	<link href="{{ asset('assets/vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
+	<link href="{{ asset('assets/vendor/icofont/icofont.min.css')}}" rel="stylesheet">
+	<link href="{{ asset('assets/vendor/boxicons/css/boxicons.min.css')}}" rel="stylesheet">
+	<link href="{{ asset('assets/vendor/animate.css/animate.min.css')}}" rel="stylesheet">
+	<link href="{{ asset('assets/vendor/remixicon/remixicon.css')}}" rel="stylesheet">
+	<link href="{{ asset('assets/vendor/venobox/venobox.css')}}" rel="stylesheet">
+	<link href="{{ asset('assets/vendor/owl.carousel/assets/owl.carousel.min.css')}}" rel="stylesheet">
+	<!-- Main CSS File -->
+	<link href="{{ asset('assets/css/style.css')}}" rel="stylesheet">
+	<link href="{{ asset('assets/css/glide.core.min.css')}}" rel="stylesheet">
+	<link href="{{ asset('assets/css/glide.theme.min.css')}}" rel="stylesheet">
+
+
+
+
+</head>
+
+<body>
+
+
+	{% include 'layouts.front.header' %}
+
+	<!-- ======= Hero Section ======= -->
+	{% block content %}{% endblock %}
+
+
+	{% include 'layouts.front.footer' %}
+
+	<a href="#" class="back-to-top" title="Aller en haut"><img src="{{ asset('assets/img/up.png')}}"
+			class="img-fluid img-responsive" width="40px">
+	</a>
+	<!-- ======= Footer ======= -->
+
+	<!-- End Footer -->
+
+
+	<script src="{{ asset('assets/vendor/jquery/jquery.min.js')}}"></script>
+	<script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+	<script src="{{ asset('assets/vendor/jquery.easing/jquery.easing.min.js')}}"></script>
+	<script src="{{ asset('assets/vendor/php-email-form/validate.js')}}"></script>
+	<script src="{{ asset('assets/vendor/jquery-sticky/jquery.sticky.js')}}"></script>
+	<script src="{{ asset('assets/vendor/waypoints/jquery.waypoints.min.js')}}"></script>
+	<script src="{{ asset('assets/vendor/counterup/counterup.min.js')}}"></script>
+	<script src="{{ asset('assets/vendor/isotope-layout/isotope.pkgd.min.js')}}"></script>
+	<script src="{{ asset('assets/vendor/venobox/venobox.min.js')}}"></script>
+	<script src="{{ asset('assets/vendor/owl.carousel/owl.carousel.min.js')}}"></script>
+
+	<!-- Template Main JS File -->
+	<script src="{{asset('assets/js/main.js')}}"></script>
+
+	<script>
+		$("#fixed-form-container .body").hide();
+		$("#fixed-form-container .button").click(function () {
+			$(this).next("#fixed-form-container div").slideToggle(400);
+			$(this).toggleClass("expanded");
+		});
+
+	</script>
+
+	<script>
+		$(document).ready(function () {
+			var urlcourant = document.location.href
+			urlcourant = urlcourant.replace(/\/$/, "")
+
+			var queurl = urlcourant.substring(urlcourant.lastIndexOf("/") + 1)
+
+			if (queurl == '') {
+				queurl = 'aujourd'
+			}
+
+
+
+			$("a.menu").removeClass("active")
+
+
+			$("#" + queurl).addClass("active")
+
+
+		})
+	</script>
+
+
+
+
+
+	<script>
+		$(document).ready(function () {
+			// Check if a flag exists in localStorage to track if the modal has been opened before
+			if (!localStorage.getItem('modalShown')) {
+				// If the flag doesn't exist, show the modal
+				$('#modalRecupForm5').modal('show');
+
+				// Set the flag in localStorage to indicate that the modal has been opened
+				localStorage.setItem('modalShown', 'true');
+			}
+		});
+	</script>
+
+
+	<script>
+		$(document).ready(function () {
+			var itemsMainDiv = ('.MultiCarousel');
+			var itemsDiv = ('.MultiCarousel-inner');
+			var itemWidth = "";
+
+			$('.leftLst, .rightLst').click(function () {
+				var condition = $(this).hasClass("leftLst");
+				if (condition)
+					click(0, this);
+				else
+					click(1, this)
+
+
+
+
+
+			});
+
+			ResCarouselSize();
+
+
+			$(window).resize(function () {
+				ResCarouselSize();
+			});
+
+			// this function define the size of the items
+			function ResCarouselSize() {
+				var incno = 0;
+				var dataItems = ("data-items");
+				var itemClass = ('.item');
+				var id = 0;
+				var btnParentSb = '';
+				var itemsSplit = '';
+				var sampwidth = $(itemsMainDiv).width();
+				var bodyWidth = $('body').width();
+				$(itemsDiv).each(function () {
+					id = id + 1;
+					var itemNumbers = $(this).find(itemClass).length;
+					btnParentSb = $(this).parent().attr(dataItems);
+					itemsSplit = btnParentSb.split(',');
+					$(this).parent().attr("id", "MultiCarousel" + id);
+
+
+					if (bodyWidth >= 1200) {
+						incno = itemsSplit[3];
+						itemWidth = sampwidth / incno;
+					} else if (bodyWidth >= 992) {
+						incno = itemsSplit[2];
+						itemWidth = sampwidth / incno;
+					} else if (bodyWidth >= 768) {
+						incno = itemsSplit[1];
+						itemWidth = sampwidth / incno;
+					} else {
+						incno = itemsSplit[0];
+						itemWidth = sampwidth / incno;
+					}
+					$(this).css({
+						'transform': 'translateX(0px)',
+						'width': itemWidth * itemNumbers
+					});
+					$(this).find(itemClass).each(function () {
+						$(this).outerWidth(itemWidth);
+					});
+
+					$(".leftLst").addClass("over");
+					$(".rightLst").removeClass("over");
+
+				});
+			}
+
+
+			// this function used to move the items
+			function ResCarousel(e, el, s) {
+				var leftBtn = ('.leftLst');
+				var rightBtn = ('.rightLst');
+				var translateXval = '';
+				var divStyle = $(el + ' ' + itemsDiv).css('transform');
+				var values = divStyle.match(/-?[\d\.]+/g);
+				var xds = Math.abs(values[4]);
+				if (e == 0) {
+					translateXval = parseInt(xds) - parseInt(itemWidth * s);
+					$(el + ' ' + rightBtn).removeClass("over");
+
+					if (translateXval <= itemWidth / 2) {
+						translateXval = 0;
+						$(el + ' ' + leftBtn).addClass("over");
+					}
+				} else if (e == 1) {
+					var itemsCondition = $(el).find(itemsDiv).width() - $(el).width();
+					translateXval = parseInt(xds) + parseInt(itemWidth * s);
+					$(el + ' ' + leftBtn).removeClass("over");
+
+					if (translateXval >= itemsCondition - itemWidth / 2) {
+						translateXval = itemsCondition;
+						$(el + ' ' + rightBtn).addClass("over");
+					}
+				}
+				$(el + ' ' + itemsDiv).css('transform', 'translateX(' + - translateXval + 'px)');
+			}
+
+			// It is used to get some elements from btn
+			function click(ell, ee) {
+				var Parent = "#" + $(ee).parent().attr("id");
+				var slide = $(Parent).attr("data-slide");
+				ResCarousel(ell, Parent, slide);
+			}
+
+		});
+	</script>
+
+	<script>
+		const searchInputDropdown = document.getElementById('search-input-dropdown');
+		const dropdownOptions = document.querySelectorAll('.input-group-dropdown-item');
+
+		searchInputDropdown.addEventListener('input', () => {
+			const filter = searchInputDropdown.value.toLowerCase();
+			showOptions();
+			const valueExist = !!filter.length;
+
+			if (valueExist) {
+				dropdownOptions.forEach((el) => {
+					const elText = el.textContent.trim().toLowerCase();
+					const isIncluded = elText.includes(filter);
+					if (!isIncluded) {
+						el.style.display = 'none';
+					}
+				});
+			}
+		});
+
+		const showOptions = () => {
+			dropdownOptions.forEach((el) => {
+				el.style.display = 'flex';
+			})
+		}
+	</script>
+
+	<script>
+		var figure = $(".video-one").hover(hoverVideo, hideVideo);
+
+		function hoverVideo(e) {
+			$('video', this).get(0).play();
+		}
+		function hideVideo(e) {
+			$('video', this).get(0).pause();
+		}
+	</script>
+
+	<script>
+		// Initial references
+		const input = document.querySelectorAll(".input");
+		const inputField = document.querySelector(".inputfield");
+		const submitButton = document.getElementById("submit");
+		let inputCount = 0,
+			finalInput = "";
+
+		// Update input
+		const updateInputConfig = (element, disabledStatus) => {
+			element.disabled = disabledStatus;
+			if (!disabledStatus) {
+				element.focus();
+			} else {
+				element.blur();
+			}
+		};
+
+		input.forEach((element) => {
+			element.addEventListener("keyup", (e) => {
+				e.target.value = e.target.value.replace(/[^0-9]/g, "");
+				let { value } = e.target;
+
+				if (value.length == 1) {
+					updateInputConfig(e.target, true);
+					if (inputCount <= 3 && e.key != "Backspace") {
+						finalInput += value;
+						element.value = value;
+						if (inputCount < 3) {
+							updateInputConfig(e.target.nextElementSibling, false);
+						}
+					}
+					inputCount += 1;
+				} else if (value.length == 0 && e.key == "Backspace") {
+					finalInput = finalInput.substring(0, finalInput.length - 1);
+					element.value = "";
+					if (inputCount == 0) {
+						updateInputConfig(e.target, false);
+						return false;
+					}
+					updateInputConfig(e.target, true);
+					e.target.previousElementSibling.value = "";
+					updateInputConfig(e.target.previousElementSibling, false);
+					inputCount -= 1;
+				} else if (value.length > 1) {
+					e.target.value = value.split("")[0];
+				}
+				submitButton.classList.add("hide");
+			});
+		});
+
+		window.addEventListener("keyup", (e) => {
+			if (inputCount > 3) {
+				submitButton.classList.remove("hide");
+				submitButton.classList.add("show");
+				if (e.key == "Backspace") {
+					finalInput = finalInput.substring(0, finalInput.length - 1);
+					updateInputConfig(inputField.lastElementChild, false);
+					inputField.lastElementChild.value = "";
+					inputCount -= 1;
+					submitButton.classList.add("hide");
+				}
+			}
+		});
+
+		const validateOTP = () => {
+			document.getElementById("otp").value = finalInput;
+			return true;
+		};
+
+		// Start
+		const startInput = () => {
+			inputCount = 0;
+			finalInput = "";
+			input.forEach((element) => {
+				element.value = "";
+			});
+			updateInputConfig(inputField.firstElementChild, false);
+		};
+
+		window.onload = startInput();
+	</script>
+
+	<script>
+		var figure = $(".video-one").hover(hoverVideo, hideVideo);
+
+		function hoverVideo(e) {
+			$('video', this).get(0).play();
+		}
+		function hideVideo(e) {
+			$('video', this).get(0).pause();
+		}
+	</script>
+
+	<script src="https://cdn.jsdelivr.net/npm/@glidejs/glide"></script>
+	
+	<script>
+		const config = {
+			type: 'carousel',
+			perView: 5,
+			breakpoints: {
+
+				800: {
+					perView: 2
+				}
+			}
+		}
+		new Glide('.glide', config).mount()
+	</script>
+
+	<script>
+		function Back() {
+			window.history.back();
+		}
+	</script>
+</body>
+
+</html>

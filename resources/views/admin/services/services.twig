@@ -1,0 +1,238 @@
+{% extends "layouts.admin.app" %}
+
+
+{% block content %}
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+
+	<!-- Content Header (Page header) -->
+	<section class="content-header">
+		<div class="container-fluid">
+			<div class="row mb-2">
+				<div class="col-sm-6">
+					<h1>Services</h1>
+				</div>
+				<div class="col-sm-6">
+					<ol class="breadcrumb float-sm-right">
+						<li class="breadcrumb-item">
+							<a href="#">Accueil</a>
+						</li>
+						<li class="breadcrumb-item active">Services</li>
+					</ol>
+				</div>
+			</div>
+		</div>
+		<!-- /.container-fluid -->
+	</section>
+
+	<section class="content">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-6">
+					<h6 class="mb-0 text-right">
+						<a class="btn btn-primary" href="{{ url('add-edit-service') }}">Ajouter</a>
+					</h6>
+				</div>
+
+				<!-- /.col -->
+			</div>
+			<!-- /.row -->
+		</div>
+		<!-- /.container-fluid -->
+	</section>
+	<hr />
+
+	<!-- Main content -->
+	<section class="content">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-12">
+
+					<div class="card">
+						<div class="card-header">
+							<h3 class="card-title">Listes des services</h3>
+						</div>
+
+
+						{% if app.session.has('success') %}
+						<div class="alert alert-primary alert-block">
+							<button type="button" class="close" data-dismiss="alert">×</button>
+							<strong>{{ app.session.get('success') }}</strong>
+						</div>
+						{% endif %}
+						
+						<!-- /.card-header -->
+						<div class="card-body">
+							<table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
+								<thead>
+									<tr>
+										<th>Nom du service</th>
+										<th>Fournisseur</th>
+										<th>Catégorie</th>
+										<th>Présentation</th>
+										<th>Image</th>
+										<th>Statut</th>
+										<th>Actions</th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for service in services %}
+									<tr>
+										<td>{{ service.nom_service}}</td>
+										<td>{{ service.partenaires.nom_partenaire}}</td>
+										<td>{{ service.categories.nom_categorie}}</td>
+										<td>{{ service.description}}</td>
+										<td>
+											<img src="{{ asset('/service_images/Capture d’écran (9)_1694621721') }}"
+												class="img-fluid img-reponsive">
+										</td>
+										{% if service.status == 0 %}
+										<td>Actif</td>
+										{% else %}
+										<td>Désactivé</td>
+										{% endif %}
+										<td>
+											<div class="d-flex order-actions">
+												<a href="{{ url('add-edit-service' , service.id) }}"
+													title="Modifier service">
+													<i class="fas fa-edit"></i>
+												</a>
+												{# <a href="#" title="Désactiver service" data-toggle="modal"
+													data-target="#modal-default-{{ service.id }}">
+													<i class="fas fa-trash-alt"></i>
+												</a> #}
+
+												{% if service.status == 0 %}
+												<a href="#" data-toggle="modal"
+													data-target="#desactive-{{ service.id }}">
+													<i class="fa fa-times"></i>
+												</a>
+												{% endif %}
+
+												{% if service.status == 1 %}
+												<a href="#" data-toggle="modal" data-target="#actif-{{ service.id }}">
+													<i class="fa fa-check"></i>
+												</a>
+												{% endif %}
+
+												<div class="modal fade" id="desactive-{{ service.id }}">
+													<div class="modal-dialog">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h4 class="modal-title">Désactiver service</h4>
+																<button type="button" class="close" data-dismiss="modal"
+																	aria-label="Close">
+																	<span aria-hidden="true">&times;</span>
+																</button>
+															</div>
+															<form role="form" method="POST"
+																action="{{ route('desactivate.services', service.id) }}">
+																{{csrf_field()}}
+																<div class="modal-body">
+																	<input type="hidden" value="{{ service.id }}"
+																		name="id">
+																	<p>Voulez-vous désactivé ce service
+																		<b>
+																			{{ service.nom_service}}</b>?
+																	</p>
+																</div>
+																<div class="modal-footer justify-content-between">
+																	<button type="button" class="btn btn-default"
+																		data-dismiss="modal">Fermer</button>
+																	<button type="submit"
+																		class="btn btn-primary">Désactivé</button>
+																</div>
+
+															</form>
+
+														</div>
+														<!-- /.modal-content -->
+													</div>
+													<!-- /.modal-dialog -->
+												</div>
+
+												<div class="modal fade" id="actif-{{ service.id }}">
+													<div class="modal-dialog">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h4 class="modal-title">Activer service</h4>
+																<button type="button" class="close" data-dismiss="modal"
+																	aria-label="Close">
+																	<span aria-hidden="true">&times;</span>
+																</button>
+															</div>
+															<form role="form" method="POST"
+																action="{{ route('activate.services', service.id) }}">
+																{{csrf_field()}}
+																<div class="modal-body">
+																	<p>Voulez-vous activé ce service
+																		<b>
+																			{{ service.nom_service}}</b>?
+																	</p>
+																</div>
+																<div class="modal-footer justify-content-between">
+																	<button type="button" class="btn btn-default"
+																		data-dismiss="modal">Fermer</button>
+																	<button type="submit"
+																		class="btn btn-primary">Activé</button>
+																</div>
+															</form>
+
+														</div>
+														<!-- /.modal-content -->
+													</div>
+													<!-- /.modal-dialog -->
+												</div>
+
+												{# <div class="modal fade" id="modal-default-{{ service.id }}">
+													<div class="modal-dialog">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h4 class="modal-title">Supprimer catégorie</h4>
+																<button type="button" class="close" data-dismiss="modal"
+																	aria-label="Close">
+																	<span aria-hidden="true">&times;</span>
+																</button>
+															</div>
+															<div class="modal-body">
+																<p>Voulez-vous supprimer ce service
+																	<b>
+																		{{ service.nom_partenaire}}</b>?
+																</p>
+															</div>
+															<div class="modal-footer justify-content-between">
+																<button type="button" class="btn btn-default"
+																	data-dismiss="modal">Fermer</button>
+																<button type="button"
+																	class="btn btn-primary">Supprimer</button>
+															</div>
+														</div>
+														<!-- /.modal-content -->
+													</div>
+													<!-- /.modal-dialog -->
+												</div> #}
+
+												{# <a title="Ajouter offre" href="{{ url('add-offres' , service.id) }}">
+													<i class="fas fa-plus"></i>
+												</a> #}
+
+										</td>
+										</td>
+									</tr>
+						</div>
+						</tbody>
+						</td>
+						</tr>
+						{% endfor %}
+						</tbody>
+						</tfoot>
+						</table>
+					</div>
+					<!-- /.card-body -->
+				</div>
+				<!-- /.card -->
+			</div>
+			<!-- /.col -->
+		</div><!-- /.row -->
+</div><!-- /.container-fluid --></section><!-- /.content --></div><!-- /.content-wrapper -->{% endblock %}

@@ -1,0 +1,394 @@
+{% extends "layouts.front.app" %}
+
+
+
+{% block content %}
+
+<section id="#" style="padding: 0;">
+
+	<div class="container">
+		<div class="row content animated fadeInUp visible" data-animation="fadeInUp">
+			{% include 'layouts.front.search' %}
+
+			<div class="col-md-12">
+				<div class="m-t-10">
+					<a href="{{ url('/') }}" class="" style="color: #005BA4;">Accueil »</a>
+					<a href="/{{ category.url }}" class="" style="color: #005BA4;">{{ category.nom_categorie }} »</a>
+					{{ productDetails['nom_service'] }}
+				</div>
+
+			</div>
+
+			<div class="col-md-12">
+				{% if session_get('error') %}
+				<div class="alert alert-danger">
+					<a href="#close" class="close" data-dismiss="alert">&times;</a>
+					{{ session_get('error') }}
+				</div>
+				{% endif %}
+			</div>
+
+			<div class="col-md-12">
+				<div class="m-t-20"
+					style="background: #f2f2f2; padding: 15px; border-radius: 25px; margin-bottom: 30px;">
+					<div class="row">
+						<div class="col-md-3">
+							<div class="text-center">
+								<img src="/image/service_images/{{ productDetails.image }}"
+									class="img-fluid img-reponsive"
+									style="border-radius: 8px; box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.07);">
+							</div>
+						</div>
+						<div class="col-md-9">
+							<div class="">
+								<div class="">
+									<span style="font-size: 25px; font-weight: 600;">{{ productDetails['nom_service'] }}
+									</span>
+								</div>
+
+
+								<div class="col-md-12 m-t-10">
+									<span style="font-size: 16px; font-weight: 600;">Description :
+									</span>
+									<br>
+									{{ productDetails.description }}
+									<p>
+										<a class="" data-toggle="collapse" href="#collapseExample" role="button"
+											aria-expanded="true" aria-controls="collapseExample"
+											style="color: #005BA4;">
+											<i class="icofont-arrow-down"></i>
+										</a>
+									</p>
+
+
+									<div class="collapse" id="collapseExample">
+										<div>
+											<span style="font-size: 16px; font-weight: 600;">Syntaxe :
+											</span>
+											<p>Code de souscription : {{ productDetails.code_souscription }}</p>
+											<p>Code de desabonnement : {{ productDetails.code_desouscription }}</p>
+										</div>
+									</div>
+								</div>
+								<h2 class="text-center m-t-20"
+									style="color: #fff; background: #005BA4; padding: 5px; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+									S'abonner</h2>
+
+								<div
+									style="background: #fff; padding: 10px; border-bottom-left-radius: 8px; border-bottom-left-radius: 8px; margin-top: -10px;">
+
+									<div class="row">
+										{% for offre in bundles %}
+										{% if userIsAuthenticated == true %}
+
+										{% if credential.url_demande_abonnement is null %}
+										<div class="col-md-4">
+											<button type="button" class="btn_l1 flex_logo" data-toggle="modal"
+												data-target="#myModal" style="background-color: #e7e7e7; color: black;">
+												<span style="font-size: 12px;"> {{ offre.periode }} ( {{ offre.tarif }}
+													FCFA)</span>
+
+
+											</button>
+										</div>
+
+
+										{% else %}
+										<div class="col-md-4">
+											<form method="POST" action="{{ route('demande.service') }}">
+												{{csrf_field()}}
+												<input class="form-control" name="image"
+													value="{{ productDetails['image'] }}" type="hidden">
+												<input class="form-control" name="service_id"
+													value="{{ productDetails['id'] }}" type="hidden">
+												<input class="form-control" name="nom_service"
+													value="{{ productDetails['nom_service'] }}" type="hidden">
+												<input class="form-control" name="forfait" value="{{ offre.periode }}"
+													type="hidden">
+
+
+												<input class="form-control" name="amount" value="{{ offre.tarif }}"
+													type="hidden">
+												<div>
+													<button type="submit" class="btn_l1 flex_logo" style="">
+														<a href="#lot_s" style="color: #fff;font-size: 12px;">{{
+															offre.periode
+															}} ( {{ offre.tarif }} FCFA)</a>
+													</button>
+													<span class="tooltiptext" style="font-size: 12px;">
+														{{ offre.description }}<br>
+													</span>
+												</div>
+											</form>
+										</div>
+										{% endif %}
+
+										{% else %}
+
+
+										{% if credential.url_demande_abonnement is null %}
+										<div class="col-md-4">
+											<button type="button" class="btn_l1 flex_logo" data-toggle="modal"
+												data-target="#myModal" style="background-color: #e7e7e7; color: black">
+												<span style="font-size: 12px;">{{ offre.periode }} ( {{ offre.tarif
+													}} FCFA)</span>
+
+											</button>
+										</div>
+
+
+
+										{% else %}
+										<div class="col-md-4">
+											{# <button type="button" class="btn_l1 flex_logo"> #}
+												<a class="button btn_l1 flex_logo" href="{{ url('/inscription') }}"
+													style="color: #fff;">
+													{{ offre.periode }} ( {{ offre.tarif}} FCFA) <br />
+												</a>
+
+												{# <span class="tooltiptext" style="font-size: 12px;">
+													{{ offre.description }}<br>
+												</span> #}
+												{# </button> #}
+										</div>
+										{% endif %}
+
+
+
+
+
+										{% endif %}
+										{% endfor %}
+
+										{#
+									</div> #}
+								</div>
+
+								<!-- <div class="m-t-10">
+																																																																																								                                        <table class="table">
+																																																																																								                                            <tbody>
+																																																																																								                                                <tr>
+																																																																																								                                                    <td>
+																																																																																								                                                        <a href="" class="btn btn_souscription40 m-t-5" data-toggle="modal" data-target="#modalRecupForm2">
+																																																																																								                                                            <span style="color:#fff; font-weight:bold; font-size:18px;">Jour</span>
+																																																																																								                                                        </a>
+																																																																																								                                                        <a href="" class="btn btn_souscription40  m-t-5" data-toggle="modal" data-target="#modalRecupForm2">
+																																																																																								                                                            <span style="color:#fff; font-weight:bold; font-size:18px;">Semaine</span>
+																																																																																								                                                        </a> 
+																																																																																								                                                        <a href="" class="btn btn_souscription40  m-t-5" data-toggle="modal" data-target="#modalRecupForm2">
+																																																																																								                                                            <span style="color:#fff; font-weight:bold; font-size:18px;">Mois</span>
+																																																																																								                                                        </a>
+																																																																																								                                                    </td>
+																																																																																								            
+																																																																																								                                                </tr>
+																																																																																								                                            </tbody>
+																																																																																								                                        </table>
+																																																																																								                                    </div> -->
+
+							</div>
+						</div>
+						<!-- <div class="col-md-3 text-center">
+																																																																				                                <div class="">
+																																																																				                                    <button type="button" class="btn_l1"><a href="#lot_s" style="color: #fff;">S'abonner</a></button>
+																																																																				                                </div>
+																																																																				                                <div class="">
+																																																																				                                    <button type="button" class="btn_l" disabled>
+																																																																				                                        <a href="#lot_s" aria-disabled="true" style="color: #fff;">Se désabonner</a>
+																																																																				                                    </button>
+																																																																				                                </div>
+																																																																				                            </div> -->
+					</div>
+				</div>
+			</div>
+
+
+		</div>
+	</div>
+</section>
+</div>
+</div>
+</section>
+
+<!-- End Hero -->
+{% if otherservices is empty %}
+
+<main id="main" style="margin-top: 1%;">
+	<!-- ======= About Section ======= -->
+	<section id="about" class="about">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12 text-center m-t-30">
+
+					<h2 class="up_text" style="color:#005BA4; font-size: 26px; font-weight: 600;"><i
+							class="icofont-song-notes"></i> D'autres services</h2>
+					<hr class="hr_mate">
+
+				</div>
+
+			</div>
+
+
+			<div class="row">
+
+				<div class="col-md-12" style="margin-bottom:40px;">
+					<div class="row">
+						{% for menu in relatedProducts %}
+						<div class="col-md-3 m-t-10 col-sm-6">
+							<div class="member">
+								<a href="{{ url('detailservice', menu['service_url']) }}">
+									<img src="/image/service_images/{{ menu.image }}" style="height:10%"
+										class="img-responsive img-fluid img-selection" alt="" title="">
+								</a>
+							</div>
+							<div class="type_vod">
+								<div class="row content">
+									<div class="col-md-8">
+										<p style="margin-top:5px; font-weight:bold; color:#fff; font-size:12px;">
+											{{ menu.nom_service | slice(0, 18) }}</p>
+									</div>
+									<div class="col-md-4">
+										<a href="{{ url('detailservice', menu['service_url']) }}" class="btn btn-sucrib"
+											style="float:right;">Souscrire</a>
+									</div>
+
+								</div>
+							</div>
+						</div>
+						{% endfor %}
+
+
+
+					</div>
+				</div>
+				<div class="row" style="margin-left: 3%;">
+					{{ categoryServices.links()|raw }}
+				</div>
+
+			</div>
+		</div>
+
+		</div>
+	</section>
+
+
+</main>
+
+{% else %}
+
+<main id="main" style="margin-top: 1%;">
+	<!-- ======= About Section ======= -->
+	<section id="about" class="about">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12 text-center m-t-30">
+
+					<h2 class="up_text" style="color:#005BA4; font-size: 26px; font-weight: 600;"><i
+							class="icofont-song-notes"></i> D'autres services</h2>
+					<hr class="hr_mate">
+
+				</div>
+
+			</div>
+
+
+			<div class="row">
+
+				<div class="col-md-12" style="margin-bottom:40px;">
+					<div class="row">
+						{% for menu in otherservices %}
+						<div class="col-md-3 m-t-10 col-sm-6">
+							<div class="member">
+								<a href="{{ url('detailservice', menu['service_url']) }}">
+									<img src="/image/service_images/{{ menu.image }}" style="height:10%"
+										class="img-responsive img-fluid img-selection" alt="" title="">
+								</a>
+							</div>
+							<div class="type_vod">
+								<div class="row content">
+									<div class="col-md-8">
+										<p style="margin-top:5px; font-weight:bold; color:#fff; font-size:12px;">
+											{{ menu.nom_service | slice(0, 18) }}</p>
+									</div>
+									<div class="col-md-4">
+										<a href="{{ url('detailservice', menu['service_url']) }}" class="btn btn-sucrib"
+											style="float:right;">Souscrire</a>
+									</div>
+
+								</div>
+							</div>
+						</div>
+						{% endfor %}
+
+
+
+					</div>
+				</div>
+				<div class="row" style="margin-left: 3%;">
+					{{ categoryServices.links()|raw }}
+				</div>
+
+			</div>
+		</div>
+
+		</div>
+	</section>
+
+
+</main>
+
+{% endif %}
+<!-- End #main -->
+
+<!-- End Hero -->
+<mainid="main"><!-- ======= About Section ======= -->
+	<section id="about" class="about">
+		<div class="container">
+			<div class="row content animated fadeInUp visible" data-animation="fadeInUp" style="margin-bottom:30px;">
+				<div class="col-md-12 text-center m-t-10">
+					<h2 class="up_text" style="color:#005BA4;">découvrez nos univers</h2>
+					<hr class="hr_mate">
+				</div>
+
+				<div class="col-md-12 text-center">
+					{% for menu in menus %}
+					<p class="text_desc2 animated fadeInLeft">
+						<a href="/{{ menu['url'] }}" class="" style="color:#fff;">{{ menu.nom_categorie }}</a>
+					</p>
+					{% endfor %}
+				</div>
+
+			</div>
+		</div>
+	</section>
+
+
+	</main>
+	<!-- End #main -->
+
+	<!-- The Modal -->
+	<div class="modal" id="myModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title">Information</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body">
+					<h5><b>La souscription à ce service est momentanement indisponible sur la plateforme MOOVPLAY</b></h5>
+					 
+					
+				</div>
+
+				<!-- Modal footer -->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-dismiss="modal">Fermer</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	{% endblock %}

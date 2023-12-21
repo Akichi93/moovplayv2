@@ -1,0 +1,146 @@
+{% extends "layouts.front.app" %}
+{% block content %}
+
+<main id="main">
+	<!-- ======= About Section ======= -->
+	<section id="hero" class="about">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="input-group">
+						<input type="search" class="form-control" placeholder="Rechercher ici"
+							style="border-bottom-left-radius: 25px;">
+						<button id="search-button" type="button" class="btn_submssion"
+							style="border-bottom-right-radius: 25px;">
+							<i class="icofont-search"></i>
+							Rechercher
+						</button>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="m-t-10">
+						<a href="#" class="" style="color: #005BA4;">Accueil »</a>
+						Mon profil
+					</div>
+
+				</div>
+
+			</div>
+
+			<div class="row" style="margin-bottom: 30px;">
+				<div class="col-md-4">
+					<div class="m-t-30 text-center">
+
+						<div class="preview ">
+							{% if result is empty %}
+							<img class="preview-img" src="{{ url('assets/img/user.png') }}" alt="Preview Image"
+								width="200" height="200" style="border-radius: 50%;">
+							{% else %}
+							<img class="preview-img" src="/image/user_images/{{ imagecompte }}" alt="Preview Image"
+								width="200" height="200" style="border-radius: 50%;">
+							{% endif %}
+
+							<span class="Error"></span>
+						</div>
+
+					</div>
+				</div>
+				<div class="col-md-8">
+					<div class="m-t-30">
+
+						<div class="col-md-3 typ_msc slted">
+							<a href="{{ url('/profil') }}" style="color:#fff !important;">Détails du compte</a>
+						</div>
+
+
+
+					</div>
+
+					{% if app.session.has('message') %}
+					<div class="alert alert-primary alert-block">
+						<button type="button" class="close" data-dismiss="alert">×</button>
+						<strong>{{ app.session.get('message') }}</strong>
+					</div>
+					{% endif %}
+
+					<div class="m-t-10" style="background: #f2f2f2; padding: 15px; border-radius: 25px;">
+						<form method="POST" action="{{ url('updateinfo') }}" enctype="multipart/form-data">
+
+							{{csrf_field()}}
+							<div class="row">
+								<div class="col-md-6">
+									<div class="m-t-10">
+										<label style="font-weight: 600;">Nom</label>
+										<input class="form-control" value="{{ users.name }}" name="name" type="text">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="m-t-10">
+										<label style="font-weight: 600;">Prénom</label>
+										<input class="form-control" value="{{ users.prenom }}" name="prenom"
+											placeholder="" type="text">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="m-t-10">
+										<label style="font-weight: 600;">Adresse email</label>
+										<input class="form-control" value="{{ users.email }}" name="email" type="email">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="m-t-10">
+										<label style="font-weight: 600;">Numéro de téléphone</label>
+										<input class="form-control" value="{{ users.contact }}" disabled type="text">
+
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="m-t-10">
+										<label style="font-weight: 600;">Photo de profil</label>
+										<input type="file" class="form-control" name="file" id="readUrl">
+
+									</div>
+								</div>
+								<div class="col-md-6">
+									<img id="uploadedImage" src="#" alt="Uploaded Image" accept="image/png, image/jpeg"
+										style="display:none; height: 100px;">
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-12">
+									<div class="text-center m-t-20">
+										<button type="submit" class="btn btn_souscription1">Enregistrer les
+											modifications</button>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</section>
+
+
+
+
+</main>
+
+<script>
+	document.getElementById('readUrl').addEventListener('change', function () {
+		if (this.files[0]) {
+			var picture = new FileReader();
+			picture.readAsDataURL(this.files[0]);
+			picture.addEventListener('load', function (event) {
+				document.getElementById('uploadedImage').setAttribute('src', event.target.result);
+				document.getElementById('uploadedImage').style.display = 'block';
+			});
+		}
+	});
+</script>
+
+
+
+
+{% endblock %}

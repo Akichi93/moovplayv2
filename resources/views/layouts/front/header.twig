@@ -1,0 +1,139 @@
+<!-- ======= Header ======= -->
+
+
+<header id="header" class="d-flex align-items-center">
+	<div class="container d-flex align-items-center">
+
+		<div class="logo mr-auto">
+			<a href="{{ url('/') }}"><img src="{{ url('assets/img/logo.png')}}" alt="" class="img-fluid flex_logo"></a>
+		</div>
+
+		<nav class="nav-menu d-none d-lg-block">
+			<ul>
+
+
+
+				<li>
+					<a class="{{ (app.request.path == '/') ? 'active' }}" href="{{ url('/') }}" title="Accueil">ACCUEIL
+
+					</a>
+				</li>
+
+
+				{% for menu in menus %}
+
+				<li>
+					<a class="menu" href="/{{ menu['url'] }}" id="{{ menu['url'] }}" title="{{ menu.nom_categorie }}">{{
+						menu.nom_categorie }}</a>
+				</li>
+
+				{% endfor %}
+
+			</ul>
+		</nav>
+		<div id="" class="pull-right" style="">
+
+			<div class="dropdown-menu" aria-labelledby="dropdownMenuLink"
+				style="border:3px solid #005BA4 !important; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);">
+				<input type="search" class="form-control dropdown-item" placeholder="Entrez votre recherche ici...">
+				<!--            <a class="dropdown-item" href="#">Action</a>-->
+			</div>
+
+			{% if userIsAuthenticated == false %}
+			<a href="{{ url('/inscription') }}" class="btn btn-primary"
+				style="float:right;margin-left:10px;background-color:#005BA4;box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;">Se
+				connecter</a>
+
+
+			{% else %}
+
+			<div id="" class="pull-right" style="">
+				{% if imagecompte is empty %}
+				<a href="#" class="dropdown-toggle" role="button" id="dropdownMenuLink" data-toggle="dropdown"
+					aria-haspopup="true" aria-expanded="false" class=""><img src="{{ url('assets/img/user.png') }}"
+						class="img-fluid img-responsive" width="45px" style="border-radius:50%;">
+				</a>
+				{% else %}
+				<a href="#" class="dropdown-toggle" role="button" id="dropdownMenuLink" data-toggle="dropdown"
+					aria-haspopup="true" aria-expanded="false" class=""><img src="/image/user_images/{{ imagecompte }}"
+						class="img-fluid img-responsive" width="45px" style="border-radius:50%;">
+				</a>
+				{% endif %}
+
+				<div class="dropdown-menu" aria-labelledby="dropdownMenuLink"
+					style="border:1px solid #ccc !important; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23); padding:5px 15px !important; color:#212529 !important;">
+					<a class="dropdown-item" href="{{ url('/compte') }}">Mes abonnements
+					</a>
+					<a class="dropdown-item" href="{{ url('/profil') }}">Mon profil</a>
+					<div class="text-center">
+						<a class="dropdown-item" href="{{ url('/logoutclient')}}"
+							style="background: #ec3022; color: #fff !important; border-radius: 25px;"
+							onclick="event.preventDefault();
+																																																																																						                document.getElementById('logout-form').submit();">
+							<i class="icofont-logout"></i>
+							Se déconnecter</a>
+
+						<form id="logout-form" action="{{ url('/logoutclient') }}" method="POST" class="d-none">
+							{{csrf_field()}}
+						</form>
+					</div>
+				</div>
+			</div>
+
+			{% endif %}
+		</div>
+	</div>
+</header>
+
+<div class="modal fade" id="login" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header text-center bg-colorViolet">
+
+				<h3 class="modal-title w-100 font-weight-bold text-uppercase inline-block animated fadeInLeft visible"
+					style="color:#fff !important;">S'authentifier !</h3>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">Fermer</span>
+				</button>
+			</div>
+			<div class="modal-body mx-3">
+				<form method="post" action="{{ url('loginclient') }}">
+					{{csrf_field()}}
+					<div class="container">
+
+						<div class="row content">
+							<div class="col-md-6 d-none d-lg-block" style="background:#ccc; padding:5px;">
+								<img src="{{ asset('assets/img/img_left.jpeg')}}" class="img-responsive img-fluid">
+							</div>
+
+							<div class="col-md-6 ">
+								<h4 class="connex_text m-t-10">Connectez-vous !</h4>
+								<input class="form-control" name="contact" style="margin-bottom:10px;" type="text"
+									placeholder="Numéro de téléphone Moov" />
+
+								<div class="row">
+									<div class="col-md-12 m-t-10">
+										<button type="submit" class="btn btn-primary" style="margin-left:25%;">Se
+											connecter</button>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-md-12 m-t-10">
+										<p>Ou si vous n'avez pas de compte,
+											<a href="{{ url('/inscription') }}"
+												style="text-decoration:underline; color:#005BA4; font-weight:bold;">Inscrivez-vous
+												!</a>
+										</p>
+									</div>
+								</div>
+								<!--                               <input class="form-control" style="margin-top:20px;" type="tel" placeholder="Entrez votre OTP">-->
+							</div>
+
+						</div>
+
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

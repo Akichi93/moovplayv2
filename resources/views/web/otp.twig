@@ -1,0 +1,147 @@
+{% extends "layouts.front.app" %}
+
+
+{% block content %}
+
+<!-- End Hero -->
+
+<section id="hero" class="">
+	<div class="container">
+		<div class="row content">
+			<div class="col-md-12">
+				<div class="input-group">
+					<input type="search" class="form-control" placeholder="Rechercher ici"
+						style="border-bottom-left-radius: 25px;">
+					<button id="search-button" type="button" class="btn_submssion"
+						style="border-bottom-right-radius: 25px;">
+						<i class="icofont-search"></i>
+						Rechercher
+					</button>
+				</div>
+			</div>
+			<div class="col-md-12">
+				<div class="m-t-10">
+					<a href="#" class="" style="color: #005BA4;">Accueil »</a>
+					Confirmation de la demande
+				</div>
+
+			</div>
+
+			<div class="col-md-5">
+				<div class="m-t-30 text-center">
+					<img src="/image/service_images/{{ services.image }}" class="img-fluid img-reponsive" width="220px"
+						style="border-radius: 8px;">
+					<div class="m-t-10" style="margin-top:5px; font-weight:bold; font-size:18px;">
+						{{ services.nom_service }}
+					</div>
+					{# <div class="" style="color:#ec3022; font-weight:bold; font-size:14px;">
+						People
+					</div> #}
+					<div class="m-t-10" style="font-size:12px; margin-top:-10px;">
+						Type de forfait : {{ services.forfait }}
+					</div>
+					<div class="m-t-30">
+						<span style="font-size: 16px; font-weight: 600;">Description :
+						</span>
+						<br>
+						{{ services.description }}
+
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-7">
+				<div class="m-t-30"
+					style="background: #f2f2f2; padding: 15px; border-radius: 25px; margin-bottom: 30px;">
+					<h2 class="up_text text-center m-t-20" style="color:#005BA4;">
+						<i class="icofont-touchpad"></i>
+						CODE OTP
+					</h2>
+					<hr class="hr_mate">
+					<div class="d-flex m justify-content-center align-items-center continer">
+						<div class="card py-5 px-3">
+			w				<h5 class="m-0">Saisir le code OTP</h5>
+							<span class="mobile-text m-t-10">
+								<b>Veuillez saisir le code de connexion à 6 chiffres reçu par SMS sur le
+								</b>
+								<b class="text-color">+{{ services.msisdn }}</b>
+							</span>
+							<form method="post" action="{{ route('otp.getdemande') }}">
+								{{csrf_field()}}
+
+								<input type="hidden" value="{{ services.nom_service }}" name="service_name"></input>
+								<input type="hidden" value="{{ services.transactionid }}" name="transactionid"></input>
+								<input type="hidden" value="{{ services.xuser }}" name="xuser"></input>
+								<input type="hidden" value="{{ services.xtoken }}" name="xtoken"></input>
+								<input type="hidden" class="form-control" id="otp" name="otp" value="" />
+								<div class="inputfield m-t-30">
+
+									<input type="number" maxlength="1" class="input" disabled />
+									<input type="number" maxlength="1" class="input" disabled />
+									<input type="number" maxlength="1" class="input" disabled />
+									<input type="number" maxlength="1" class="input" disabled />
+
+								</div>
+								<button class="hide m-t-20" id="submit" onclick="validateOTP()">Valider</button>
+							</form>
+
+						</div>
+					</div>
+					{# <form method="post" action="{{ route('otp.resendotp') }}">
+						{{csrf_field()}}
+						<input type="hidden" name="etape" value="Inscription">
+						<input type="hidden" name="contact" value="{{numero.contact}}">
+						<button type="submit" id="submit">Renvoyez le code</button>
+					</form> #}
+				</div>
+
+			</div>
+
+
+		</div>
+	</div>
+</section>
+
+<!-- End Hero -->
+<main id="main">
+	<!-- ======= About Section ======= -->
+
+
+	<section id="social_bloc" class="d-none d-lg-block">
+		<div class="container">
+			<div class="row animated fadeInUp visible" data-animation="fadeInUp">
+				<div class="col-md-12 text-center">
+					<h2 class="up_text" style="color:#005BA4; font-size: 26px; font-weight: 600;">SUIVEZ NOUS SUR LES
+						RÉSEAUX SOCIAUX</h2>
+					<hr class="hr_mate">
+					<p class="">
+						<a href="#" class="link_social">
+							<i class="icofont-facebook" style="color: #fff;"></i>
+						</a>
+						<a href="#" class="link_social2">
+							<i class="icofont-twitter" style="color: #fff;"></i>
+						</a>
+						<a href="#" class="link_social3">
+							<i class="icofont-youtube" style="color: #fff;"></i>
+						</a>
+						<a href="#" class="link_social4">
+							<i class="icofont-linkedin" style="color: #fff;"></i>
+						</a>
+						<a href="#" class="link_social5">
+							<i class="icofont-instagram" style="color: #fff;"></i>
+						</a>
+					</p>
+				</div>
+
+
+			</div>
+		</div>
+	</section>
+
+</main>
+<!-- End #main -->
+
+
+<!-- End #main -->
+
+{% endblock %}

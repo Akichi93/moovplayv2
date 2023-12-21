@@ -1,0 +1,160 @@
+{% extends "layouts.admin.app" %}
+
+
+{% block content %}
+
+	<!-- Content Wrapper. Contains page content -->
+	<div
+		class="content-wrapper">
+
+		<!-- Content Header (Page header) -->
+		<section class="content-header">
+			<div class="container-fluid">
+				<div class="row mb-2">
+					<div class="col-sm-6">
+						<h1>Offres</h1>
+					</div>
+					<div class="col-sm-6">
+						<ol class="breadcrumb float-sm-right">
+							<li class="breadcrumb-item">
+								<a href="#">Accueil</a>
+							</li>
+							<li class="breadcrumb-item active">Catégories</li>
+							<li class="breadcrumb-item active">Offres</li>
+						</ol>
+					</div>
+				</div>
+			</div>
+			<!-- /.container-fluid -->
+		</section>
+
+
+		<hr/>
+
+		<!-- Main content -->
+
+		<!-- Main content -->
+			<section class="content"> <div class="container-fluid">
+
+				<div class="row">
+					<div
+						class="col-12">
+
+
+						<!-- Main content -->
+						<div
+							class="invoice p-3 mb-3">
+							<!-- title row -->
+
+							<form name="attributesForm" id="attributesForm" method="POST" action="{{ url('add-offres', servicedata.id) }}" enctype="multipart/form-data">
+								{{csrf_field()}}
+								<input type="hidden" name="product_id" value="{{ servicedata.id }}">
+
+								<div class="col-md-10">
+									<div class="form-group mb-3">
+										<label for="category_name">Nom du service:</label>&nbsp;{{ servicedata.nom_service }}
+									</div>
+									<div class="form-group mb-3">
+										<label for="product_code">Nom du partenaire:
+										</label>&nbsp;{{ servicedata.partenaires.nom_partenaire }}
+									</div>
+									<div class="form-group mb-3">
+										<label for="product_color">Nom de la catégorie:
+										</label>&nbsp;{{ servicedata.categories.nom_categorie }}
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-md-12">
+										<div class="form-group">
+											<div class="field_wrapper">
+												<div class="row mt-2 mb-2">
+													<input style="width: 10%;" class="form-control m-1 col-md-2" id="periode" type="text" name="periode[]" value="" placeholder="Période" required=""/>
+													<input style="width: 10%;" class="form-control m-1 col-md-2" id="tarif" type="number" name="tarif[]" value="" placeholder="Tarif" required=""/>
+
+													<textarea id="avantage" name="avantage[]" rows="4" cols="50" placeholder=""></textarea>
+													<a href="javascript:void(0);" class="add_button col-md-1" title="Ajouter">
+														<i class="fa fa-plus-circle" style="font-size: 25px;"></i>
+													</a>
+												</div>
+											</div>
+										</div>
+
+									</div>
+									<div class="form-group text-center mb-3">
+										<button type="submit" class="btn btn-success">Ajouter offre
+										</button>
+									</div>
+									<hr/>
+
+
+								</div>
+								<!-- Table row -->
+
+								<!-- /.row -->
+							</form>
+
+							<form name="editAttributeForm" id="editAttributeForm" method="POST" action="{{ url('edit-offres' , servicedata.id ) }}">
+								{{csrf_field()}}
+								<div class="card">
+									<div class="card-body">
+										<div class="table-responsive">
+											<table id="example" class="table table-striped table-bordered" style="width:100%">
+												<thead>
+													<tr>
+														<th>Id</th>
+														<th>Période</th>
+														<th>Tarifs</th>
+														<th>Avantage</th>
+
+														<th>Actions</th>
+													</tr>
+												</thead>
+												<tbody>
+													{% for offre in servicedata['offres'] %}
+
+														<input style="display: none;" type="text" name="attrId[]" value="{{ offre.id }}">
+														<tr>
+															<td>
+																{{ offre['id'] }}
+															</td>
+															<td>
+																<input type="text" name="periode[]" value="{{ offre['periode'] }}" required>
+															</td>
+															<td>
+																<input type="number" name="tarif[]" value="{{ offre['tarifs'] }}" required></td>
+															<td>
+																<textarea id="avantage" name="avantage[]" rows="4" cols="50" placeholder="" required>{{ offre['avantages'] }}</textarea>
+
+															</td>
+															<td>
+
+																<a title="Désactiver offre" href="javascript:void(0)" class="confirmDelete ms-3" record="attribute" recordid="{{ offre['id'] }}">
+																	<i class='fa fa-trash text-danger'></i>
+																</a>
+															</td>
+														</tr>
+													{% endfor %}
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+								<div class="card-footer">
+									<button type="submit" class="btn btn-primary">Modifier offre</button>
+								</div>
+							</form>
+
+						</div>
+						<!-- /.invoice -->
+					</div>
+					<!-- /.col -->
+				</div>
+			</div>
+			<!-- /.container-fluid -->
+		</section>
+		<!-- /.content -->
+		<!-- /.container-fluid -->
+	</section>
+	<!-- /.content -->
+</div>
+<!-- /.content-wrapper -->{% endblock %}

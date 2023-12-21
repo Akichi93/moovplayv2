@@ -1,0 +1,90 @@
+{% extends "layouts.front.app" %}
+
+
+
+{% block content %}
+
+<!-- ======= Hero Section ======= -->
+<section id="hero" class="">
+	<div class="container">
+		<div class="row content">
+			
+			{% include 'layouts.front.search' %}
+			
+
+		</div>
+
+		<form action="{{ route('otp.generate') }}" method="POST">
+			{{csrf_field()}}
+
+			<div class="row content">
+				<div class="col-md-12">
+					<div class="">
+						<img src="assets/img/moov-folie1-1-2048x655.jpg" class="img-fluid img-responsive img_portail1">
+					</div>
+				</div>
+
+				{# {% if errors.any() %}
+				<div class="alert alert-danger">
+					<ul>
+						{% for error in errors.all() %}
+						<li>{{ error }}</li>
+						{% endfor %}
+					</ul>
+				</div>
+				{% endif %} #}
+
+
+
+				
+					<div class="col-md-12 text-center m-t-30" style="">
+						<h2 class="up_text" style="color:#005BA4;">
+							<i class="icofont-user"></i>
+							Se connecter
+						</h2>
+						<hr class="hr_mate">
+						<!--                    <p class="link_suscrib"><a href="" class="btn btn_souscription1">Jour</a> <a href="" class="btn btn_souscription2">Semaine</a> <a href="" class="btn btn_souscription3">Mois</a></p>-->
+					</div>
+					<div class="col-md-12">
+						{% if session_get('flash_message_error') %}
+						<div class="alert alert-danger">
+							<a href="#close" class="close" data-dismiss="alert">&times;</a>
+							{{ session_get('flash_message_error') }}
+						</div>
+						{% endif %}
+
+						<div class="col-md-12">
+							{% if session_get('message') %}
+							<div class="alert alert-danger">
+								<a href="#close" class="close" data-dismiss="alert">&times;</a>
+								{{ session_get('message') }}
+							</div>
+							{% endif %}
+						</div>
+					</div>
+
+					<div class="col-md-12 m-t-10" style="text-align: center;">
+						<label>Numéro de téléphone
+							<span style="color:red;">*</span>
+						</label>
+						<input class="form-control" name="contact" required
+							placeholder="Entrez votre numero de telephone" type="tel">
+						<p style="color: red">
+							{{ errors.first('contact') }}
+						</p>
+					</div>
+
+					<div class="col-md-12 text-center m-t-30">
+						<button type="submit" class="btn btn-primary">Se connecter</button>
+					</div>
+
+
+
+			</div>
+		</form>
+	</div>
+</section>
+<br />
+
+
+{% endblock %}

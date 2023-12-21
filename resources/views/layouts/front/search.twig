@@ -1,0 +1,17 @@
+<div class="col-md-12">
+    <form action="/search" method="POST" role="search">
+        {{ csrf_field() }}
+        <div class="input-group">
+
+            <input type="search" name="search" class="form-control" placeholder="Rechercher ici"
+                style="border-bottom-left-radius: 25px;">
+            <button type="submit" id="search-button" class="btn_submssion"
+                style="border-bottom-right-radius: 25px;">
+                <i class="icofont-search"></i>
+                Rechercher
+            </button>
+
+        </div>
+    </form>
+
+</div>
