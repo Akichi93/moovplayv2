@@ -32,16 +32,18 @@ class PartenaireController extends Controller
             $partenairedata = json_decode(json_encode($partenairedata), true);
 
             $partenaire = Partenaire::find($id);
-            $message = "Le partenaire a ete Modifée avec succès !";
+            $message = "Le partenaire à été Modifée avec succès !";
         }
         if ($request->isMethod('post')) {
             $data = $request->all();
             $rules = [
                 'nom_partenaire' => 'required',
+                'nom_correspondant' => 'required',
             ];
 
             $customMessage = [
-                'nom_partenaire.required' => 'Le nom de la categorie',
+                'nom_partenaire.required' => 'Le nom de la categorie est requis',
+                'nom_correspondant.required' => 'Le nom du correspondant est requis',
             ];
             $this->validate($request, $rules, $customMessage);
 
@@ -52,7 +54,7 @@ class PartenaireController extends Controller
             $partenaire->x_user = $data['x_user'];
             $partenaire->x_token = $data['x_token'];
             $partenaire->save();
-            // Session::flash('success_message', $message);
+            $request->session()->flash('success_message', $message);
             return redirect('/partenaires');
         }
         return view('admin.partenaires.add_edit_partenaire')->with(compact('title', 'partenairedata'));
@@ -65,7 +67,7 @@ class PartenaireController extends Controller
         $partenaires->status = 1;
         $partenaires->save();
 
-        $request->session()->flash('success', "Partenaire désactivé.");
+        $request->session()->flash('success_message', "Partenaire désactivé.");
 
         return back();
     }
@@ -76,7 +78,7 @@ class PartenaireController extends Controller
         $partenaires->status = 0;
         $partenaires->save();
 
-        $request->session()->flash('success', "Partenaire activé.");
+        $request->session()->flash('success_message', "Partenaire activé.");
 
         return back();
     }

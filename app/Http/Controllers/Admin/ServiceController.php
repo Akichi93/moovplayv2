@@ -32,10 +32,10 @@ class ServiceController extends Controller
             $servicedata = array();
 
             $getPartenaires = Partenaire::all();
-            $getPartenaires = json_decode(json_encode($getPartenaires), true);
+            // $getPartenaires = json_decode(json_encode($getPartenaires), true);
 
             $getCategories = Categorie::all();
-            $getCategories = json_decode(json_encode($getCategories), true);
+            // $getCategories = json_decode(json_encode($getCategories), true);
 
             $message = "Le service a ete ajoutée avec succès !";
         } else {
@@ -44,10 +44,10 @@ class ServiceController extends Controller
             $servicedata = json_decode(json_encode($servicedata), true);
 
             $getPartenaires = Partenaire::all();
-            $getPartenaires = json_decode(json_encode($getPartenaires), true);
+            // $getPartenaires = json_decode(json_encode($getPartenaires), true);
 
             $getCategories = Categorie::all();
-            $getCategories = json_decode(json_encode($getCategories), true);
+            // $getCategories = json_decode(json_encode($getCategories), true);
 
 
             $service = Service::find($id);
@@ -59,14 +59,14 @@ class ServiceController extends Controller
                 'nom_service' => 'required',
                 'categorie_id' => 'required',
                 'partenaire_id' => 'required',
-                'file' => 'required',
+                // 'file' => 'required',
             ];
 
             $customMessage = [
                 'nom_service.required' => 'Le nom du service',
                 'categorie_id.required' => 'Selectionnez une catégorie',
                 'partenaire_id.required' => 'Selectionnez un partenaire',
-                'file.required' => 'Selectionnez un partenaire',
+                // 'file.required' => 'Selectionnez une image',
             ];
             $this->validate($request, $rules, $customMessage);
 
@@ -114,11 +114,13 @@ class ServiceController extends Controller
                 'service_name' => $request->service_name,
                 'url_demande_abonnement' => $request->url_demande_abonnement,
                 'url_desabonnement' => $request->url_desabonnement,
-                'url_confirmation_abonnement' => $request->url_abonnement,
+                'url_confirmation_abonnement' => $request->url_confirmation_abonnement,
+                'url_consultation' => $request->url_consultation,
                 'bundle' =>  $array
             ];
             $service->save();
-            // Session::flash('success_message', $message);
+        
+            $request->session()->flash('success_message', $message);
             return redirect('/services');
         }
         return view('admin.services.add_edit_service')->with(compact('title', 'servicedata', 'getPartenaires', 'getCategories'));

@@ -7,6 +7,7 @@ use App\Models\Categorie;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 
 class CategorieController extends Controller
@@ -52,15 +53,18 @@ class CategorieController extends Controller
             // verification 
             $verif = Categorie::where('status',0)->count();
 
-            if($verif >= 4){
-                return redirect('/categories'); 
-            }else{
+            // if($verif >= 4){
+            //     return redirect('/categories'); 
+            // }else{
                 $category->nom_categorie = $data['nom_categorie'];
                 $category->url = $data['url'];
+                $category->position = $data['position'];
                 $category->save();
-                // Session::flash('success_message', $message);
+
+                $request->session()->flash('success_message', $message);
+            
                 return redirect('/categories'); 
-            }
+            // }
 
             
         }

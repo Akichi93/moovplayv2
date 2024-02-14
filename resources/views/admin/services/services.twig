@@ -55,10 +55,10 @@
 						</div>
 
 
-						{% if app.session.has('success') %}
+						{% if app.session.has('success_message') %}
 						<div class="alert alert-primary alert-block">
 							<button type="button" class="close" data-dismiss="alert">×</button>
-							<strong>{{ app.session.get('success') }}</strong>
+							<strong>{{ app.session.get('success_message') }}</strong>
 						</div>
 						{% endif %}
 						

@@ -87,9 +87,13 @@
 													<option value="">Selectionnez une catégorie</option>
 													{% for categorie in getCategories %}
 
-														<option value="{{ categorie['id'] }}">{{ categorie['nom_categorie'] }}</option>
+														<option value="{{ categorie.id }} 
+														{% if servicedata.categorie_id is not empty and servicedata.categorie_id == categorie.id %} selected="" {% endif %}>
+														">{{ categorie['nom_categorie'] }}</option>
 
 													{% endfor %}
+
+													 
 												</select>
 												<p style="color: red">
 													{{ errors.first('categorie_id') }}
@@ -113,6 +117,14 @@
 											<div class="form-group">
 												<label for="file">Image</label>
 												<input type="file" class="form-control" id="file" name="file">
+
+												  {% if servicedata.image is not empty %}
+                                                    <div>
+                                                        <img style="width: 60px; margin-top: 5px;"
+                                                             src="/image/service_images/{{ servicedata.image }}">
+                                                        
+                                                    </div>
+                                                {% endif %}
 											</div>
 										</div>
 									</div>
@@ -136,13 +148,13 @@
 										<div class="col-md-6">
 											<div class="form-group">
 												<label for="exampleInputEmail1">Url de demande d'abonnement</label>
-												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez l'url de demande d'abonnement" name="url_demande_abonnement" {% if servicedata['url_demande_abonnement'] is not empty %} value="{{ servicedata['url_demande_abonnement'] }}" {% else %} value="{{ old('url_demande_abonnement ') }}" {% endif %}>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez l'url de demande d'abonnement" name="url_demande_abonnement" {% if servicedata.credential.url_demande_abonnement is not empty %} value="{{ servicedata.credential.url_demande_abonnement }}" {% else %} value="{{ old('url_demande_abonnement ') }}" {% endif %}>
 											</div>
 										</div>
 										<div class="col-md-6">
 											<div class="form-group">
 												<label for="exampleInputEmail1">Url de confirmation d'abonnement</label>
-												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez l'url de confirmation d'abonnement" name="url_confirmation_abonnement" {% if servicedata['url_confirmation_abonnement'] is not empty %} value="{{ servicedata['url_confirmation_abonnement'] }}" {% else %} value="{{ old('url_confirmation_abonnement ') }}" {% endif %}>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez l'url de confirmation d'abonnement" name="url_confirmation_abonnement" {% if servicedata.credential.url_confirmation_abonnement is not empty %} value="{{ servicedata.credential.url_confirmation_abonnement }}" {% else %} value="{{ old('url_confirmation_abonnement ') }}" {% endif %}>
 											</div>
 										</div>
 									</div>
@@ -151,15 +163,25 @@
 										<div class="col-md-6">
 											<div class="form-group">
 												<label for="exampleInputEmail1">Code de service</label>
-												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez le code du service" name="service_name" {% if servicedata['service_name'] is not empty %} value="{{ servicedata['service_name'] }}" {% else %} value="{{ old('service_name') }}" {% endif %}>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez le code du service" name="service_name" {% if servicedata.credential.service_name is not empty %} value="{{ servicedata.credential.service_name }}" {% else %} value="{{ old('service_name') }}" {% endif %}>
 											</div>
 										</div>
 										<div class="col-md-6">
 											<div class="form-group">
-												<label for="exampleInputEmail1">Url de desabonnement</label>
-												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez le'url de desabonnement" name="url_desabonnement" {% if servicedata['url_desabonnement'] is not empty %} value="{{ servicedata['url_desabonnement'] }}" {% else %} value="{{ old('url_desabonnement ') }}" {% endif %}>
+												<label for="exampleInputEmail1">Url de desabonnement </label>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez l'URL de désabonnement" name="url_desabonnement" {% if servicedata.credential.url_desabonnement is not null %} value="{{ servicedata.credential.url_desabonnement }}" {% endif %}>
 											</div>
 										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="exampleInputEmail1">Url de consultation</label>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez l'url de consultation" name="url_consultation" {% if servicedata.credential.url_consultation is not empty %} value="{{ servicedata.credential.url_consultation }}" {% else %} value="{{ old('url_consultation') }}" {% endif %}>
+											</div>
+										</div>
+										
 									</div>
 
 
@@ -167,7 +189,7 @@
 										<div class="col-md-12">
 											<div class="form-group">
 												<label for="exampleInputEmail1">Description</label>
-												<textarea class="form-control" name="description" rows="3" placeholder="Entrez la description ..."></textarea>
+												<textarea class="form-control" name="description" rows="3" placeholder="Entrez la description ...">{{ servicedata['description'] }}</textarea>
 											</div>
 										</div>
 
@@ -177,15 +199,20 @@
 									<div class="col-md-12">
 										<div class="form-group">
 											<div class="field_wrapper">
+											{% for credential in servicedata['credential']['bundle'] %}
 												<div class="row mt-2 mb-2">
-													<input style="width: 10%;" class="form-control m-1 col-md-2" id="periode" type="text" name="periode[]" value="" placeholder="Période" required=""/>
-													<input style="width: 10%;" class="form-control m-1 col-md-2" id="tarif" type="number" name="tarif[]" value="" placeholder="Tarif" required=""/>
+												
+												
+													<input style="width: 10%;" class="form-control m-1 col-md-2" id="periode" type="text" name="periode[]" value="{{ credential['periode'] }}" placeholder="Période" required=""/>
+													<input style="width: 10%;" class="form-control m-1 col-md-2" id="tarif" type="number" name="tarif[]" value="{{ credential['tarif'] }}" placeholder="Tarif" required=""/>
 
-													<textarea id="avantage" name="avantage[]" rows="4" cols="50" placeholder=""></textarea>
+													<textarea id="avantage" name="avantage[]" rows="4" cols="50" placeholder="">{{ credential['description'] }}</textarea>
 													<a href="javascript:void(0);" class="add_button col-md-1" title="Ajouter">
 														<i class="fa fa-plus-circle" style="font-size: 25px;"></i>
 													</a>
+													
 												</div>
+												{% endfor %}
 											</div>
 										</div>
 

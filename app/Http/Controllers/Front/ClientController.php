@@ -76,16 +76,16 @@ class ClientController extends Controller
                     $contact = $request->all();
 
                     $otp =  User::where('contact', $request->contact)->pluck('code')->first();
-                    $message = "Votre code d'inscription MOOVPLAY est : $otp";
+                    $message = "Votre code de connexion à MOOVPLAY est : $otp";
                     $now = date('Y-m-d H:i:s');
 
                     $mobile = '225' . $request->contact;
 
                     $message = [
-                        "code_service" => "IZYPHONE",
-                        "password" => "00225izyphone",
+                        "code_service" => "MOOVPLAY",
+                        "password" => "zpkd8547@moovplay-2024",
                         "message" => $message,
-                        "sender" => '98096',
+                        "sender" => 'MOOVPLAY',
                         "msisdn" => $mobile,
                         "datetime" => $now,
                     ];
@@ -123,17 +123,17 @@ class ClientController extends Controller
 
                     // Envoie de SMS
                     $otp =  User::where('contact', $request->contact)->pluck('code')->first();
-                    $message = "Votre code  d'inscription MOOVPLAY est : $otp";
+                    $message = "Votre code  de connexion à MOOVPLAY est : $otp";
 
                     $now = date('Y-m-d H:i:s');
 
                     $mobile = '225' . $request->contact;
 
                     $message = [
-                        "code_service" => "IZYPHONE",
-                        "password" => "00225izyphone",
+                        "code_service" => "MOOVPLAY",
+                        "password" => "zpkd8547@moovplay-2024",
                         "message" => $message,
-                        "sender" => '98096',
+                        "sender" => 'MOOVPLAY',
                         "msisdn" => $mobile,
                         "datetime" => $now,
                     ];
@@ -206,6 +206,109 @@ class ClientController extends Controller
 
     public function compte()
     {
+
+        // verifier tous les api de consultation
+        $all = Service::select('partenaires.x_user', 'partenaires.x_token', 'credential')->join("partenaires", 'services.partenaire_id', '=', 'partenaires.id')->get();
+
+
+        $contact = Auth::user()->contact;
+
+        $numero = '225' . $contact;
+
+        $result = [];
+
+        foreach ($all as $item) {
+            if (!is_null($item['credential']['url_demande_abonnement'])) {
+                $result[] = [
+                    'x_user' => $item['x_user'],
+                    'x_token' => $item['x_token'],
+                    'url_demande_abonnement' => $item['credential']['url_demande_abonnement']
+                ];
+            }
+        }
+
+
+        foreach ($result as $item) {
+            // Extraire les informations de l'élément actuel
+            $url = $item['url_demande_abonnement'];
+            $xuser = $item['x_user'];
+            $xtoken = $item['x_token'];
+
+            // Construire l'URL avec le numéro
+            $url_with_numero = $url . '?msisdn=' . $numero;
+
+            // En-têtes de la requête cURL
+            $headers = [
+                'xuser:' . $xuser,
+                'xtoken:' . $xtoken,
+                'content-type: application/json'
+            ];
+
+            // Initialiser cURL
+            $curl = curl_init();
+
+            // Configuration de la requête cURL
+            curl_setopt_array($curl, [
+                CURLOPT_URL => $url_with_numero,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_FOLLOWLOCATION => true, // Suivre les redirections
+                CURLOPT_HTTPHEADER => $headers,
+            ]);
+
+            // Exécution de la requête cURL
+            $response = curl_exec($curl);
+            $error = curl_error($curl);
+
+            // Vérification des erreurs
+            if ($error) {
+                echo "Erreur cURL : $error\n";
+            } else {
+                // Traitement de la réponse
+                $response_array = json_decode($response, true);
+
+                // Vérifier si le statusCode est égal à 0
+                if (isset($response_array['statusCode']) && $response_array['statusCode'] === '0') {
+                    // Récupérer le service_name
+                    $service_name = $response_array['service_name'];
+
+                    // Stocker le service_name dans le tableau des services actifs
+                    $services_actifs[] = $service_name;
+                }
+            }
+
+            // Fermeture de la session cURL
+            curl_close($curl);
+        }
+
+        //Recuperer les services externe 
+        $services = Service::whereIn('credential.service_name', $services_actifs)->get();
+
+        //Recuperer service interne
+        $abonnes = Abonne::select("service_name")->where('msisdn', $contact)->get();
+
+        $get = Service::whereIn('', $abonnes)->get();
+
+
+
+        // Récupérer tous les abonnés dont le service_name n'est pas dans $services_actifs
+        $abonnes_inactifs = Abonne::where('msisdn', $contact)->whereNotIn('service_name', $services_actifs)->get();
+
+
+
+
+
+
+        // Maintenant $abonnes_inactifs contient tous les abonnés dont le service_name n'est pas dans $services_actifs
+        foreach ($abonnes_inactifs as $abonne) {
+            // Faites ce que vous avez besoin de faire avec chaque abonné inactif
+            echo "Abonné inactif - ID: {$abonne->id}, Service Name: {$abonne->service_name}\n";
+        }
+
+
+
+        // Log::info($result);
+
+
         $userIsAuthenticated = auth()->user();
         $imagecompte = auth()->user()->image;
         $services = Abonne::where('user_id', Auth::user()->id)->where('date_desabonnement', '=', null)
