@@ -2,80 +2,79 @@
 
 {% block content %}
 
-<main id="main">
-	<!-- ======= About Section ======= -->
-	<section id="hero" class="about">
-		<div class="container">
-			<div class="row">
+	<main
+		id="main">
+		<!-- ======= About Section ======= -->
+		<section id="hero" class="about">
+			<div class="container">
+				<div class="row">
 
-				<div class="col-md-12">
-					<div class="m-t-10">
-						<a href="#" class="" style="color: #005BA4;">Accueil »</a>
-						Mes abonnements
+					<div class="col-md-12">
+						<div class="m-t-10">
+							<a href="#" class="" style="color: #005BA4;">Accueil »</a>
+							Mes abonnements
+						</div>
+
 					</div>
 
 				</div>
 
-			</div>
+				<div class="row  pay_s m-t-30">
 
-			<div class="row  pay_s m-t-30">
-
-				{% if services is empty %} 
-
-				<h3>Vous n'avez pas d'abonnement</h3>
-				{% else %}
-				{% for service in services %}
-
-
-				<div class="col-md-3 m-t-10 text-center">
-
-					<div class="member">
-						<a href="page_details_app.html">
-							<img src="/image/service_images/{{ service.image }}" class="img-fluid" alt="" title=""
-								style="border-radius: 25px;">
-						</a>
-					</div>
-					<div class="">
-						<div class="" style="margin-top:5px; font-weight:bold; font-size:18px;">
-							{{ service.nom_service }}
-						</div>
-
-						<div class="m-t-10" style="font-size:12px; margin-top:-10px;">
-							Type de forfait :
-							{{ service.forfait }}
-						</div>
-
-						<form action="{{ route('desabonnement') }}" method="post">
-							{{csrf_field()}}
-
-							<input type="hidden" name="service_name" value="{{ service.nom_service }}">
-							<input type="hidden" name="xuser" value="{{ service.xuser }}">
-							<input type="hidden" name="xtoken" value="{{ service.xtoken }}">
-							<input type="hidden" name="transactionid" value="{{ service.transactionid }}">
-							<div class="m-t-10">
-								<button type="submit" class="btn btn-primary">Se désabonner</button>
+					{% if services is empty %}
+						
+							<div class="col-md-12 text-center m-t-50">
+								<h3>Vous n'avez pas d'abonnement</h3>
 							</div>
-						</form>
+
+						
+
+					{% else %}
+						{% for service in services %}
 
 
+							<div class="col-md-3 m-t-10 text-center">
 
-					</div>
+								<div class="member">
+									<a href="page_details_app.html">
+										<img src="/image/service_images/{{ service.image }}" class="img-fluid" alt="" title="" style="border-radius: 25px;">
+									</a>
+								</div>
+								<div class="">
+									<div class="" style="margin-top:5px; font-weight:bold; font-size:18px;">
+										{{ service.nom_service }}
+									</div>
+
+									<div class="m-t-10" style="font-size:12px; margin-top:-10px;">
+										Type de forfait :
+										{{ service.forfait }}
+									</div>
+
+									<form action="{{ route('desabonnement') }}" method="post">
+										{{csrf_field()}}
+
+										<input type="hidden" name="service_name" value="{{ service.nom_service }}">
+										<input type="hidden" name="xuser" value="{{ service.xuser }}">
+										<input type="hidden" name="xtoken" value="{{ service.xtoken }}">
+										<input type="hidden" name="transactionid" value="{{ service.transactionid }}">
+										<div class="m-t-10">
+											<button type="submit" class="btn btn-primary">Se désabonner</button>
+										</div>
+									</form>
+
+
+								</div>
+							</div>
+						{% endfor %}
+
+					{% endif %}
+
+
 				</div>
-				{% endfor %}
-
-				{% endif %}
-
-
 
 			</div>
-
-		</div>
 		</div>
 	</section>
 
 
-
-
-</main>
-
-{% endblock %}
+</main>{% endblock %}

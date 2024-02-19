@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Crypt;
 
 class OrderController extends Controller
 {
@@ -47,7 +48,9 @@ class OrderController extends Controller
 
                 $ref = $a . '-' . intval($month) . intval($day) . $year . $heure;
 
-                $order_url = Hash::make($ref);
+                $order_url =  Crypt::encrypt($ref);
+
+               
 
                 $partenaire_id = Service::join("partenaires", 'services.partenaire_id', '=', 'partenaires.id')
                     ->where('services.id', $request->service_id)
@@ -85,11 +88,11 @@ class OrderController extends Controller
                 //verifier si l'utilisateur à dejà un abonnement à ce service 
 
                 $auth = Transaction::where('service_id', $request->service_id)->where('user_id', Auth::user()->id)->count();
-                if ($auth == 1) {
-                    $request->session()->flash('error', 'Vous êtes déjà inscrit ou abonné au service demandé');
+                // if ($auth == 1) {
+                //     $request->session()->flash('error', 'Vous êtes déjà inscrit ou abonné au service demandé');
 
-                    return redirect()->back();
-                }
+                //     return redirect()->back();
+                // }
 
                 // Headers
                 $headers = [
@@ -135,6 +138,8 @@ class OrderController extends Controller
                     $request->session()->flash('error', 'Vous êtes déjà inscrit ou abonné au service demandé');
 
                     return redirect()->back();
+                }  else if($status == "2061"){
+                    $request->session()->flash('error', 'Veuillez ressayer plus tard');
                 }
 
                 // Ajouter la transaction dans la bdd
@@ -150,12 +155,13 @@ class OrderController extends Controller
                 $order->service_name = $servicename;
                 $order->order_url = $order_url;
                 $order->image = $request->image;
-                $order->transaction_method = "web";
+                // $order->transaction_method = "web";
                 $order->save();
 
                 $lastID = $order->id;
 
                 $transaction = json_decode($result);
+
 
                 $transaction_id = $transaction->transaction_id;
 

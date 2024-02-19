@@ -160,6 +160,28 @@ class ServicesController extends Controller
 
             $date = json_decode($result);
 
+            if($date->statusCode == "2032"){
+                $request->session()->flash('error', 'Votre crédit est inssuffisant pour souscrire à cette offre');
+
+                return redirect()->away('/');
+            }
+
+            if($date->statusCode == "2061"){
+                
+                $request->session()->flash('error', 'Cette operation a déjà été prise en compte.');
+
+                return redirect()->away('/');      
+            }
+
+            if($date->statusCode == "2084"){
+                
+                $request->session()->flash('error', 'Vous êtes déjà inscrit ou abonné au service demandé.');
+
+                return redirect()->away('/');      
+            }
+
+            // dd($date);
+
             $date_fin_abonnement = $date->date_fin_abonnement;
 
             // Mise à jour de la transaction

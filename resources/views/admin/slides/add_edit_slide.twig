@@ -41,11 +41,11 @@
 						<!-- general form elements -->
 						<div class="card card-primary">
 							<div class="card-header">
-								<h3 class="card-title">{{ title }}</h3>
+								<h3 class="card-title">{{ titles }}</h3>
 							</div>
 							<!-- /.card-header -->
 							<!-- form start -->
-							<form {% if partenairedata['id'] is empty %} action="{{ url('add-edit-partenaire') }}" {% else %} action="{{ url('add-edit-partenaire' , partenairedata['id']) }}" {% endif %} method="POST">
+							<form {% if slidedata['id'] is empty %} action="{{ url('add-edit-slide') }}" {% else %} action="{{ url('add-edit-slide' , slidedata['id']) }}" {% endif %} method="POST" enctype="multipart/form-data">
 								{{csrf_field()}}
 
 								<div class="card-body">
@@ -54,14 +54,15 @@
 										<div class="col-md-6">
 											<div class="form-group">
 												<label for="exampleInputEmail1">Titre</label>
-												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez le titre de l" name="nom_partenaire" 
-												{% if partenairedata['title'] is not empty %} value="{{ partenairedata['title'] }}" {% else %} value="{{ old('nom_partenaire ') }}" {% endif %}>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez le titre du slide" name="title" 
+												{% if slidedata['title'] is not empty %} value="{{ slidedata['title'] }}" {% else %} value="{{ old('title ') }}" {% endif %}>
 											</div>
 										</div>
 										<div class="col-md-6">
 											<div class="form-group">
 												<label for="exampleInputEmail1">Lien</label>
-												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez le nom du correspondant" name="nom_correspondant" {% if partenairedata['nom_correspondant'] is not empty %} value="{{ partenairedata['nom_partenaire'] }}" {% else %} value="{{ old('nom_partenaire ') }}" {% endif %}>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez lien du slide" name="link" 
+												{% if slidedata['link'] is not empty %} value="{{ slidedata['link'] }}" {% else %} value="{{ old('link ') }}" {% endif %}>
 											</div>
 										</div>
 									</div>
@@ -70,13 +71,15 @@
 										<div class="col-md-6">
 											<div class="form-group">
 												<label for="exampleInputEmail1">Type</label>
-												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez le contact du correspondant" name="contact_partenaire" {% if partenairedata['contact_partenaire'] is not empty %} value="{{ partenairedata['nom_partenaire'] }}" {% else %} value="{{ old('nom_partenaire ') }}" {% endif %}>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez le type" name="type" 
+												{% if slidedata['type'] is not empty %} value="{{ slidedata['type'] }}" {% else %} value="{{ old('type ') }}" {% endif %}>
 											</div>
 										</div>
 										<div class="col-md-6">
 											<div class="form-group">
 												<label for="exampleInputEmail1">Image</label>
-												<input type="file" class="form-control" id="exampleInputEmail1"  name="email_partenaire" {% if partenairedata['email_partenaire'] is not empty %} value="{{ partenairedata['email_partenaire'] }}" {% else %} value="{{ old('email_partenaire ') }}" {% endif %}>
+												<input type="file" class="form-control" id="exampleInputEmail1" name="image" 
+												{% if slidedata['image'] is not empty %} value="{{ slidedata['image'] }}" {% else %} value="{{ old('image ') }}" {% endif %}>
 											</div>
 										</div>
 									</div>
@@ -88,7 +91,7 @@
 								<!-- /.card-body -->
 
 								<div class="card-footer">
-									<button type="submit" class="btn btn-primary">{{ title}}</button>
+									<button type="submit" class="btn btn-primary">{{ titles}}</button>
 								</div>
 							</form>
 						</div>

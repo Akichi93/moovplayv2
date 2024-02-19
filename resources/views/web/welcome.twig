@@ -159,6 +159,13 @@
 				{% endif %}
 			</div>
 
+				{% if session_get('error') %}
+				<div class="alert alert-danger">
+					<a href="#close" class="close" data-dismiss="alert">&times;</a>
+					{{ session_get('error') }}
+				</div>
+				{% endif %}
+
 			<div class="col-md-12 text-center m-t-10" style="margin-bottom: 10px;">
 				<a class="btn btn_desc" data-toggle="collapse" href="#collapseExample" role="button"
 					aria-expanded="false" aria-controls="collapseExample"

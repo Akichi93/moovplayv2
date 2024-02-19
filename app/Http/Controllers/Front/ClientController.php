@@ -204,8 +204,11 @@ class ClientController extends Controller
         return redirect("/")->withSuccess('Oppes! You have entered invalid credentials');
     }
 
-    public function compte()
+    public function compte(Request $request)
     {
+        try {
+
+
 
         // verifier tous les api de consultation
         $all = Service::select('partenaires.x_user', 'partenaires.x_token', 'credential')->join("partenaires", 'services.partenaire_id', '=', 'partenaires.id')->get();
@@ -218,24 +221,27 @@ class ClientController extends Controller
         $result = [];
 
         foreach ($all as $item) {
-            if (!is_null($item['credential']['url_demande_abonnement'])) {
+            if (isset($item['credential']['url_consultation'])) {
                 $result[] = [
                     'x_user' => $item['x_user'],
                     'x_token' => $item['x_token'],
-                    'url_demande_abonnement' => $item['credential']['url_demande_abonnement']
+                    'url_consultation' => $item['credential']['url_consultation']
                 ];
             }
         }
 
+        // dd($result);
+
+        $services_actifs = [];
 
         foreach ($result as $item) {
             // Extraire les informations de l'élément actuel
-            $url = $item['url_demande_abonnement'];
+            $url = $item['url_consultation'];
             $xuser = $item['x_user'];
             $xtoken = $item['x_token'];
 
             // Construire l'URL avec le numéro
-            $url_with_numero = $url . '?msisdn=' . $numero;
+            $url_with_numero = $url . '/' . $numero;
 
             // En-têtes de la requête cURL
             $headers = [
@@ -270,9 +276,14 @@ class ClientController extends Controller
                 if (isset($response_array['statusCode']) && $response_array['statusCode'] === '0') {
                     // Récupérer le service_name
                     $service_name = $response_array['service_name'];
+                    $transaction_id = $response_array['transaction_id'];
+                    $date_fin_abonnement = $response_array['date_fin_abonnement'];
 
                     // Stocker le service_name dans le tableau des services actifs
                     $services_actifs[] = $service_name;
+                } elseif (isset($response_array['statusCode']) && ($response_array['statusCode'] === '1001' || $response_array['statusCode'] === '2061')) {
+                    // Si le statusCode est 1001 ou 2061, ignorer cet élément et passer au suivant
+                    continue;
                 }
             }
 
@@ -280,33 +291,62 @@ class ClientController extends Controller
             curl_close($curl);
         }
 
+
+
+    
+
+        $getId = User::select('id')->where("contact", $contact)->value('id');
+
+
         //Recuperer les services externe 
-        $services = Service::whereIn('credential.service_name', $services_actifs)->get();
+        // $service_names = array_column($services_actifs, 'service_name');
+
+
+
+        // Récupérer les services en fonction des noms extraits
+        $services = Service::whereIn('credential->service_name', $services_actifs)->get();
 
         //Recuperer service interne
-        $abonnes = Abonne::select("service_name")->where('msisdn', $contact)->get();
+        $abonnes = Abonne::select("service_name")->where('msisdn', $contact)->value('service_name');
 
-        $get = Service::whereIn('', $abonnes)->get();
+        if ($abonnes != null) {
+            $get = Service::where('credential.service_name', $abonnes)->get();
 
+            $services_non_existants = $services->diff($get);
 
+            foreach ($services_non_existants as $service) {
 
-        // Récupérer tous les abonnés dont le service_name n'est pas dans $services_actifs
-        $abonnes_inactifs = Abonne::where('msisdn', $contact)->whereNotIn('service_name', $services_actifs)->get();
+                if (isset($response_array['statusCode']) && $response_array['statusCode'] === '0') {
+                    // Récupérer le service_name, l'identifiant de transaction et d'autres détails
+                    $service_name = $response_array['service_name'];
+                    $transaction_id = $response_array['transaction_id'];
+                    $date_fin_abonnement = $response_array['date_fin_abonnement'];
 
-
-
-
-
-
-        // Maintenant $abonnes_inactifs contient tous les abonnés dont le service_name n'est pas dans $services_actifs
-        foreach ($abonnes_inactifs as $abonne) {
-            // Faites ce que vous avez besoin de faire avec chaque abonné inactif
-            echo "Abonné inactif - ID: {$abonne->id}, Service Name: {$abonne->service_name}\n";
+                    // Créer un nouvel objet Abonne et l'initialiser avec les valeurs récupérées
+                    $abonne = new Abonne();
+                    $abonne->service_name = $service_name;
+                    $abonne->nom_service = $service->nom_service;
+                    $abonne->msisdn = $contact;
+                    $abonne->forfait = $service->credential->bundle->forfait;
+                    $abonne->amount = $service->credential->bundle->amount;
+                    $abonne->image = $service->image;
+                    $abonne->transactionid = $transaction_id; // Ajouter l'identifiant de transaction
+                    $abonne->user_id = $getId;
+                    $abonne->service_id = $service->id;
+                    $abonne->partenaire_id = $service->partenaire_id;
+                    $abonne->date_abonnement = date("Y-m-d");
+                    $abonne->date_fin_abonnement = $date_fin_abonnement;
+                    $abonne->save();
+                }
+            }
+        }else{
+         
         }
 
 
 
-        // Log::info($result);
+
+
 
 
         $userIsAuthenticated = auth()->user();
@@ -319,6 +359,12 @@ class ClientController extends Controller
         // dd($services);
 
         return view('web.compte')->with(compact('userIsAuthenticated', 'services', 'imagecompte'));
+        } catch (\Exception $exception) {
+
+            $request->session()->flash('message', 'Veuillez ressayez plus tard');
+
+            return redirect()->back();
+        }
     }
 
     public function profil()

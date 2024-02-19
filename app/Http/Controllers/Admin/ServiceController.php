@@ -20,7 +20,7 @@ class ServiceController extends Controller
         $respo = Admin::select('role')->where('id', Auth::guard('admin')->user()->id)->value('role');
         $services = Service::with(['partenaires', 'categories'])->get();
 
-        return view('admin.services.services')->with(compact('services','respo'));
+        return view('admin.services.services')->with(compact('services', 'respo'));
     }
 
     public function addEditService(Request $request, $id = null)
@@ -70,19 +70,24 @@ class ServiceController extends Controller
             ];
             $this->validate($request, $rules, $customMessage);
 
-            $fileNameWithTheExtension = request('file')->getClientOriginalName();
+            if ($request->file != null) {
+                $fileNameWithTheExtension = request('file')->getClientOriginalName();
 
-            //obtenir le nom de l'image
+                //obtenir le nom de l'image
 
-            $fileName = pathinfo($fileNameWithTheExtension, PATHINFO_FILENAME);
+                $fileName = pathinfo($fileNameWithTheExtension, PATHINFO_FILENAME);
 
-            // extension
-            $extension = request('file')->getClientOriginalExtension();
+                // extension
+                $extension = request('file')->getClientOriginalExtension();
 
-            // creation de nouveau nom
-            $newFileName = $fileName . '_' . time() . '.' . $extension;
+                // creation de nouveau nom
+                $newFileName = $fileName . '_' . time() . '.' . $extension;
 
-            $path = request('file')->move('image/service_images', $newFileName);
+                $path = request('file')->move('image/service_images', $newFileName);
+            } else {
+                // Si aucun fichier n'est téléchargé, conserver l'ancienne donnée
+                $newFileName = $servicedata['image']; // Utilisation de l'ancien nom de fichier
+            }
 
 
             // Création d'object
@@ -100,7 +105,7 @@ class ServiceController extends Controller
 
                 array_push($array, $object);
             }
-            
+
 
             $service->categorie_id = $data['categorie_id'];
             $service->partenaire_id = $data['partenaire_id'];
@@ -108,6 +113,7 @@ class ServiceController extends Controller
             $service->code_souscription = $data['code_souscription'];
             $service->code_desouscription = $data['code_desouscription'];
             $service->nom_service = $data['nom_service'];
+
             $service->image = $newFileName;
             $service->service_url = Str::slug($request->input('nom_service'), "-");
             $service->credential = [
@@ -119,7 +125,7 @@ class ServiceController extends Controller
                 'bundle' =>  $array
             ];
             $service->save();
-        
+
             $request->session()->flash('success_message', $message);
             return redirect('/services');
         }
@@ -182,7 +188,7 @@ class ServiceController extends Controller
         }
     }
 
-    public function desactivateservice(Request $request,$id)
+    public function desactivateservice(Request $request, $id)
     {
 
         $services = Service::find($id);
@@ -194,7 +200,7 @@ class ServiceController extends Controller
         return back();
     }
 
-    public function activateservice(Request $request,$id)
+    public function activateservice(Request $request, $id)
     {
         $services = Service::find($id);
         $services->status = 0;

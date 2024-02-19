@@ -24,7 +24,7 @@ use App\Http\Controllers\Front\OrderController;
 |
 */
 
-
+// URL::forceRootUrl('https://https://demo.moovplay.com/');
 Route::get('/bundle', [ServicesController::class, 'bundle']);
 
 

@@ -195,10 +195,12 @@
 
 									</div>
 
+
 									<div class="row">
 									<div class="col-md-12">
 										<div class="form-group">
 											<div class="field_wrapper">
+											{% if servicedata is not empty %}
 											{% for credential in servicedata['credential']['bundle'] %}
 												<div class="row mt-2 mb-2">
 												
@@ -213,6 +215,20 @@
 													
 												</div>
 												{% endfor %}
+												{% else %}
+												<div class="row mt-2 mb-2">
+												
+												
+													<input style="width: 10%;" class="form-control m-1 col-md-2" id="periode" type="text" name="periode[]" placeholder="Période" required=""/>
+													<input style="width: 10%;" class="form-control m-1 col-md-2" id="tarif" type="number" name="tarif[]"  placeholder="Tarif" required=""/>
+
+													<textarea id="avantage" name="avantage[]" rows="4" cols="50" placeholder=""></textarea>
+													<a href="javascript:void(0);" class="add_button col-md-1" title="Ajouter">
+														<i class="fa fa-plus-circle" style="font-size: 25px;"></i>
+													</a>
+													
+												</div>
+												{% endif %}
 											</div>
 										</div>
 

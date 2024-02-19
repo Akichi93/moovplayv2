@@ -67,8 +67,11 @@
 									<tbody>
 										{% for slide in slides %}
 											<tr>
-												<td>{{ slide.nom_categorie}}</td>
-												<td>{{ slide.nom_categorie}}</td>
+												<td>{{ slide.title}}</td>
+												<td>
+												<img src="/image/banner_images/{{ slide.image }}" style="height:100px"
+										class="img-responsive img-fluid img-selection" alt="" title="">
+										</td>
 												<td>
 													<div class="d-flex order-actions">
 														<a href="{{ url('add-edit-slide' , slide.id) }}">
@@ -88,7 +91,7 @@
 																		</button>
 																	</div>
 																	<div class="modal-body">
-																		<p>Voulez-vous supprimer cette catégorie
+																		<p>Voulez-vous supprimer ce slide
 																			<b>
 																				{{ slide.nom_categorie}}</b>?</p>
 																	</div>

@@ -25,14 +25,14 @@ class PartenaireController extends Controller
             $partenaire = new Partenaire();
             $partenairedata = array();
 
-            $message = "La categorie a ete ajoutée avec succès !";
+            $message = "Le partenaire a ete ajouté avec succès !";
         } else {
             $title = "Modifier partenaire";
             $partenairedata = Partenaire::where('id', $id)->first();
             $partenairedata = json_decode(json_encode($partenairedata), true);
 
             $partenaire = Partenaire::find($id);
-            $message = "Le partenaire à été Modifée avec succès !";
+            $message = "Le partenaire à été Modifé avec succès !";
         }
         if ($request->isMethod('post')) {
             $data = $request->all();

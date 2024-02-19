@@ -84,14 +84,14 @@
 									<div class="row">
 										<div class="col-md-6">
 											<div class="form-group">
-												<label for="exampleInputEmail1">Login</label>
-												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez le nom de l'utilisateur" name="x_user" {% if partenairedata['x_user'] is not empty %} value="{{ partenairedata['x_user'] }}" {% else %} value="{{ old('x_user ') }}" {% endif %}>
+												<label for="exampleInputEmail1">Xuser</label>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez le xuser" name="x_user" {% if partenairedata['x_user'] is not empty %} value="{{ partenairedata['x_user'] }}" {% else %} value="{{ old('x_user ') }}" {% endif %}>
 											</div>
 										</div>
 										<div class="col-md-6">
 											<div class="form-group">
-												<label for="exampleInputEmail1">Mot de passe</label>
-												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez le mot de passe utilisateur" name="x_token" {% if partenairedata['email_partenaire'] is not empty %} value="{{ partenairedata['email_partenaire'] }}" {% else %} value="{{ old('email_partenaire ') }}" {% endif %}>
+												<label for="exampleInputEmail1">Xtoken</label>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez le xtoken " name="x_token" {% if partenairedata['x_token'] is not empty %} value="{{ partenairedata['x_token'] }}" {% else %} value="{{ old('x_token ') }}" {% endif %}>
 											</div>
 										</div>
 									</div>

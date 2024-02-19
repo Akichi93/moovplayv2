@@ -33,5 +33,9 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrap();
 
         view()->share(['menus' => $menus]);
+
+        // if (env('APP_ENV') !== 'local') {
+        //     $this->app['request']->server->set('HTTPS', true);
+        // }
     }
 }

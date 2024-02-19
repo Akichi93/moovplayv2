@@ -84,7 +84,8 @@
 										<td>{{ service.categories.nom_categorie}}</td>
 										<td>{{ service.description}}</td>
 										<td>
-											<img src="{{ asset('/service_images/Capture d’écran (9)_1694621721') }}"
+										
+											<img src="/service_images/{{ slide.image }}" style="height:100px"
 												class="img-fluid img-reponsive">
 										</td>
 										{% if service.status == 0 %}

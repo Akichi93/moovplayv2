@@ -14,29 +14,32 @@ class BannerController extends Controller
     {
         $respo = Admin::select('role')->where('id', Auth::guard('admin')->user()->id)->value('role');
         $slides = Banner::all();
-        return view('admin.slides.slides')->with(compact('slides','respo'));
+        return view('admin.slides.slides')->with(compact('slides', 'respo'));
     }
 
     public function addEditSlide(Request $request, $id = null)
     {
+        
         if ($id == "") {
-            $title = 'Ajouter slide';
+            $titles = 'Ajouter slide';
             // ajout de fonctionnalités
             $slide = new Banner();
             $slidedata = array();
-            $getslides = array();
-            
+            // $getslides = array();
+
             $message = "Le slide a ete ajoutée avec succès !";
         } else {
-            $title = "Modifier slide";
+            $titles = "Modifier slide";
             $slidedata = Banner::where('id', $id)->first();
             $slidedata = json_decode(json_encode($slidedata), true);
-          
-            $category = Banner::find($id);
+
+            $slide = Banner::find($id);
             $message = "Le slide a ete Modifée avec succès !";
         }
         if ($request->isMethod('post')) {
             $data = $request->all();
+
+            // dd($data);
             $rules = [
                 'title' => 'required',
                 'image' => 'required',
@@ -50,15 +53,35 @@ class BannerController extends Controller
             ];
             $this->validate($request, $rules, $customMessage);
 
-            $category->title = $data['title'];
-            $category->alt = $data['title'];
-            $category->link = $data['link'];
-            $category->image = $data['image'];
-            $category->type = $data['type'];
-            $category->save();
-        
+
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $fileNameWithTheExtension = $file->getClientOriginalName();
+                //obtenir le nom de l'image
+
+                $fileName = pathinfo($fileNameWithTheExtension, PATHINFO_FILENAME);
+
+                // extension
+                $extension = $file->getClientOriginalExtension();
+
+                // creation de nouveau nom
+                $newFileName = $fileName . '_' . time() . '.' . $extension;
+
+                $path = $file->move('image/banner_images', $newFileName);
+            } else {
+                // Si aucun fichier n'est téléchargé, conserver l'ancienne donnée
+                $newFileName = $slidedata['image']; // Utilisation de l'ancien nom de fichier
+            }
+
+            $slide->title = $request->get('title');
+            $slide->alt = $data['title'];
+            $slide->link = $data['link'];
+            $slide->image = $newFileName;
+            $slide->type = $data['type'];
+            $slide->save();
+
             return redirect('/slides');
         }
-        return view('admin.slides.add_edit_slide')->with(compact('title', 'slidedata'));
+        return view('admin.slides.add_edit_slide')->with(compact('titles', 'slidedata'));
     }
 }
