@@ -24,7 +24,8 @@ use App\Http\Controllers\Front\OrderController;
 |
 */
 
-// URL::forceRootUrl('https://https://demo.moovplay.com/');
+
+// URL::forceRootUrl('https://demo.moovplay.com/');
 Route::get('/bundle', [ServicesController::class, 'bundle']);
 
 
@@ -58,6 +59,8 @@ Route::post('/resendotp', [ClientController::class, 'resendOtp'])->name('otp.res
 Route::get('/inscription', [ClientController::class, 'userLoginRegister']);
 Route::get('/resetpassword', [ClientController::class, 'resetPassword']);
 Route::post('/loginclient', [ClientController::class, 'loginclient']);
+
+
 
 Auth::routes();
 
@@ -100,3 +103,5 @@ Route::get('/detailservice/{service_url}', [ServicesController::class, 'details'
 
 
 Route::post('/postlogin', [AdminController::class, 'postLogin']);
+
+Route::view('/{path}','errors.404');

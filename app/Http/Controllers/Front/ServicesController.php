@@ -30,7 +30,7 @@ class ServicesController extends Controller
                 $categoryDetails = Categorie::catDetails($url);
                 $categoryServices = Service::whereIn('categorie_id', $categoryDetails['catIds'])->where('status', 0);
                 $title = Service::join("categories", 'services.categorie_id', '=', 'categories.id')->whereIn('categorie_id', $categoryDetails['catIds'])->first();
-                $categoryServices = $categoryServices->paginate(8);
+                $categoryServices = $categoryServices->paginate(12);
                 $categories = Service::whereIn('categorie_id', $categoryDetails['catIds'])->where('status', 0)->count();
 
 
@@ -53,7 +53,7 @@ class ServicesController extends Controller
                     ->where('status', 0)->where('nom_service', 'LIKE', "%$search%");
                 $title = Service::join("categories", 'services.categorie_id', '=', 'categories.id')
                     ->whereIn('categorie_id', $categoryDetails['catIds'])->first();
-                $categoryServices = $categoryServices->paginate(8);
+                $categoryServices = $categoryServices->paginate(12);
                 $categories = Service::whereIn('categorie_id', $categoryDetails['catIds'])->where('status', 0)->count();
 
 
