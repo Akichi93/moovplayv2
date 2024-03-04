@@ -54,37 +54,48 @@
 										<div class="col-md-6">
 											<div class="form-group">
 												<label for="exampleInputEmail1">Titre</label>
-												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez le titre du slide" name="title" 
-												{% if slidedata['title'] is not empty %} value="{{ slidedata['title'] }}" {% else %} value="{{ old('title ') }}" {% endif %}>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez le titre de la banniere" name="title" {% if slidedata['title'] is not empty %} value="{{ slidedata['title'] }}" {% else %} value="{{ old('title ') }}" {% endif %}>
 											</div>
 										</div>
 										<div class="col-md-6">
 											<div class="form-group">
-												<label for="exampleInputEmail1">Lien</label>
-												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez lien du slide" name="link" 
-												{% if slidedata['link'] is not empty %} value="{{ slidedata['link'] }}" {% else %} value="{{ old('link ') }}" {% endif %}>
+												<label for="exampleInputEmail1">Type</label>
+												<select name="type" id="type" class="single-select form-control" style="width: 100%;">
+													<option value="">Selectionnez un type</option>
+													<option value="Image">Image</option>
+													<option value="Vidéo">Vidéo</option>
+												</select>
+												{# <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez le type" name="type" 
+																																																												{% if slidedata['type'] is not empty %} value="{{ slidedata['type'] }}" {% else %} value="{{ old('type ') }}" {% endif %}> #}
 											</div>
 										</div>
 									</div>
 
 									<div class="row">
-										<div class="col-md-6">
+										<div class="col-md-12">
 											<div class="form-group">
-												<label for="exampleInputEmail1">Type</label>
-												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez le type" name="type" 
-												{% if slidedata['type'] is not empty %} value="{{ slidedata['type'] }}" {% else %} value="{{ old('type ') }}" {% endif %}>
+												<label for="exampleInputEmail1">Description</label>
+												<textarea class="form-control" name="description" rows="3" placeholder="Entrez la description ...">{{ slidedata['description'] }}</textarea>
+											</div>
+										</div>
+
+									</div>
+
+									<div class="row">
+
+										<div class="col-md-6">
+											<div class="form-group link">
+												<label for="exampleInputEmail1">Lien</label>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez lien de la vidéo" name="link" {% if slidedata['link'] is not empty %} value="{{ slidedata['link'] }}" {% else %} value="{{ old('link ') }}" {% endif %}>
 											</div>
 										</div>
 										<div class="col-md-6">
-											<div class="form-group">
+											<div class="form-group image">
 												<label for="exampleInputEmail1">Image</label>
-												<input type="file" class="form-control" id="exampleInputEmail1" name="image" 
-												{% if slidedata['image'] is not empty %} value="{{ slidedata['image'] }}" {% else %} value="{{ old('image ') }}" {% endif %}>
+												<input type="file" class="form-control" id="exampleInputEmail1" name="image" {% if slidedata['image'] is not empty %} value="{{ slidedata['image'] }}" {% else %} value="{{ old('image ') }}" {% endif %}>
 											</div>
 										</div>
 									</div>
-
-								
 
 
 								</div>

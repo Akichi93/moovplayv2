@@ -10,12 +10,14 @@ class Service extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nom_service', 'partenaire_id', 'categorie_id', 'status', 'code_souscription', 'code_desouscription', 'image','service_url'
+        'nom_service', 'partenaire_id', 'categorie_id', 'status', 'code_souscription', 'code_desouscription','service_url'
     ];
 
     // Cast credential JSON to array
     protected $casts = [
-        'credential' => 'array'
+        'credential' => 'array',
+        'image' => 'array',
+        'ressources' => 'array',
     ];
 
     public function partenaires()

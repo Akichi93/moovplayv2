@@ -105,19 +105,19 @@
 
 																<input class="form-control" name="amount" value="{{ offre.tarif }}" type="hidden">
 																<div>
-																	<button type="submit" class="btn_l1 flex_logo" style="">
-																		<a href="#lot_s" style="color: #fff;font-size: 12px;margin-top:20px;">{{
+																	<button type="submit"  style="" class="btn_l1 flex_logo" style="color: #fff;font-size: 12px;margin-top:20px;">
+																	{{
 															offre.periode
 															}}
 																			(
 																			{{ offre.tarif }}
-																			FCFA)</a>
+																			FCFA)
 																	</button>
 																	<br/>
 																	<br/>
-																	<span class="tooltiptext" style="font-size: 12px;">
+																	{# <span class="tooltiptext" style="font-size: 12px;">
 																		{{ offre.description }}<br>
-																	</span>
+																	</span> #}
 																</div>
 															</form>
 														</div>

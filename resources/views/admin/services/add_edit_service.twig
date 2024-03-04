@@ -55,7 +55,7 @@
 								</div>
 							{% endif %}
 
-							
+
 							<!-- form start -->
 							<form {% if servicedata['id'] is empty %} action="{{ url('add-edit-service') }}" {% else %} action="{{ url('add-edit-service' , servicedata['id']) }}" {% endif %} method="POST" enctype="multipart/form-data">
 								{{csrf_field()}}
@@ -87,13 +87,12 @@
 													<option value="">Selectionnez une catégorie</option>
 													{% for categorie in getCategories %}
 
-														<option value="{{ categorie.id }} 
-														{% if servicedata.categorie_id is not empty and servicedata.categorie_id == categorie.id %} selected="" {% endif %}>
-														">{{ categorie['nom_categorie'] }}</option>
+														<option value="{{ categorie.id }} {% if servicedata.categorie_id is not empty and servicedata.categorie_id == categorie.id %} selected=" " {% endif %}>
+																													">{{ categorie['nom_categorie'] }}</option>
 
 													{% endfor %}
 
-													 
+
 												</select>
 												<p style="color: red">
 													{{ errors.first('categorie_id') }}
@@ -116,15 +115,14 @@
 										<div class="col-md-6">
 											<div class="form-group">
 												<label for="file">Image</label>
-												<input type="file" class="form-control" id="file" name="file">
+												<input type="file" class="form-control" multiple id="file" name="file[]">
 
-												  {% if servicedata.image is not empty %}
-                                                    <div>
-                                                        <img style="width: 60px; margin-top: 5px;"
-                                                             src="/image/service_images/{{ servicedata.image }}">
-                                                        
-                                                    </div>
-                                                {% endif %}
+												{% if servicedata.image is not empty %}
+													<div>
+														<img style="width: 60px; margin-top: 5px;" src="/image/service_images/{{ servicedata.image }}">
+
+													</div>
+												{% endif %}
 											</div>
 										</div>
 									</div>
@@ -168,7 +166,8 @@
 										</div>
 										<div class="col-md-6">
 											<div class="form-group">
-												<label for="exampleInputEmail1">Url de desabonnement </label>
+												<label for="exampleInputEmail1">Url de desabonnement
+												</label>
 												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez l'URL de désabonnement" name="url_desabonnement" {% if servicedata.credential.url_desabonnement is not null %} value="{{ servicedata.credential.url_desabonnement }}" {% endif %}>
 											</div>
 										</div>
@@ -181,7 +180,23 @@
 												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez l'url de consultation" name="url_consultation" {% if servicedata.credential.url_consultation is not empty %} value="{{ servicedata.credential.url_consultation }}" {% else %} value="{{ old('url_consultation') }}" {% endif %}>
 											</div>
 										</div>
-										
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="exampleInputEmail1">Icône</label>
+												<input type="file" class="form-control" id="file" name="icone">
+												
+											</div>
+										</div>
+
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="exampleInputEmail1">Lien de la vidéo</label>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez l'url de de la vidéo" name="url_consultation" {% if servicedata.credential.url_consultation is not empty %} value="{{ servicedata.credential.url_consultation }}" {% else %} value="{{ old('url_consultation') }}" {% endif %}>
+											</div>
+										</div>
+
 									</div>
 
 
@@ -197,46 +212,46 @@
 
 
 									<div class="row">
-									<div class="col-md-12">
-										<div class="form-group">
-											<div class="field_wrapper">
-											{% if servicedata is not empty %}
-											{% for credential in servicedata['credential']['bundle'] %}
-												<div class="row mt-2 mb-2">
-												
-												
-													<input style="width: 10%;" class="form-control m-1 col-md-2" id="periode" type="text" name="periode[]" value="{{ credential['periode'] }}" placeholder="Période" required=""/>
-													<input style="width: 10%;" class="form-control m-1 col-md-2" id="tarif" type="number" name="tarif[]" value="{{ credential['tarif'] }}" placeholder="Tarif" required=""/>
+										<div class="col-md-12">
+											<div class="form-group">
+												<div class="field_wrapper">
+													{% if servicedata is not empty %}
+														{% for credential in servicedata['credential']['bundle'] %}
+															<div class="row mt-2 mb-2">
 
-													<textarea id="avantage" name="avantage[]" rows="4" cols="50" placeholder="">{{ credential['description'] }}</textarea>
-													<a href="javascript:void(0);" class="add_button col-md-1" title="Ajouter">
-														<i class="fa fa-plus-circle" style="font-size: 25px;"></i>
-													</a>
-													
-												</div>
-												{% endfor %}
-												{% else %}
-												<div class="row mt-2 mb-2">
-												
-												
-													<input style="width: 10%;" class="form-control m-1 col-md-2" id="periode" type="text" name="periode[]" placeholder="Période" required=""/>
-													<input style="width: 10%;" class="form-control m-1 col-md-2" id="tarif" type="number" name="tarif[]"  placeholder="Tarif" required=""/>
 
-													<textarea id="avantage" name="avantage[]" rows="4" cols="50" placeholder=""></textarea>
-													<a href="javascript:void(0);" class="add_button col-md-1" title="Ajouter">
-														<i class="fa fa-plus-circle" style="font-size: 25px;"></i>
-													</a>
-													
+																<input style="width: 10%;" class="form-control m-1 col-md-2" id="periode" type="text" name="periode[]" value="{{ credential['periode'] }}" placeholder="Période" required=""/>
+																<input style="width: 10%;" class="form-control m-1 col-md-2" id="tarif" type="number" name="tarif[]" value="{{ credential['tarif'] }}" placeholder="Tarif" required=""/>
+
+																<textarea id="avantage" name="avantage[]" rows="4" cols="50" placeholder="">{{ credential['description'] }}</textarea>
+																<a href="javascript:void(0);" class="add_button col-md-1" title="Ajouter">
+																	<i class="fa fa-plus-circle" style="font-size: 25px;"></i>
+																</a>
+
+															</div>
+														{% endfor %}
+													{% else %}
+														<div class="row mt-2 mb-2">
+
+
+															<input style="width: 10%;" class="form-control m-1 col-md-2" id="periode" type="text" name="periode[]" placeholder="Période" required=""/>
+															<input style="width: 10%;" class="form-control m-1 col-md-2" id="tarif" type="number" name="tarif[]" placeholder="Tarif" required=""/>
+
+															<textarea id="avantage" name="avantage[]" rows="4" cols="50" placeholder=""></textarea>
+															<a href="javascript:void(0);" class="add_button col-md-1" title="Ajouter">
+																<i class="fa fa-plus-circle" style="font-size: 25px;"></i>
+															</a>
+
+														</div>
+													{% endif %}
 												</div>
-												{% endif %}
 											</div>
+
 										</div>
+										<hr/>
+
 
 									</div>
-									<hr/>
-
-
-								</div>
 
 
 								</div>

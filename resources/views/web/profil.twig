@@ -32,7 +32,7 @@
 					<div class="m-t-30 text-center">
 
 						<div class="preview ">
-							{% if result is empty %}
+							{% if result is not empty %}
 							<img class="preview-img" src="{{ url('assets/img/user.png') }}" alt="Preview Image"
 								width="200" height="200" style="border-radius: 50%;">
 							{% else %}

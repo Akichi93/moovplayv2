@@ -275,6 +275,36 @@ select.add(new Option(d));
 			<script src="{{ asset('admin/dist/js/demo.js')}}"></script>
 		{% endblock %}
 
+		
+    <!-- Hide and show-->
+     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Function to toggle visibility of link and image fields based on type selection
+            function toggleFields() {
+                var type = document.getElementById('type').value;
+                var lienField = document.querySelector('.form-group.link');
+                var imageField = document.querySelector('.form-group.image');
+
+                if (type === 'Vidéo') {
+                    lienField.style.display = 'block';
+                    imageField.style.display = 'none';
+                } else if (type === 'Image') {
+                    lienField.style.display = 'none';
+                    imageField.style.display = 'block';
+                } else {
+                    lienField.style.display = 'none';
+                    imageField.style.display = 'none';
+                }
+            }
+
+            // Call toggleFields on page load
+            toggleFields();
+
+            // Add event listener to type dropdown
+            document.getElementById('type').addEventListener('change', toggleFields);
+        });
+    </script>
+
 		{# {% stack('graph') %} #}
 		<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
 		{# <script src="{{ asset('admin/dist/js/pages/dashboard.js')}}"></script> #}<script src="{{ asset('js/admin/admin_scripts.js') }}"> </script>

@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Front;
 
 use App\Models\Offre;
+use App\Models\Banner;
 use App\Models\Service;
 use App\Models\Categorie;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
 class IndexController extends Controller
 {
@@ -25,6 +27,8 @@ class IndexController extends Controller
          });
 
 
+      $slides = Banner::all();
+
       $userIsAuthenticated = auth()->check();
 
       if ($userIsAuthenticated == null) {
@@ -33,7 +37,7 @@ class IndexController extends Controller
          $imagecompte = auth()->user()->image;
       }
 
-      return view('web.welcome')->with(compact('services', 'userIsAuthenticated', 'imagecompte'));
+      return view('web.welcome')->with(compact('services', 'userIsAuthenticated', 'imagecompte', 'slides'));
    }
 
    public function search(Request $request)
@@ -41,5 +45,101 @@ class IndexController extends Controller
       $q = $request->search;
       $result = Service::where('nom_service', 'LIKE', '%' . $q . '%')->get();
       return view('web.pages')->with(compact('result', 'q'));
+   }
+
+   public function getCategories()
+   {
+      $categories = Categorie::all();
+
+      return response()->json([
+         'success' => true,
+         'data' => $categories
+      ], Response::HTTP_OK);
+   }
+
+   public function getServices(Request $request)
+   {
+      $services = null;
+
+      if ($services === null) {
+         $services = Service::all();
+      }
+
+      if ($request->has('category')) {
+         $services = Categorie::where('url', $request->category)->with('service')->get();
+      }
+
+      if ($request->has('slug')) {
+         $services = Service::with('categories')->where('service_url', $request->slug)->first();
+      }
+
+      if ($request->has('limit')) {
+         $limit = $request->limit;
+         $services = Categorie::where('url', $request->category)->with('service')
+            ->get()
+            ->map(function ($query) use ($limit) {
+               $query->setRelation('service', $query->service->take($limit));
+               return $query;
+            });
+      }
+
+      if ($request->has('sort')) {
+         if ($request->sort == 'random') {
+            $services = Service::inRandomOrder()->where('status', 0)->get();
+         }
+
+         if ($request->sort == 'newer') {
+            $services = Service::orderby('id', 'asc')->where('status', 0)->get();
+         }
+      }
+
+      return response()->json([
+         'success' => true,
+         'data' => $services
+      ], Response::HTTP_OK);
+   }
+
+   public function getBanners()
+   {
+      $banners = Banner::all();
+
+
+      return response()->json([
+         'success' => true,
+         'data' => $banners
+      ], Response::HTTP_OK);
+   }
+
+   public function details($service_url)
+   {
+
+      $productDetails = Service::with('categories')->where('service_url', $service_url)->first();
+      if ($productDetails == null) {
+
+         return response()->json([
+            'success' => false,
+            'data' => 'Ce service n\'existe pas'
+         ], Response::HTTP_OK);
+
+         //   abort(404);
+      } else {
+         $Data['productDetails'] = Service::with('categories')->where('service_url', $service_url)->first();
+
+         $Data['relatedProducts'] = Service::limit(4)->inRandomOrder()->where('service_url', '!=', $service_url)->where('status', 0)->get();
+
+         $categorie_id = Service::with('categories')->where('service_url', $service_url)->value('categorie_id');
+
+         $Data['otherservices'] = Service::with('categories')->inRandomOrder()
+            ->where('categorie_id', $categorie_id)
+            ->where('service_url', '!=', $service_url)
+            ->where('status', 0)
+            ->limit(4)
+            ->get();
+
+         return response()->json([
+            'success' => true,
+            'data' => $Data
+         ], Response::HTTP_OK);
+      }
    }
 }

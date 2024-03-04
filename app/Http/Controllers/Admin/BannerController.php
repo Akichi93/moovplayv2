@@ -19,7 +19,7 @@ class BannerController extends Controller
 
     public function addEditSlide(Request $request, $id = null)
     {
-        
+
         if ($id == "") {
             $titles = 'Ajouter slide';
             // ajout de fonctionnalités
@@ -38,46 +38,43 @@ class BannerController extends Controller
         }
         if ($request->isMethod('post')) {
             $data = $request->all();
+            // dd($request->all());
 
             // dd($data);
             $rules = [
                 'title' => 'required',
-                'image' => 'required',
+                'description' => 'required',
                 'type' => 'required',
             ];
 
             $customMessage = [
                 'title.required' => 'Le titre est requis',
-                'image.required' => "Entrez l'image",
+                'description.required' => "Entrez l'image",
                 'type.required' => "Entrez l'image",
             ];
             $this->validate($request, $rules, $customMessage);
 
-
-            if ($request->hasFile('image')) {
+            // $filename = null; // Initialize $filename with a default value
+            // if ($request->hasfile('image')) {
                 $file = $request->file('image');
-                $fileNameWithTheExtension = $file->getClientOriginalName();
-                //obtenir le nom de l'image
-
-                $fileName = pathinfo($fileNameWithTheExtension, PATHINFO_FILENAME);
-
-                // extension
-                $extension = $file->getClientOriginalExtension();
-
-                // creation de nouveau nom
-                $newFileName = $fileName . '_' . time() . '.' . $extension;
-
-                $path = $file->move('image/banner_images', $newFileName);
-            } else {
-                // Si aucun fichier n'est téléchargé, conserver l'ancienne donnée
-                $newFileName = $slidedata['image']; // Utilisation de l'ancien nom de fichier
-            }
+                $extenstion = $file->getClientOriginalExtension();
+                $filename = time() . '.' . $extenstion;
+                $file->move('image/banner_images/', $filename);
+            // }
+            // elseif (isset($slidedata['image']) && $slidedata['image'] != null) {
+            //     // Si aucun fichier n'est téléchargé, conserver l'ancienne donnée
+            //     $newFileName = $slidedata['image']; // Utilisation de l'ancien nom de fichier
+            // } 
+            // else {
+            //     $newFileName = null;
+            // }
 
             $slide->title = $request->get('title');
             $slide->alt = $data['title'];
             $slide->link = $data['link'];
-            $slide->image = $newFileName;
+            $slide->image = $filename;
             $slide->type = $data['type'];
+            $slide->description = $data['description'];
             $slide->save();
 
             return redirect('/slides');

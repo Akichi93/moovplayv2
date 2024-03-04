@@ -60,7 +60,7 @@
 									<thead>
 										<tr>
 											<th>Nom du slide</th>
-											<th>Image</th>
+											<th>Description</th>
 											<th>Actions</th>
 										</tr>
 									</thead>
@@ -68,11 +68,7 @@
 										{% for slide in slides %}
 											<tr>
 												<td>{{ slide.title}}</td>
-												<td>
-												
-												<img src="/image/banner_images/{{ slide.image }}" style="height:100px"
-										class="img-responsive img-fluid img-selection" alt="" title="">
-										</td>
+												<td>{{ slide.description}}</td>
 												<td>
 													<div class="d-flex order-actions">
 														<a href="{{ url('add-edit-slide' , slide.id) }}">
