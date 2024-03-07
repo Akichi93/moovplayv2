@@ -81,9 +81,9 @@ return [
             'model' => App\Models\Admin::class,
         ],
 
-       
 
-       
+
+
 
         // 'users' => [
         //     'driver' => 'database',
@@ -110,8 +110,8 @@ return [
         'users' => [
             'provider' => 'users',
             'table' => 'password_resets',
-            'expire' => 60,
-            'throttle' => 60,
+            'expire' => 8766,
+            'throttle' => 120,
         ],
 
         'admins' => [

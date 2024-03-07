@@ -34,8 +34,8 @@ Route::post('/clientregister', [ClientController::class, 'register'])->name('otp
 Route::post('/clientforgot', [ClientController::class, 'forgot'])->name('otp.forgot');
 Route::post('/uploadfile', [ClientController::class, 'uploadfile'])->name('upload.file');
 
-Route::get('/compte', [ClientController::class, 'compte']);
-Route::get('/profil', [ClientController::class, 'profil']);
+// Route::get('/compte', [ClientController::class, 'compte']);
+// Route::get('/profil', [ClientController::class, 'profil']);
 Route::get('/changepassword', [ClientController::class, 'changepassword']);
 Route::post('/logoutclient', [ClientController::class, 'logoutClient']);
 Route::post('/updateinfo', [ClientController::class, 'updateinfo']);
@@ -47,9 +47,9 @@ Route::post('/otpreset', [ClientController::class, 'resetWithOtp'])->name('otp.g
 
 Route::post('/desabonnement', [ClientController::class, 'desabonnement'])->name('desabonnement');
 
-Route::post('/otpdemande', [ServicesController::class, 'demandeWithOtp'])->name('otp.getdemande');
+// Route::post('/otpdemande', [ServicesController::class, 'demandeWithOtp'])->name('otp.getdemande');
 
-Route::post('/demandeservice', [OrderController::class, 'demandeService'])->name('demande.service');
+// Route::post('/demandeservice', [OrderController::class, 'demandeService'])->name('demande.service');
 Route::get('/demandeotp/{order_url}', [OrderController::class, 'demandeotp'])->name('demandeotp');
 
 Route::post('/resendotp', [ClientController::class, 'resendOtp'])->name('otp.resendotp');

@@ -2,22 +2,35 @@
 
 namespace App\Http\Controllers\Front;
 
-use JWTAuth;
+use Exception;
+use App\Models\User;
+use App\Models\Abonne;
+use App\Models\Service;
+use App\Models\Transaction;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\User;
-use Tymon\JWTAuth\Contracts\Providers\Auth;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Validator;
+use PhpParser\Node\Stmt\TryCatch;
+use Tymon\JWTAuth\Exceptions\JWTException;
 use Symfony\Component\HttpFoundation\Response;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 
 class AuthController extends Controller
 {
 
     public function __construct()
     {
-        $this->middleware('JWT', ['except' => ['login', 'register']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
+
+
 
     public function register(Request $request)
     {
@@ -67,6 +80,7 @@ class AuthController extends Controller
                     $user = new User();
                     $user->code = $verification_code;
                     $user->contact = $request->contact;
+                    $user->referent = Str::random(6);
                     $user->save();
 
                     $lastID = DB::table('users')->max('id');
@@ -76,34 +90,35 @@ class AuthController extends Controller
                     $contact = $request->all();
 
                     $otp =  DB::table('users')->where('contact', $request->contact)->pluck('code')->first();
+
                     $message = "Votre code de connexion à MOOVPLAY est : $otp";
-                    // $now = date('Y-m-d H:i:s');
+                    $now = date('Y-m-d H:i:s');
 
-                    // $mobile = '225' . $request->contact;
+                    $mobile = '225' . $request->contact;
 
-                    // $message = [
-                    //     "code_service" => "MOOVPLAY",
-                    //     "password" => "zpkd8547@moovplay-2024",
-                    //     "message" => $message,
-                    //     "sender" => 'MOOVPLAY',
-                    //     "msisdn" => $mobile,
-                    //     "datetime" => $now,
-                    // ];
+                    $message = [
+                        "code_service" => "MOOVPLAY",
+                        "password" => "zpkd8547@moovplay-2024",
+                        "message" => $message,
+                        "sender" => 'MOOVPLAY',
+                        "msisdn" => $mobile,
+                        "datetime" => $now,
+                    ];
 
-                    // $json = json_encode($message);
+                    $json = json_encode($message);
 
-                    // $ch = curl_init();
-                    // curl_setopt($ch, CURLOPT_URL, "https://smartdev.ci/sms/smsMT.php");
-                    // curl_setopt($ch, CURLOPT_POST, 1);
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, "https://smartdev.ci/sms/smsMT.php");
+                    curl_setopt($ch, CURLOPT_POST, 1);
 
-                    // curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
-                    // curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-                    // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-                    // $server_output = curl_exec($ch);
-                    // curl_close($ch);
+                    $server_output = curl_exec($ch);
+                    curl_close($ch);
 
-                    // Log::info('Demande :', ['data' => $server_output]);
+                    Log::info('Demande :', ['data' => $server_output]);
 
 
 
@@ -130,33 +145,33 @@ class AuthController extends Controller
                     $otp =  DB::table('users')->where('contact', $request->contact)->pluck('code')->first();
                     $message = "Votre code  de connexion à MOOVPLAY est : $otp";
 
-                    // $now = date('Y-m-d H:i:s');
+                    $now = date('Y-m-d H:i:s');
 
-                    // $mobile = '225' . $request->contact;
+                    $mobile = '225' . $request->contact;
 
-                    // $message = [
-                    //     "code_service" => "MOOVPLAY",
-                    //     "password" => "zpkd8547@moovplay-2024",
-                    //     "message" => $message,
-                    //     "sender" => 'MOOVPLAY',
-                    //     "msisdn" => $mobile,
-                    //     "datetime" => $now,
-                    // ];
+                    $message = [
+                        "code_service" => "MOOVPLAY",
+                        "password" => "zpkd8547@moovplay-2024",
+                        "message" => $message,
+                        "sender" => 'MOOVPLAY',
+                        "msisdn" => $mobile,
+                        "datetime" => $now,
+                    ];
 
-                    // $json = json_encode($message);
+                    $json = json_encode($message);
 
-                    // $ch = curl_init();
-                    // curl_setopt($ch, CURLOPT_URL, "https://smartdev.ci/sms/smsMT.php");
-                    // curl_setopt($ch, CURLOPT_POST, 1);
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, "https://smartdev.ci/sms/smsMT.php");
+                    curl_setopt($ch, CURLOPT_POST, 1);
 
-                    // curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
-                    // curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-                    // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-                    // $server_output = curl_exec($ch);
-                    // curl_close($ch);
+                    $server_output = curl_exec($ch);
+                    curl_close($ch);
 
-                    // Log::info('Demande :', ['data' => $server_output]);
+                    Log::info('Demande :', ['data' => $server_output]);
 
 
                     return response()->json([
@@ -171,38 +186,49 @@ class AuthController extends Controller
         // }
     }
 
+
+
     public function login(Request $request)
     {
-        $data = $request->all();
 
-        $rules = [
+        //Validation
+        $validator = Validator::make($request->all(), [
             'contact' => 'required',
             'code' => 'required',
-        ];
+        ], [
+            'contact.required' => 'Le numéro de téléphone est requis.',
+        ]);
 
-        $customMessage = [
-            'contact.required' => 'contact est requis',
-            'code.required' => 'l\'otp est requis',
-        ];
-        $this->validate($request, $rules, $customMessage);
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Veuillez entrer le code',
+                    // 'message' => $validator->errors(),
+                ]
+
+            );
+        }
+
+        /* Validation Logic */
+        $user = DB::table('users')
+            ->where('contact', $request->contact)
+            ->where('code', $request->code)
+            ->first();
 
 
-        // Trouver l'utilisateur correspondant au contact et au code
-        $user = User::where('contact', $request->contact)->where('code', $request->code)->first();
-
-        // Vérifier si l'utilisateur existe
         if (!$user) {
             return response()->json([
                 'success' => false,
-                'message' => "Les informations de connexion sont incorrectes.",
-            ], Response::HTTP_UNAUTHORIZED);
+                'message' => "Votre OTP n'/est pas  valide.",
 
-        } 
-        
+            ], Response::HTTP_OK);
+        }
+
         $user = User::where('contact', $request->contact)->first();
         if ($user) {
 
-            $token = JWTAuth::fromUser($user);
+            $token = Auth::login($user);
 
             return response()->json([
                 'success' => true,
@@ -243,10 +269,10 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    // public function refresh()
-    // {
-    //     return $this->respondWithToken(auth()->refresh());
-    // }
+    public function refresh()
+    {
+        return $this->respondWithToken(auth()->refresh());
+    }
 
     /**
      * Get the token array structure.
@@ -255,21 +281,206 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    // protected function respondWithToken($token)
-    // {
-    //     return response()->json([
-    //         'success' => true,
-    //         'data' =>
-    //         [
-    //             'access_token' => $token,
-    //             'admin_id' =>  auth('admin')->user()->id,
-    //             'name' =>  auth('admin')->user()->nom_complet,
-    //             'email' =>  auth('admin')->user()->email,
-    //             'token_type' => 'bearer',
-    //             'expires_in' => auth('admin')->factory()->getTTL() * 10000000,
-    //             'role' => auth('admin')->user()->role_id,
-    //             'gravatars' => auth('admin')->user()->gravatars,
-    //         ]
-    //     ]);
-    // }
+    protected function respondWithToken($token)
+    {
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60,
+            'user' => auth()->user()
+        ]);
+    }
+
+
+
+    public function userProfile()
+    {
+        try {
+            $Data = User::where('id', '=', auth()->user()->id)->get();
+
+            return response()->json([
+                'success' => true,
+                'user' => $Data
+            ], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }
+
+    public function compte()
+    {
+        // try {
+        $user = JWTAuth::parseToken()->authenticate();
+
+
+
+        // $all = Service::select('partenaires.x_user', 'partenaires.x_token', 'credential')->join("partenaires", 'services.partenaire_id', '=', 'partenaires.id')->get();
+
+        // $user = JWTAuth::parseToken()->authenticate();
+
+        // $contact = $user->contact;
+
+        // $numero = '225' . $contact;
+
+        // $result = [];
+
+        // foreach ($all as $item) {
+        //     if (isset($item['credential']['url_consultation'])) {
+        //         $result[] = [
+        //             'x_user' => $item['x_user'],
+        //             'x_token' => $item['x_token'],
+        //             'url_consultation' => $item['credential']['url_consultation']
+        //         ];
+        //     }
+        // }
+
+        // $services_actifs = [];
+
+        // foreach ($result as $item) {
+        //     // Extraire les informations de l'élément actuel
+        //     $url = $item['url_consultation'];
+        //     $xuser = $item['x_user'];
+        //     $xtoken = $item['x_token'];
+
+        //     // Construire l'URL avec le numéro
+        //     $url_with_numero = $url . '/' . $numero;
+
+        //     // En-têtes de la requête cURL
+        //     $headers = [
+        //         'xuser:' . $xuser,
+        //         'xtoken:' . $xtoken,
+        //         'content-type: application/json'
+        //     ];
+
+        //     // Initialiser cURL
+        //     $curl = curl_init();
+
+        //     // Configuration de la requête cURL
+        //     curl_setopt_array($curl, [
+        //         CURLOPT_URL => $url_with_numero,
+        //         CURLOPT_RETURNTRANSFER => true,
+        //         CURLOPT_FOLLOWLOCATION => true, // Suivre les redirections
+        //         CURLOPT_HTTPHEADER => $headers,
+        //     ]);
+
+        //     // Exécution de la requête cURL
+        //     $response = curl_exec($curl);
+        //     $error = curl_error($curl);
+
+        //     // Vérification des erreurs
+        //     if ($error) {
+        //         echo "Erreur cURL : $error\n";
+        //     } else {
+        //         // Traitement de la réponse
+        //         $response_array = json_decode($response, true);
+
+        //         // Vérifier si le statusCode est égal à 0
+        //         if (isset($response_array['statusCode']) && $response_array['statusCode'] === '0' && $response_array['status'] == 'actif') {
+        //             // Récupérer le service_name
+        //             $service_name = $response_array['service_name'];
+        //             $transaction_id = isset($response_array['transaction_id']) ? $response_array['transaction_id'] : null;
+        //             $date_fin_abonnement = isset($response_array['date_fin_abonnement']) ? $response_array['date_fin_abonnement'] : null;
+
+
+        //             // Stocker le service_name dans le tableau des services actifs
+        //             $services_actifs[] = $service_name;
+        //         } elseif (isset($response_array['statusCode']) && ($response_array['statusCode'] === '1001' || $response_array['statusCode'] === '2061' || $response_array['statusCode'] === '3033')) {
+        //             // Si le statusCode est 1001 ou 2061, ignorer cet élément et passer au suivant
+        //             continue;
+        //         }
+        //     }
+
+        //     // Fermeture de la session cURL
+        //     curl_close($curl);
+        // }
+
+        // $getId = User::select('id')->where("contact", $contact)->value('id');
+
+        // // $services = Service::select('credential->service_name')->get();
+        // $services = Service::select('credential->service_name as service_name')->get();
+
+
+        $services = Abonne::where('user_id', $user->id)->where('date_desabonnement', '=', null)
+            // ->where('etat', '!=', 'Desabonnement')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'Data' => $services,
+        ], Response::HTTP_OK);
+        // } catch (TokenExpiredException $e) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Aucun token fourni',
+        //     ], Response::HTTP_OK);
+        // }
+    }
+
+    public function desabonnement(Request $request)
+    {
+
+        $rules = [
+            'transactionid' => 'required',
+        ];
+
+        $customMessage = [
+            'transactionid.required' => 'Entrez le numéro de la transaction',
+        ];
+
+        $this->validate($request, $rules, $customMessage);
+
+
+        try {
+            // Obtenir l'url 
+            $serviceurl = Service::select('credential')->where('nom_service', $request->service_name)->first();
+
+            $apiURL = $serviceurl->credential['url_desabonnement'];
+
+            // Headers
+            $headers = [
+                'Xuser:' . $request->xuser,
+                'Xtoken:' . $request->xtoken,
+                'content-type: application/json'
+            ];
+
+            // POST Data
+            $postInput = [
+                'transaction_id' => $request->transactionid,
+            ];
+
+
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $apiURL);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postInput));
+            $result = curl_exec($ch);
+            curl_close($ch);
+            Log::info('Desabonnement :', ['data' => $result]);
+
+            $date =  date("Y-m-d");
+
+            //  Mise à jour de la transaction
+            Transaction::where('transactionid', $request->transactionid)->update(['date_desabonnement' => $date, 'etat' => 'Desabonnement']);
+
+            // Mise à jour de la table abonné
+
+            Abonne::where('transactionid', $request->transactionid)->update(['date_desabonnement' => date("Y-m-d")]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Désabonnement du service ',
+            ], Response::HTTP_OK);
+        } catch (\Exception $exception) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Veuillez ressayer plus tard ',
+            ], Response::HTTP_OK);
+        }
+    }
 }

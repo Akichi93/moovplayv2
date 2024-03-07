@@ -204,238 +204,238 @@ class ClientController extends Controller
         return redirect("/")->withSuccess('Oppes! You have entered invalid credentials');
     }
 
-    public function compte(Request $request)
-    {
-        $auth = Auth::user();
-        if ($auth == null) {
-            return view('web.register');
-        } else {
+    // public function compte(Request $request)
+    // {
+    //     $auth = Auth::user();
+    //     if ($auth == null) {
+    //         return view('web.register');
+    //     } else {
 
 
-            // try {
-
-
-
-            // verifier tous les api de consultation
-            $all = Service::select('partenaires.x_user', 'partenaires.x_token', 'credential')->join("partenaires", 'services.partenaire_id', '=', 'partenaires.id')->get();
-
-
-            $contact = Auth::user()->contact;
-
-            $numero = '225' . $contact;
-
-            $result = [];
-
-            foreach ($all as $item) {
-                if (isset($item['credential']['url_consultation'])) {
-                    $result[] = [
-                        'x_user' => $item['x_user'],
-                        'x_token' => $item['x_token'],
-                        'url_consultation' => $item['credential']['url_consultation']
-                    ];
-                }
-            }
-
-            // dd($result);
-
-            $services_actifs = [];
-
-            foreach ($result as $item) {
-                // Extraire les informations de l'élément actuel
-                $url = $item['url_consultation'];
-                $xuser = $item['x_user'];
-                $xtoken = $item['x_token'];
-
-                // Construire l'URL avec le numéro
-                $url_with_numero = $url . '/' . $numero;
-
-                // En-têtes de la requête cURL
-                $headers = [
-                    'xuser:' . $xuser,
-                    'xtoken:' . $xtoken,
-                    'content-type: application/json'
-                ];
-
-                // Initialiser cURL
-                $curl = curl_init();
-
-                // Configuration de la requête cURL
-                curl_setopt_array($curl, [
-                    CURLOPT_URL => $url_with_numero,
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_FOLLOWLOCATION => true, // Suivre les redirections
-                    CURLOPT_HTTPHEADER => $headers,
-                ]);
-
-                // Exécution de la requête cURL
-                $response = curl_exec($curl);
-                $error = curl_error($curl);
-
-                // Vérification des erreurs
-                if ($error) {
-                    echo "Erreur cURL : $error\n";
-                } else {
-                    // Traitement de la réponse
-                    $response_array = json_decode($response, true);
-
-                    // Vérifier si le statusCode est égal à 0
-                    if (isset($response_array['statusCode']) && $response_array['statusCode'] === '0' && $response_array['status'] == 'actif') {
-                        // Récupérer le service_name
-                        $service_name = $response_array['service_name'];
-                        $transaction_id = isset($response_array['transaction_id']) ? $response_array['transaction_id'] : null;
-                        $date_fin_abonnement = isset($response_array['date_fin_abonnement']) ? $response_array['date_fin_abonnement'] : null;
-
-
-                        // Stocker le service_name dans le tableau des services actifs
-                        $services_actifs[] = $service_name;
-                    } elseif (isset($response_array['statusCode']) && ($response_array['statusCode'] === '1001' || $response_array['statusCode'] === '2061' || $response_array['statusCode'] === '3033')) {
-                        // Si le statusCode est 1001 ou 2061, ignorer cet élément et passer au suivant
-                        continue;
-                    }
-                }
-
-                // Fermeture de la session cURL
-                curl_close($curl);
-            }
-
-            $getId = User::select('id')->where("contact", $contact)->value('id');
-
-            $services = Service::select('credential->service_name')->get();
+    //         // try {
 
 
 
+    //         // verifier tous les api de consultation
+    //         $all = Service::select('partenaires.x_user', 'partenaires.x_token', 'credential')->join("partenaires", 'services.partenaire_id', '=', 'partenaires.id')->get();
+
+
+    //         $contact = Auth::user()->contact;
+
+    //         $numero = '225' . $contact;
+
+    //         $result = [];
+
+    //         foreach ($all as $item) {
+    //             if (isset($item['credential']['url_consultation'])) {
+    //                 $result[] = [
+    //                     'x_user' => $item['x_user'],
+    //                     'x_token' => $item['x_token'],
+    //                     'url_consultation' => $item['credential']['url_consultation']
+    //                 ];
+    //             }
+    //         }
+
+    //         // dd($result);
+
+    //         $services_actifs = [];
+
+    //         foreach ($result as $item) {
+    //             // Extraire les informations de l'élément actuel
+    //             $url = $item['url_consultation'];
+    //             $xuser = $item['x_user'];
+    //             $xtoken = $item['x_token'];
+
+    //             // Construire l'URL avec le numéro
+    //             $url_with_numero = $url . '/' . $numero;
+
+    //             // En-têtes de la requête cURL
+    //             $headers = [
+    //                 'xuser:' . $xuser,
+    //                 'xtoken:' . $xtoken,
+    //                 'content-type: application/json'
+    //             ];
+
+    //             // Initialiser cURL
+    //             $curl = curl_init();
+
+    //             // Configuration de la requête cURL
+    //             curl_setopt_array($curl, [
+    //                 CURLOPT_URL => $url_with_numero,
+    //                 CURLOPT_RETURNTRANSFER => true,
+    //                 CURLOPT_FOLLOWLOCATION => true, // Suivre les redirections
+    //                 CURLOPT_HTTPHEADER => $headers,
+    //             ]);
+
+    //             // Exécution de la requête cURL
+    //             $response = curl_exec($curl);
+    //             $error = curl_error($curl);
+
+    //             // Vérification des erreurs
+    //             if ($error) {
+    //                 echo "Erreur cURL : $error\n";
+    //             } else {
+    //                 // Traitement de la réponse
+    //                 $response_array = json_decode($response, true);
+
+    //                 // Vérifier si le statusCode est égal à 0
+    //                 if (isset($response_array['statusCode']) && $response_array['statusCode'] === '0' && $response_array['status'] == 'actif') {
+    //                     // Récupérer le service_name
+    //                     $service_name = $response_array['service_name'];
+    //                     $transaction_id = isset($response_array['transaction_id']) ? $response_array['transaction_id'] : null;
+    //                     $date_fin_abonnement = isset($response_array['date_fin_abonnement']) ? $response_array['date_fin_abonnement'] : null;
+
+
+    //                     // Stocker le service_name dans le tableau des services actifs
+    //                     $services_actifs[] = $service_name;
+    //                 } elseif (isset($response_array['statusCode']) && ($response_array['statusCode'] === '1001' || $response_array['statusCode'] === '2061' || $response_array['statusCode'] === '3033')) {
+    //                     // Si le statusCode est 1001 ou 2061, ignorer cet élément et passer au suivant
+    //                     continue;
+    //                 }
+    //             }
+
+    //             // Fermeture de la session cURL
+    //             curl_close($curl);
+    //         }
+
+    //         $getId = User::select('id')->where("contact", $contact)->value('id');
+
+    //         $services = Service::select('credential->service_name')->get();
 
 
 
-            // foreach ($services as $service) {
-
-            //     // Créer un nouvel objet Abonne et l'initialiser avec les valeurs récupérées
-            //     $abonne = new Abonne();
-            //     $abonne->service_name = $service_name;
-            //     $abonne->nom_service = $service->nom_service;
-            //     $abonne->msisdn = $contact;
-            //     $abonne->forfait = $service->credential->bundle->forfait;
-            //     $abonne->amount = $service->credential->bundle->amount;
-            //     $abonne->image = $service->image;
-            //     $abonne->transactionid = $transaction_id; // Ajouter l'identifiant de transaction
-            //     $abonne->user_id = $getId;
-            //     $abonne->service_id = $service->id;
-            //     $abonne->partenaire_id = $service->partenaire_id;
-            //     $abonne->date_abonnement = date("Y-m-d");
-            //     $abonne->date_fin_abonnement = $date_fin_abonnement;
-            //     $abonne->save();
-            // }
-
-
-            // dd($services_actifs);
-
-            // $getId = User::select('id')->where("contact", $contact)->value('id');
-
-
-            //Recuperer les services externe 
-            // $service_names = array_column($services_actifs, 'service_name');
 
 
 
-            // // Récupérer les services en fonction des noms extraits
-            // $services = Service::whereIn('credential->service_name', $services_actifs)->get();
+    //         // foreach ($services as $service) {
 
-            // //Recuperer service interne
-            // $abonnes = Abonne::select("service_name")->where('msisdn', $contact)->value('service_name');
-
-            // if ($abonnes != null) {
-            //     $get = Service::where('credential.service_name', $abonnes)->get();
-
-            //     $services_non_existants = $services->diff($get);
-
-            //     foreach ($services_non_existants as $service) {
-
-            //         if (isset($response_array['statusCode']) && $response_array['statusCode'] === '0') {
-            //             // Récupérer le service_name, l'identifiant de transaction et d'autres détails
-            //             $service_name = $response_array['service_name'];
-
-            //             // Vérifier si transaction_id est présent dans $response_array
-            //             $transaction_id = isset($response_array['transaction_id']) ? $response_array['transaction_id'] : null;
-            //             $date_fin_abonnement = isset($response_array['date_fin_abonnement']) ? $response_array['date_fin_abonnement'] : null;
-
-            //             // Créer un nouvel objet Abonne et l'initialiser avec les valeurs récupérées
-            //             $abonne = new Abonne();
-            //             $abonne->service_name = $service_name;
-            //             $abonne->nom_service = $service->nom_service;
-            //             $abonne->msisdn = $contact;
-            //             $abonne->forfait = $service->credential->bundle->forfait;
-            //             $abonne->amount = $service->credential->bundle->amount;
-            //             $abonne->image = $service->image;
-            //             $abonne->transactionid = $transaction_id; // Ajouter l'identifiant de transaction
-            //             $abonne->user_id = $getId;
-            //             $abonne->service_id = $service->id;
-            //             $abonne->partenaire_id = $service->partenaire_id;
-            //             $abonne->date_abonnement = date("Y-m-d");
-            //             $abonne->date_fin_abonnement = $date_fin_abonnement;
-            //             $abonne->save();
-            //         }
-            //     }
-            // } else {
-            //     foreach ($services as $service) {
-
-            //         if (isset($response_array['statusCode']) && $response_array['statusCode'] === '0') {
-            //             // Récupérer le service_name, l'identifiant de transaction et d'autres détails
-            //             $service_name = $response_array['service_name'];
-
-            //             // Vérifier si transaction_id est présent dans $response_array
-            //             $transaction_id = isset($response_array['transaction_id']) ? $response_array['transaction_id'] : null;
-            //             $date_fin_abonnement = isset($response_array['date_fin_abonnement']) ? $response_array['date_fin_abonnement'] : null;
-
-            //             // Créer un nouvel objet Abonne et l'initialiser avec les valeurs récupérées
-            //             $abonne = new Abonne();
-            //             $abonne->service_name = $service_name;
-            //             $abonne->nom_service = $service->nom_service;
-            //             $abonne->msisdn = $contact;
-            //             $abonne->forfait = $service->credential->bundle->forfait;
-            //             $abonne->amount = $service->credential->bundle->amount;
-            //             $abonne->image = $service->image;
-            //             $abonne->transactionid = $transaction_id; // Ajouter l'identifiant de transaction
-            //             $abonne->user_id = $getId;
-            //             $abonne->service_id = $service->id;
-            //             $abonne->partenaire_id = $service->partenaire_id;
-            //             $abonne->date_abonnement = date("Y-m-d");
-            //             $abonne->date_fin_abonnement = $date_fin_abonnement;
-            //             $abonne->save();
-            //         }
-            //     }
-            // }
+    //         //     // Créer un nouvel objet Abonne et l'initialiser avec les valeurs récupérées
+    //         //     $abonne = new Abonne();
+    //         //     $abonne->service_name = $service_name;
+    //         //     $abonne->nom_service = $service->nom_service;
+    //         //     $abonne->msisdn = $contact;
+    //         //     $abonne->forfait = $service->credential->bundle->forfait;
+    //         //     $abonne->amount = $service->credential->bundle->amount;
+    //         //     $abonne->image = $service->image;
+    //         //     $abonne->transactionid = $transaction_id; // Ajouter l'identifiant de transaction
+    //         //     $abonne->user_id = $getId;
+    //         //     $abonne->service_id = $service->id;
+    //         //     $abonne->partenaire_id = $service->partenaire_id;
+    //         //     $abonne->date_abonnement = date("Y-m-d");
+    //         //     $abonne->date_fin_abonnement = $date_fin_abonnement;
+    //         //     $abonne->save();
+    //         // }
 
 
-            $userIsAuthenticated = auth()->user();
-            $imagecompte = auth()->user()->image;
-            $services = Abonne::where('user_id', Auth::user()->id)->where('date_desabonnement', '=', null)
-                // ->where('etat', '!=', 'Desabonnement')
-                ->orderBy('id', 'desc')
-                ->get();
+    //         // dd($services_actifs);
 
-            // dd($services);
+    //         // $getId = User::select('id')->where("contact", $contact)->value('id');
 
-            return view('web.compte')->with(compact('userIsAuthenticated', 'services', 'imagecompte'));
-            // } catch (\Exception $exception) {
 
-            //     $request->session()->flash('message', 'Veuillez ressayez plus tard');
+    //         //Recuperer les services externe 
+    //         // $service_names = array_column($services_actifs, 'service_name');
 
-            //     return redirect()->back();
-            // }
-        }
-    }
 
-    public function profil()
-    {
-        $userIsAuthenticated = auth()->user();
-        if ($userIsAuthenticated == null) {
-            $imagecompte = [];
-        } else {
-            $imagecompte = auth()->user()->image;
-        }
-        $users = User::where('id', Auth::user()->id)->first();
-        return view('web.profil')->with(compact('userIsAuthenticated', 'users', 'imagecompte'));
-    }
+
+    //         // // Récupérer les services en fonction des noms extraits
+    //         // $services = Service::whereIn('credential->service_name', $services_actifs)->get();
+
+    //         // //Recuperer service interne
+    //         // $abonnes = Abonne::select("service_name")->where('msisdn', $contact)->value('service_name');
+
+    //         // if ($abonnes != null) {
+    //         //     $get = Service::where('credential.service_name', $abonnes)->get();
+
+    //         //     $services_non_existants = $services->diff($get);
+
+    //         //     foreach ($services_non_existants as $service) {
+
+    //         //         if (isset($response_array['statusCode']) && $response_array['statusCode'] === '0') {
+    //         //             // Récupérer le service_name, l'identifiant de transaction et d'autres détails
+    //         //             $service_name = $response_array['service_name'];
+
+    //         //             // Vérifier si transaction_id est présent dans $response_array
+    //         //             $transaction_id = isset($response_array['transaction_id']) ? $response_array['transaction_id'] : null;
+    //         //             $date_fin_abonnement = isset($response_array['date_fin_abonnement']) ? $response_array['date_fin_abonnement'] : null;
+
+    //         //             // Créer un nouvel objet Abonne et l'initialiser avec les valeurs récupérées
+    //         //             $abonne = new Abonne();
+    //         //             $abonne->service_name = $service_name;
+    //         //             $abonne->nom_service = $service->nom_service;
+    //         //             $abonne->msisdn = $contact;
+    //         //             $abonne->forfait = $service->credential->bundle->forfait;
+    //         //             $abonne->amount = $service->credential->bundle->amount;
+    //         //             $abonne->image = $service->image;
+    //         //             $abonne->transactionid = $transaction_id; // Ajouter l'identifiant de transaction
+    //         //             $abonne->user_id = $getId;
+    //         //             $abonne->service_id = $service->id;
+    //         //             $abonne->partenaire_id = $service->partenaire_id;
+    //         //             $abonne->date_abonnement = date("Y-m-d");
+    //         //             $abonne->date_fin_abonnement = $date_fin_abonnement;
+    //         //             $abonne->save();
+    //         //         }
+    //         //     }
+    //         // } else {
+    //         //     foreach ($services as $service) {
+
+    //         //         if (isset($response_array['statusCode']) && $response_array['statusCode'] === '0') {
+    //         //             // Récupérer le service_name, l'identifiant de transaction et d'autres détails
+    //         //             $service_name = $response_array['service_name'];
+
+    //         //             // Vérifier si transaction_id est présent dans $response_array
+    //         //             $transaction_id = isset($response_array['transaction_id']) ? $response_array['transaction_id'] : null;
+    //         //             $date_fin_abonnement = isset($response_array['date_fin_abonnement']) ? $response_array['date_fin_abonnement'] : null;
+
+    //         //             // Créer un nouvel objet Abonne et l'initialiser avec les valeurs récupérées
+    //         //             $abonne = new Abonne();
+    //         //             $abonne->service_name = $service_name;
+    //         //             $abonne->nom_service = $service->nom_service;
+    //         //             $abonne->msisdn = $contact;
+    //         //             $abonne->forfait = $service->credential->bundle->forfait;
+    //         //             $abonne->amount = $service->credential->bundle->amount;
+    //         //             $abonne->image = $service->image;
+    //         //             $abonne->transactionid = $transaction_id; // Ajouter l'identifiant de transaction
+    //         //             $abonne->user_id = $getId;
+    //         //             $abonne->service_id = $service->id;
+    //         //             $abonne->partenaire_id = $service->partenaire_id;
+    //         //             $abonne->date_abonnement = date("Y-m-d");
+    //         //             $abonne->date_fin_abonnement = $date_fin_abonnement;
+    //         //             $abonne->save();
+    //         //         }
+    //         //     }
+    //         // }
+
+
+    //         $userIsAuthenticated = auth()->user();
+    //         $imagecompte = auth()->user()->image;
+    //         $services = Abonne::where('user_id', Auth::user()->id)->where('date_desabonnement', '=', null)
+    //             // ->where('etat', '!=', 'Desabonnement')
+    //             ->orderBy('id', 'desc')
+    //             ->get();
+
+    //         // dd($services);
+
+    //         return view('web.compte')->with(compact('userIsAuthenticated', 'services', 'imagecompte'));
+    //         // } catch (\Exception $exception) {
+
+    //         //     $request->session()->flash('message', 'Veuillez ressayez plus tard');
+
+    //         //     return redirect()->back();
+    //         // }
+    //     }
+    // }
+
+    // public function profil()
+    // {
+    //     $userIsAuthenticated = auth()->user();
+    //     if ($userIsAuthenticated == null) {
+    //         $imagecompte = [];
+    //     } else {
+    //         $imagecompte = auth()->user()->image;
+    //     }
+    //     $users = User::where('id', Auth::user()->id)->first();
+    //     return view('web.profil')->with(compact('userIsAuthenticated', 'users', 'imagecompte'));
+    // }
 
     public function logoutclient()
     {

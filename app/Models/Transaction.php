@@ -8,4 +8,29 @@ use Illuminate\Database\Eloquent\Model;
 class Transaction extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'image',
+        'order_id',
+        'user_id',
+        'service_id',
+        'partenaire_id',
+        'nom_service',
+        'forfait',
+        'amount',
+        'msisdn',
+        'service_name',
+        'order_url',
+        'contact',
+        // 'image',
+        'canal',
+        'mod_paiement',
+    ];
+
+        // Cast credential JSON to array
+        protected $casts = [
+            'image' => 'array',
+            'ressources' => 'array',
+        ];
+    
 }

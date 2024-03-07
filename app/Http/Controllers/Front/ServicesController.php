@@ -3,13 +3,18 @@
 namespace App\Http\Controllers\Front;
 
 use Log;
+use App\Models\User;
+use App\Models\Abonne;
 use App\Models\Service;
 use App\Models\Categorie;
 use App\Models\Transaction;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\Abonne;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class ServicesController extends Controller
@@ -112,29 +117,405 @@ class ServicesController extends Controller
         return view('web.bundle');
     }
 
+
+    public function demandeService(Request $request)
+    {
+        $rules = [
+            'contact' => 'required|digits:10',
+            'service_id' => 'required',
+            // 'nom_service' => 'required',
+            'forfait' => 'required',
+            // 'image' => 'required',
+            'amount' => 'required',
+            'mode_paiement' => 'required',
+        ];
+
+        $customMessage = [
+            'contact.required' => 'Entrez le numéro de téléphone',
+            'service_id.required' => 'Entrez le service',
+            // 'nom_service.required' => 'Entrez le partenaire',
+            'forfait.required' => 'Le forfait n\'est pas defini',
+            // 'image.required' => 'L\'image n\'est pas defini',
+            'amount.required' => 'Le montant n\'est pas defini',
+            'mode_paiement.required' => 'Le type de paiment est requis',
+        ];
+        $this->validate($request, $rules, $customMessage);
+
+        try {
+
+
+
+            if ($request->mode_paiement != "AIR_TIME") {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Le mode de paiement est invalide.',
+                ], Response::HTTP_OK);
+            }
+
+            // vérifier cenuméro existe dans la bdd
+            $numberExist = DB::table('users')->where('contact', $request->contact)->count();
+            if ($numberExist == 0) {
+                $verification_code = random_int(1000, 9999);
+
+                // Ajouter le numéro dans la bdd
+                $user = new User();
+                $user->code = $verification_code;
+                $user->contact = $request->contact;
+                $user->referent = Str::random(6);
+                $user->save();
+
+                $day = date('d');
+                $month = date('m');
+                $year = date('Y');
+                $a = "MP";
+                $heure = date("h:i:sa");
+
+                $ref = $a . '-' . intval($month) . intval($day) . $year . $heure;
+
+                $order_url =  Crypt::encrypt($ref);
+
+
+                $partenaire_id = Service::join("partenaires", 'services.partenaire_id', '=', 'partenaires.id')
+                    ->where('services.id', $request->service_id)
+                    ->value('partenaire_id');
+
+                $service_name = Service::select('credential')->where('id', $request->service_id)->first();
+
+                $service = json_decode($service_name);
+
+                $servicename = $service->credential->service_name;
+
+                // Récupération du nom du service et l'image
+
+                $nomService = Service::select('nom_service')->where('id', $request->service_id)->value('nom_service');
+
+                $imageService = Service::where('id', $request->service_id)->value('image');
+
+                Log::info('Demande :', ['data' => $nomService]);
+                // Log::info('Demande :', ['data' => $imageService]);
+
+
+                $contact = $request->contact;
+
+                $mobile = '225' . $contact;
+
+                // Obtenir le xuser et le xtoken
+                $xuser = Service::join("partenaires", 'services.partenaire_id', '=', 'partenaires.id')
+                    ->where('services.id', $request->service_id)
+                    ->value('x_user');
+
+                $xtoken = Service::join("partenaires", 'services.partenaire_id', '=', 'partenaires.id')
+                    ->where('services.id', $request->service_id)
+                    ->value('x_token');
+
+                // Obtenir l'url 
+                $serviceurl = Service::select('credential')->where('id', $request->service_id)->first();
+
+                $apiURL = $serviceurl->credential['url_demande_abonnement'];
+
+                if ($apiURL == null) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Ce service est indisponible.',
+                    ], Response::HTTP_OK);
+                }
+
+                //verifier si l'utilisateur à dejà un abonnement à ce service 
+
+                // $auth = Transaction::where('service_id', $request->service_id)->where('user_id', Auth::user()->id)->count();
+                // Headers
+                $headers = [
+                    'xuser:' . $xuser,
+                    'xtoken:' . $xtoken,
+                    'content-type: application/json'
+                ];
+
+                // POST Data
+                $postInput = [
+                    'forfait' => $request->forfait,
+                    'amount' => $request->amount,
+                    'msisdn' => $mobile,
+                    'order_id' => $ref,
+                    'service_name' => $servicename
+                ];
+
+
+
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $apiURL);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postInput));
+                $result = curl_exec($ch);
+                curl_close($ch);
+                Log::info('Demande :', ['data' => $result]);
+
+                $info = json_decode($result);
+
+                $status = $info->statusCode;
+
+                if ($status == "2032") {
+
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Le solde de l\'abonné est insuffisant.',
+                    ], Response::HTTP_OK);
+                } else if ($status == "2084") {
+
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Vous êtes déjà inscrit ou abonné au service demandé.',
+                    ], Response::HTTP_OK);
+                } else if ($status == "2061") {
+
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Veuillez ressayer plus tard.',
+                    ], Response::HTTP_OK);
+                }
+
+                // Ajouter la transaction dans la bdd
+                $order = new Transaction();
+                $order->order_id = $ref;
+                $order->user_id = $user->id;
+                $order->service_id = $request->service_id;
+                $order->partenaire_id = $partenaire_id;
+                $order->nom_service = $nomService;
+                $order->forfait = $request->forfait;
+                $order->amount = $request->amount;
+                $order->msisdn = $mobile;
+                $order->service_name = $servicename;
+                $order->order_url = $order_url;
+                $order->image = $imageService;
+                $order->canal = "web";
+                $order->mode_paiement = $request->mode_paiement;
+                $order->save();
+
+                $lastID = $order->id;
+
+                $transaction = json_decode($result);
+
+
+                $transaction_id = $transaction->transaction_id;
+
+
+                // Mise à jour de la transaction
+                Transaction::where('id', $lastID)->update(['transactionid' => $transaction_id, 'xuser' => $xuser, 'xtoken' => $xtoken]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'La souscription a été bien effectuée.',
+                ], Response::HTTP_OK);
+            } else {
+                $day = date('d');
+                $month = date('m');
+                $year = date('Y');
+                $a = "MP";
+                $heure = date("h:i:sa");
+
+                $ref = $a . '-' . intval($month) . intval($day) . $year . $heure;
+
+                $order_url =  Crypt::encrypt($ref);
+
+
+                $partenaire_id = Service::join("partenaires", 'services.partenaire_id', '=', 'partenaires.id')
+                    ->where('services.id', $request->service_id)
+                    ->value('partenaire_id');
+
+                $service_name = Service::select('credential')->where('id', $request->service_id)->first();
+
+
+                $service = json_decode($service_name);
+
+                $servicename = $service->credential->service_name;
+
+                // Récupération du nom du service et l'image
+
+                $nomService = Service::where('id', $request->service_id)->value('nom_service');
+
+                $imageService = Service::where('id', $request->service_id)->value('image');
+
+
+
+                $contact = $request->contact;
+
+                $mobile = '225' . $contact;
+
+                // Obtenir le xuser et le xtoken
+                $xuser = Service::join("partenaires", 'services.partenaire_id', '=', 'partenaires.id')
+                    ->where('services.id', $request->service_id)
+                    ->value('x_user');
+
+                $xtoken = Service::join("partenaires", 'services.partenaire_id', '=', 'partenaires.id')
+                    ->where('services.id', $request->service_id)
+                    ->value('x_token');
+
+                // Obtenir l'url 
+                $serviceurl = Service::select('credential')->where('id', $request->service_id)->first();
+
+                $apiURL = $serviceurl->credential['url_demande_abonnement'];
+
+                if ($apiURL == null) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Ce service est indisponible.',
+                    ], Response::HTTP_OK);
+                }
+
+                //verifier si l'utilisateur à dejà un abonnement à ce service 
+
+                // $auth = Transaction::where('service_id', $request->service_id)->where('user_id', Auth::user()->id)->count();
+                // Headers
+                $headers = [
+                    'xuser:' . $xuser,
+                    'xtoken:' . $xtoken,
+                    'content-type: application/json'
+                ];
+
+                // POST Data
+                $postInput = [
+                    'forfait' => $request->forfait,
+                    'amount' => $request->amount,
+                    'msisdn' => $mobile,
+                    'order_id' => $ref,
+                    'service_name' => $servicename
+                ];
+
+
+
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $apiURL);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postInput));
+                $result = curl_exec($ch);
+                curl_close($ch);
+                Log::info('Demande :', ['data' => $result]);
+
+                $info = json_decode($result);
+
+                $status = $info->statusCode;
+
+                if ($status == "2032") {
+
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Le solde de l\'abonné est insuffisant.',
+                    ], Response::HTTP_OK);
+                } else if ($status == "2084") {
+
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Vous êtes déjà inscrit ou abonné au service demandé.',
+                    ], Response::HTTP_OK);
+                } else if ($status == "2061") {
+
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Veuillez ressayer plus tphp artisan serveard.',
+                    ], Response::HTTP_OK);
+                }
+
+                $id = User::where('contact', $request->contact)->value('id');
+
+                // Ajouter la transaction dans la bdd
+                $order = new Transaction();
+                $order->order_id = $ref;
+                $order->user_id = $id;
+                $order->service_id = $request->service_id;
+                $order->partenaire_id = $partenaire_id;
+                $order->nom_service = $nomService;
+                $order->forfait = $request->forfait;
+                $order->amount = $request->amount;
+                $order->msisdn = $mobile;
+                $order->service_name = $servicename;
+                $order->order_url = $order_url;
+                $order->image = $imageService;
+                $order->canal = "web";
+                $order->mode_paiement = $request->mode_paiement;
+                $order->save();
+
+                $lastID = $order->id;
+
+                $transaction = json_decode($result);
+
+
+                $transaction_id = $transaction->transaction_id;
+
+
+                // Mise à jour de la transaction
+                Transaction::where('id', $lastID)->update(['transactionid' => $transaction_id, 'xuser' => $xuser, 'xtoken' => $xtoken]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Veuillez consulter votre messagerie.',
+                    'data' => $info,
+                ], Response::HTTP_OK);
+            }
+        } catch (\Exception $exception) {
+            Log::info('error :', ['data' => $exception]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Veuillez ressayez plus tard.',
+            ], Response::HTTP_OK);
+        }
+    }
+
     public function demandeWithOtp(Request $request)
     {
-        try {
+        $rules = [
+            'code_otp' => 'required',
+            'transaction_id' => 'required',
+
+        ];
+
+        $customMessage = [
+            'code_otp.required' => 'Entrez le numéro de téléphone',
+            'transaction_id.required' => 'Entrez le numéro de la transaction',
+        ];
+        $this->validate($request, $rules, $customMessage);
+
+        // try {
+            // Récupérer le service_name
+            $serviceName = Transaction::select('nom_service')->where('transactionid', $request->transaction_id)->value('nom_service');
+
+            $xuser = Service::join("partenaires", 'services.partenaire_id', '=', 'partenaires.id')
+                ->where('services.nom_service', $serviceName)
+                ->value('x_user');
+
+
+            $xtoken = Service::join("partenaires", 'services.partenaire_id', '=', 'partenaires.id')
+                ->where('services.nom_service', $serviceName)
+                ->value('x_token');
+
             // Obtenir l'url 
-            $serviceurl = Service::select('credential')->where('nom_service', $request->service_name)->first();
+            $serviceurl = Service::select('credential')->where('nom_service', $serviceName)->first();
 
             $apiURL = $serviceurl->credential['url_confirmation_abonnement'];
 
             // Headers
             $headers = [
-                'xuser:' . $request->xuser,
-                'xtoken:' . $request->xtoken,
+                'xuser:' . $xuser,
+                'xtoken:' . $xtoken,
                 'content-type: application/json'
             ];
 
             // POST Data
             $postInput = [
-                'transaction_id' => $request->transactionid,
-                'code_otp' => $request->otp,
+                'transaction_id' => $request->transaction_id,
+                'code_otp' => $request->code_otp,
             ];
 
 
-            $info = Transaction::where('transactionid', $request->transactionid)->first();
+
+            Log::info('Confirmation demande :', ['headers' => $headers, 'postInput' => $postInput]);
+
+
+            $info = Transaction::where('transactionid', $request->transaction_id)->first();
 
             $contact = $info['msisdn'];
             $forfait = $info['forfait'];
@@ -156,44 +537,48 @@ class ServicesController extends Controller
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postInput));
             $result = curl_exec($ch);
             curl_close($ch);
-            Log::info('Confirmation demande :', ['data' => $result]);
+            // Log::info('Confirmation demande :', ['data' => $result]);
 
             $date = json_decode($result);
 
-            if($date->statusCode == "2032"){
-                $request->session()->flash('error', 'Votre crédit est inssuffisant pour souscrire à cette offre');
+            Log::info('statutCode :', ['data' => $date]);
 
-                return redirect()->away('/');
+            if ($date->statusCode == "2032") {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Votre crédit est insuffisant pour souscrire à cette offre.',
+                ], Response::HTTP_OK);
             }
 
-            if($date->statusCode == "2061"){
-                
-                $request->session()->flash('error', 'Cette operation a déjà été prise en compte.');
+            if ($date->statusCode == "2061") {
 
-                return redirect()->away('/');      
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Requête invalide.',
+                ], Response::HTTP_OK);
             }
 
-            if($date->statusCode == "2084"){
-                
-                $request->session()->flash('error', 'Vous êtes déjà inscrit ou abonné au service demandé.');
+            if ($date->statusCode == "2084") {
 
-                return redirect()->away('/');      
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Vous êtes déjà inscrit ou abonné au service demandé.',
+                ], Response::HTTP_OK);
             }
 
-            // dd($date);
 
             $date_fin_abonnement = $date->date_fin_abonnement;
 
             // Mise à jour de la transaction
-            Transaction::where('transactionid', $request->transactionid)->update(['date_fin_abonnement' => $date_fin_abonnement, 'status' => "successful", 'etat' => 1]);
+            Transaction::where('transactionid', $request->transaction_id)->update(['date_fin_abonnement' => $date_fin_abonnement, 'status' => "successful", 'etat' => 1]);
 
             //verifier si le client est un abonné
-            $abonne = Abonne::where('msisdn', $contact)->where('service_id', $service_id)->count();
-            // dd($abonne);
-            if ($abonne == 1) {
-                return redirect('/compte');
-                // return redirect()->route('listing');
-            }
+            // $abonne = Abonne::where('msisdn', $contact)->where('service_id', $service_id)->count();
+            // // dd($abonne);
+            // if ($abonne == 1) {
+            //     return redirect('/compte');
+            //     // return redirect()->route('listing');
+            // }
 
             // Enregistré l'abonné
             $order = new Abonne();
@@ -203,7 +588,7 @@ class ServicesController extends Controller
             $order->forfait = $forfait;
             $order->amount = $amount;
             $order->image = $image;
-            $order->transactionid = $request->transactionid;
+            $order->transactionid = $request->transaction_id;
             $order->user_id = $user_id;
             $order->service_id = $service_id;
             $order->partenaire_id = $partenaire_id;
@@ -211,13 +596,16 @@ class ServicesController extends Controller
             $order->date_fin_abonnement = $date_fin_abonnement;
             $order->save();
 
-            // return redirect()->view('listing');
-            return redirect('/compte');
-        } catch (\Exception $exception) {
-
-            $request->session()->flash('message', 'Veuillez ressayez plus tard');
-
-            return redirect()->back();
-        }
+            return response()->json([
+                'success' => true,
+                'message' => 'Souscription effectué avec succès.',
+            ], Response::HTTP_OK);
+        // } catch (\Exception $exception) {
+        //     Log::info('erreur :', ['data' => $exception]);
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Veuillez ressayez plus tard.',
+        //     ], Response::HTTP_OK);
+        // }
     }
 }
