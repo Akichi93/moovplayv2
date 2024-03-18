@@ -296,7 +296,8 @@ class AuthController extends Controller
     public function userProfile()
     {
         try {
-            $Data = User::where('id', '=', auth()->user()->id)->get();
+            $user =  JWTAuth::parseToken()->authenticate();
+            $Data = User::where('id', '=', $user->id)->get();
 
             return response()->json([
                 'success' => true,
@@ -310,7 +311,9 @@ class AuthController extends Controller
     public function compte()
     {
         try {
-            $user = auth()->user();
+
+            // $user = auth()->user();
+            $user =  JWTAuth::parseToken()->authenticate();
 
             // $all = Service::select('partenaires.x_user', 'partenaires.x_token', 'credential')->join("partenaires", 'services.partenaire_id', '=', 'partenaires.id')->get();
 
@@ -399,15 +402,25 @@ class AuthController extends Controller
             // $services = Service::select('credential->service_name as service_name')->get();
 
 
-            $services = Abonne::join("services", 'abonnes.service_id', '=', 'services.id')
+            $data['services'] = Abonne::join("services", 'abonnes.service_id', '=', 'services.id')
                 ->where('user_id', $user->id)
                 ->where('date_desabonnement', '=', null)
-                ->orderBy('abonnes.id', 'desc')
+                // ->orderBy('abonnes.id', 'desc')
                 ->get();
+            $serviceIds = Abonne::select('service_id')->join("services", 'abonnes.service_id', '=', 'services.id')
+                ->where('user_id', $user->id)
+                ->where('date_desabonnement', '=', null)
+                ->pluck('service_id');
+
+            $data['recommandations'] = Service::limit(8)
+                ->inRandomOrder()
+                ->whereNotIn('id', $serviceIds)
+                ->get();
+
 
             return response()->json([
                 'success' => true,
-                'Data' => $services,
+                'data' => $data,
             ], Response::HTTP_OK);
         } catch (TokenExpiredException $e) {
             return response()->json([

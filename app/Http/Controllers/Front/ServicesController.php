@@ -517,14 +517,14 @@ class ServicesController extends Controller
             $forfait = $info['forfait'];
             $nom_service = $info['nom_service'];
             $service_name = $info['service_name'];
-            $user_id = $info['id'];
+            $user_id = $info['user_id'];
             $service_id = $info['service_id'];
             $partenaire_id = $info['partenaire_id'];
             $amount = $info['amount'];
             $image = $info['image'];
 
             Log::info($info);
-            
+
 
 
             $ch = curl_init();
@@ -548,38 +548,62 @@ class ServicesController extends Controller
 
                 // Mise à jour de la transaction
                 Transaction::where('transactionid', $request->transaction_id)->update(['date_fin_abonnement' => $date_fin_abonnement, 'status' => "successful", 'etat' => 1]);
-                // Enregistré l'abonné
-                $abonne = new Abonne();
-                $abonne->nom_service = $nom_service;
-                $abonne->service_name = $service_name;
-                $abonne->msisdn = $contact;
-                $abonne->forfait = $forfait;
-                $abonne->amount = $amount;
-                // $order->image = $image;
-                $abonne->transactionid = $request->transaction_id;
-                $abonne->user_id = $user_id;
-                $abonne->service_id = $service_id;
-                $abonne->partenaire_id = $partenaire_id;
-                $abonne->date_abonnement = date("Y-m-d");
-                $abonne->date_fin_abonnement = $date_fin_abonnement;
-                $abonne->save();
 
-                $msisdn = substr($contact, 3);
-                $user = User::where('id', $user_id)->get();
+                $verif = Abonne::where('contact', $contact)->where('nom_service', $nom_service)->count();
+                if ($verif == 0) {
+                    // Enregistré l'abonné
+                    $abonne = new Abonne();
+                    $abonne->nom_service = $nom_service;
+                    $abonne->service_name = $service_name;
+                    $abonne->msisdn = $contact;
+                    $abonne->forfait = $forfait;
+                    $abonne->amount = $amount;
+                    // $order->image = $image;
+                    $abonne->transactionid = $request->transaction_id;
+                    $abonne->user_id = $user_id;
+                    $abonne->service_id = $service_id;
+                    $abonne->partenaire_id = $partenaire_id;
+                    $abonne->date_abonnement = date("Y-m-d");
+                    $abonne->date_fin_abonnement = $date_fin_abonnement;
+                    $abonne->save();
 
-                $contact = User::where('contact', $msisdn)->first();
+                    $msisdn = substr($contact, 3);
+                    $user = User::where('id', $user_id)->get();
 
-                $token = Auth::login($contact);
+                    $contact = User::where('contact', $msisdn)->first();
 
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Souscription effectué avec succès.',
-                    'user' => $user,
-                    'authorization' => [
-                        'token' => $token,
-                        'type' => 'bearer',
-                    ]
-                ], Response::HTTP_OK);
+                    $token = Auth::login($contact);
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Souscription effectué avec succès.',
+                        'user' => $user,
+                        'authorization' => [
+                            'token' => $token,
+                            'type' => 'bearer',
+                        ]
+                    ], Response::HTTP_OK);
+                } else {
+
+                    Abonne::where('contact', $contact)->where('nom_service', $nom_service)->update(['forfait' => $forfait, 'amount' => $amount, 'transactionid' => $request->transaction_id]);
+
+                    $msisdn = substr($contact, 3);
+                    $user = User::where('id', $user_id)->get();
+
+                    $contact = User::where('contact', $msisdn)->first();
+
+                    $token = Auth::login($contact);
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Souscription effectué avec succès.',
+                        'user' => $user,
+                        'authorization' => [
+                            'token' => $token,
+                            'type' => 'bearer',
+                        ]
+                    ], Response::HTTP_OK)
+                }
             } else if ($data->statusCode == "2032") {
                 return response()->json([
                     'success' => false,
