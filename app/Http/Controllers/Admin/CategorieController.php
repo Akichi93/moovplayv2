@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Admin;
 use App\Models\Categorie;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -41,12 +42,12 @@ class CategorieController extends Controller
             $data = $request->all();
             $rules = [
                 'nom_categorie' => 'required',
-                'url' => 'required',
+                'position' => 'required',
             ];
 
             $customMessage = [
                 'nom_categorie.required' => 'Le nom de la categorie',
-                'url.required' => "Entrez l'url de la catégorie",
+                'position.required' => "Entrez l'url de la catégorie",
             ];
             $this->validate($request, $rules, $customMessage);
 
@@ -57,7 +58,7 @@ class CategorieController extends Controller
             //     return redirect('/categories'); 
             // }else{
                 $category->nom_categorie = $data['nom_categorie'];
-                $category->url = $data['url'];
+                $category->url = Str::slug($request->input('nom_categorie'), "-");
                 $category->position = $data['position'];
                 $category->save();
 

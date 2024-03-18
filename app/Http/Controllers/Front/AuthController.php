@@ -309,112 +309,111 @@ class AuthController extends Controller
 
     public function compte()
     {
-        // try {
-        $user = JWTAuth::parseToken()->authenticate();
+        try {
+            $user = auth()->user();
+
+            // $all = Service::select('partenaires.x_user', 'partenaires.x_token', 'credential')->join("partenaires", 'services.partenaire_id', '=', 'partenaires.id')->get();
+
+            // // $user = JWTAuth::parseToken()->authenticate();
+
+            // $contact = $user->contact;
+
+            // $numero = '225' . $contact;
+
+            // $result = [];
+
+            // foreach ($all as $item) {
+            //     if (isset($item['credential']['url_consultation'])) {
+            //         $result[] = [
+            //             'x_user' => $item['x_user'],
+            //             'x_token' => $item['x_token'],
+            //             'url_consultation' => $item['credential']['url_consultation']
+            //         ];
+            //     }
+            // }
+
+            // $services_actifs = [];
+
+            // foreach ($result as $item) {
+            //     // Extraire les informations de l'élément actuel
+            //     $url = $item['url_consultation'];
+            //     $xuser = $item['x_user'];
+            //     $xtoken = $item['x_token'];
+
+            //     // Construire l'URL avec le numéro
+            //     $url_with_numero = $url . '/' . $numero;
+
+            //     // En-têtes de la requête cURL
+            //     $headers = [
+            //         'xuser:' . $xuser,
+            //         'xtoken:' . $xtoken,
+            //         'content-type: application/json'
+            //     ];
+
+            //     // Initialiser cURL
+            //     $curl = curl_init();
+
+            //     // Configuration de la requête cURL
+            //     curl_setopt_array($curl, [
+            //         CURLOPT_URL => $url_with_numero,
+            //         CURLOPT_RETURNTRANSFER => true,
+            //         CURLOPT_FOLLOWLOCATION => true, // Suivre les redirections
+            //         CURLOPT_HTTPHEADER => $headers,
+            //     ]);
+
+            //     // Exécution de la requête cURL
+            //     $response = curl_exec($curl);
+            //     $error = curl_error($curl);
+
+            //     // Vérification des erreurs
+            //     if ($error) {
+            //         echo "Erreur cURL : $error\n";
+            //     } else {
+            //         // Traitement de la réponse
+            //         $response_array = json_decode($response, true);
+
+            //         // Vérifier si le statusCode est égal à 0
+            //         if (isset($response_array['statusCode']) && $response_array['statusCode'] === '0' && $response_array['status'] == 'actif') {
+            //             // Récupérer le service_name
+            //             $service_name = $response_array['service_name'];
+            //             $transaction_id = isset($response_array['transaction_id']) ? $response_array['transaction_id'] : null;
+            //             $date_fin_abonnement = isset($response_array['date_fin_abonnement']) ? $response_array['date_fin_abonnement'] : null;
 
 
+            //             // Stocker le service_name dans le tableau des services actifs
+            //             $services_actifs[] = $service_name;
+            //         } elseif (isset($response_array['statusCode']) && ($response_array['statusCode'] === '1001' || $response_array['statusCode'] === '2061' || $response_array['statusCode'] === '3033')) {
+            //             // Si le statusCode est 1001 ou 2061, ignorer cet élément et passer au suivant
+            //             continue;
+            //         }
+            //     }
 
-        // $all = Service::select('partenaires.x_user', 'partenaires.x_token', 'credential')->join("partenaires", 'services.partenaire_id', '=', 'partenaires.id')->get();
+            //     // Fermeture de la session cURL
+            //     curl_close($curl);
+            // }
 
-        // $user = JWTAuth::parseToken()->authenticate();
+            // $getId = User::select('id')->where("contact", $contact)->value('id');
 
-        // $contact = $user->contact;
+            // $abonne = Abonne::where('');
 
-        // $numero = '225' . $contact;
-
-        // $result = [];
-
-        // foreach ($all as $item) {
-        //     if (isset($item['credential']['url_consultation'])) {
-        //         $result[] = [
-        //             'x_user' => $item['x_user'],
-        //             'x_token' => $item['x_token'],
-        //             'url_consultation' => $item['credential']['url_consultation']
-        //         ];
-        //     }
-        // }
-
-        // $services_actifs = [];
-
-        // foreach ($result as $item) {
-        //     // Extraire les informations de l'élément actuel
-        //     $url = $item['url_consultation'];
-        //     $xuser = $item['x_user'];
-        //     $xtoken = $item['x_token'];
-
-        //     // Construire l'URL avec le numéro
-        //     $url_with_numero = $url . '/' . $numero;
-
-        //     // En-têtes de la requête cURL
-        //     $headers = [
-        //         'xuser:' . $xuser,
-        //         'xtoken:' . $xtoken,
-        //         'content-type: application/json'
-        //     ];
-
-        //     // Initialiser cURL
-        //     $curl = curl_init();
-
-        //     // Configuration de la requête cURL
-        //     curl_setopt_array($curl, [
-        //         CURLOPT_URL => $url_with_numero,
-        //         CURLOPT_RETURNTRANSFER => true,
-        //         CURLOPT_FOLLOWLOCATION => true, // Suivre les redirections
-        //         CURLOPT_HTTPHEADER => $headers,
-        //     ]);
-
-        //     // Exécution de la requête cURL
-        //     $response = curl_exec($curl);
-        //     $error = curl_error($curl);
-
-        //     // Vérification des erreurs
-        //     if ($error) {
-        //         echo "Erreur cURL : $error\n";
-        //     } else {
-        //         // Traitement de la réponse
-        //         $response_array = json_decode($response, true);
-
-        //         // Vérifier si le statusCode est égal à 0
-        //         if (isset($response_array['statusCode']) && $response_array['statusCode'] === '0' && $response_array['status'] == 'actif') {
-        //             // Récupérer le service_name
-        //             $service_name = $response_array['service_name'];
-        //             $transaction_id = isset($response_array['transaction_id']) ? $response_array['transaction_id'] : null;
-        //             $date_fin_abonnement = isset($response_array['date_fin_abonnement']) ? $response_array['date_fin_abonnement'] : null;
+            // $services = Service::select('credential->service_name as service_name')->get();
 
 
-        //             // Stocker le service_name dans le tableau des services actifs
-        //             $services_actifs[] = $service_name;
-        //         } elseif (isset($response_array['statusCode']) && ($response_array['statusCode'] === '1001' || $response_array['statusCode'] === '2061' || $response_array['statusCode'] === '3033')) {
-        //             // Si le statusCode est 1001 ou 2061, ignorer cet élément et passer au suivant
-        //             continue;
-        //         }
-        //     }
+            $services = Abonne::join("services", 'abonnes.service_id', '=', 'services.id')->where('abonnes.user_id', $user->id)->where('date_desabonnement', '=', null)
+                // ->where('etat', '!=', 'Desabonnement')
+                ->orderBy('id', 'desc')
+                ->get();
 
-        //     // Fermeture de la session cURL
-        //     curl_close($curl);
-        // }
-
-        // $getId = User::select('id')->where("contact", $contact)->value('id');
-
-        // // $services = Service::select('credential->service_name')->get();
-        // $services = Service::select('credential->service_name as service_name')->get();
-
-
-        $services = Abonne::where('user_id', $user->id)->where('date_desabonnement', '=', null)
-            // ->where('etat', '!=', 'Desabonnement')
-            ->orderBy('id', 'desc')
-            ->get();
-
-        return response()->json([
-            'success' => true,
-            'Data' => $services,
-        ], Response::HTTP_OK);
-        // } catch (TokenExpiredException $e) {
-        //     return response()->json([
-        //         'success' => false,
-        //         'message' => 'Aucun token fourni',
-        //     ], Response::HTTP_OK);
-        // }
+            return response()->json([
+                'success' => true,
+                'Data' => $services,
+            ], Response::HTTP_OK);
+        } catch (TokenExpiredException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Aucun token fourni',
+            ], Response::HTTP_OK);
+        }
     }
 
     public function desabonnement(Request $request)

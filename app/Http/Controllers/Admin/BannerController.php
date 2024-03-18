@@ -55,12 +55,14 @@ class BannerController extends Controller
             $this->validate($request, $rules, $customMessage);
 
             // $filename = null; // Initialize $filename with a default value
-            // if ($request->hasfile('image')) {
+            if ($request->hasfile('image')) {
                 $file = $request->file('image');
                 $extenstion = $file->getClientOriginalExtension();
                 $filename = time() . '.' . $extenstion;
                 $file->move('image/banner_images/', $filename);
-            // }
+
+                $slide->image = $filename;
+            }
             // elseif (isset($slidedata['image']) && $slidedata['image'] != null) {
             //     // Si aucun fichier n'est téléchargé, conserver l'ancienne donnée
             //     $newFileName = $slidedata['image']; // Utilisation de l'ancien nom de fichier
@@ -72,7 +74,7 @@ class BannerController extends Controller
             $slide->title = $request->get('title');
             $slide->alt = $data['title'];
             $slide->link = $data['link'];
-            $slide->image = $filename;
+            
             $slide->type = $data['type'];
             $slide->description = $data['description'];
             $slide->save();
