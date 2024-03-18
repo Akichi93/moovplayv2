@@ -511,18 +511,17 @@ class ServicesController extends Controller
 
             $info = Transaction::where('transactionid', $request->transaction_id)->first();
 
+            Log::info('info :', ['data' => $info]);
+
             $contact = $info['msisdn'];
             $forfait = $info['forfait'];
             $nom_service = $info['nom_service'];
             $service_name = $info['service_name'];
-            $user_id = $info['id'];
+            $user_id = $info['user_id'];
             $service_id = $info['service_id'];
             $partenaire_id = $info['partenaire_id'];
             $amount = $info['amount'];
             $image = $info['image'];
-
-            Log::info($info);
-            
 
 
             $ch = curl_init();
@@ -546,7 +545,7 @@ class ServicesController extends Controller
 
                 // Mise à jour de la transaction
                 Transaction::where('transactionid', $request->transaction_id)->update(['date_fin_abonnement' => $date_fin_abonnement, 'status' => "successful", 'etat' => 1]);
-                
+
                 // Enregistré l'abonné
                 $abonne = new Abonne();
                 $abonne->nom_service = $nom_service;
@@ -563,9 +562,21 @@ class ServicesController extends Controller
                 $abonne->date_fin_abonnement = $date_fin_abonnement;
                 $abonne->save();
 
+                $msisdn = substr($contact, 3);
+                $user = User::where('id', $user_id)->get();
+
+                $contact = User::where('contact', $msisdn)->first();
+
+                $token = Auth::login($contact);
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Souscription effectué avec succès.',
+                    'user' => $user,
+                    'authorization' => [
+                        'token' => $token,
+                        'type' => 'bearer',
+                    ]
                 ], Response::HTTP_OK);
             } else if ($data->statusCode == "2032") {
                 return response()->json([
