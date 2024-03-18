@@ -12,15 +12,15 @@
 			<div class="container-fluid">
 				<div class="row mb-2">
 					<div class="col-sm-6">
-						<h1>Offres</h1>
+						<h1>Ressources</h1>
 					</div>
 					<div class="col-sm-6">
 						<ol class="breadcrumb float-sm-right">
 							<li class="breadcrumb-item">
 								<a href="#">Accueil</a>
 							</li>
-							<li class="breadcrumb-item active">Catégories</li>
-							<li class="breadcrumb-item active">Offres</li>
+							<li class="breadcrumb-item active">Services</li>
+							<li class="breadcrumb-item active">Ressources</li>
 						</ol>
 					</div>
 				</div>
@@ -68,10 +68,15 @@
 										<div class="form-group">
 											<div class="field_wrapper">
 												<div class="row mt-2 mb-2">
-													<input style="width: 10%;" class="form-control m-1 col-md-2" id="periode" type="text" name="periode[]" value="" placeholder="Période" required=""/>
-													<input style="width: 10%;" class="form-control m-1 col-md-2" id="tarif" type="number" name="tarif[]" value="" placeholder="Tarif" required=""/>
+													<select name="type" id="type" class="single-select form-control m-1 col-md-2" style="width: 100%;">
+														<option value="">Selectionnez un type</option>
+														<option value="Image">Image</option>
+														<option value="Vidéo">Vidéo</option>
+													</select>
+													<input style="width: 10%;" class="form-control m-1 col-md-2" id="link" type="text" name="link[]" value="" placeholder="Tarif" required=""/>
+													<input style="width: 10%;" class="form-control m-1 col-md-2" id="image" type="file" name="image[]" value="" placeholder="Tarif" required=""/>
 
-													<textarea id="avantage" name="avantage[]" rows="4" cols="50" placeholder=""></textarea>
+													<textarea class="form-control m-1 col-md-2" id="avantage" name="avantage[]" rows="4" cols="50" placeholder=""></textarea>
 													<a href="javascript:void(0);" class="add_button col-md-1" title="Ajouter">
 														<i class="fa fa-plus-circle" style="font-size: 25px;"></i>
 													</a>
@@ -81,7 +86,7 @@
 
 									</div>
 									<div class="form-group text-center mb-3">
-										<button type="submit" class="btn btn-success">Ajouter offre
+										<button type="submit" class="btn btn-success">Ajouter ressource
 										</button>
 									</div>
 									<hr/>
@@ -157,4 +162,7 @@
 	</section>
 	<!-- /.content -->
 </div>
+
 <!-- /.content-wrapper -->{% endblock %}
+
+

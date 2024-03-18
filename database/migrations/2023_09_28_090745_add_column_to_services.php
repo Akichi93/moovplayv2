@@ -15,6 +15,9 @@ class AddColumnToServices extends Migration
     {
         Schema::table('services', function (Blueprint $table) {
             $table->string('service_url')->after('image')->nullable();
+            $table->string('link')->after('service_url')->nullable();
+            $table->json('ressource')->after('link')->nullable();
+            $table->string('icone')->after('ressource')->nullable();
         });
     }
 

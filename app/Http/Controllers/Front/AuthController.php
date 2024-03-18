@@ -400,7 +400,10 @@ class AuthController extends Controller
 
 
             $services = Abonne::join("services", 'abonnes.service_id', '=', 'services.id')->where('abonnes.user_id', $user->id)->where('date_desabonnement', '=', null)
+<<<<<<< HEAD
                 // ->where('etat', '!=', 'Desabonnement')
+=======
+>>>>>>> 07385c92341cb3ec744dd0b32af3260eb65d420d
                 ->orderBy('id', 'desc')
                 ->get();
 
@@ -420,26 +423,38 @@ class AuthController extends Controller
     {
 
         $rules = [
-            'transactionid' => 'required',
+            'transaction_id' => 'required',
+
         ];
 
         $customMessage = [
-            'transactionid.required' => 'Entrez le numéro de la transaction',
+
+            'transaction_id.required' => 'Entrez le numéro de la transaction',
         ];
-
         $this->validate($request, $rules, $customMessage);
-
-
         try {
+
+            $serviceName = Transaction::select('nom_service')->where('transactionid', $request->transaction_id)->value('nom_service');
+
             // Obtenir l'url 
-            $serviceurl = Service::select('credential')->where('nom_service', $request->service_name)->first();
+            $serviceurl = Service::select('credential')->where('nom_service', $serviceName)->first();
 
             $apiURL = $serviceurl->credential['url_desabonnement'];
 
+
+            $xuser = Service::join("partenaires", 'services.partenaire_id', '=', 'partenaires.id')
+                ->where('services.nom_service', $serviceName)
+                ->value('x_user');
+
+
+            $xtoken = Service::join("partenaires", 'services.partenaire_id', '=', 'partenaires.id')
+                ->where('services.nom_service', $serviceName)
+                ->value('x_token');
+
             // Headers
             $headers = [
-                'Xuser:' . $request->xuser,
-                'Xtoken:' . $request->xtoken,
+                'xuser:' . $xuser,
+                'xtoken:' . $xtoken,
                 'content-type: application/json'
             ];
 
@@ -447,8 +462,6 @@ class AuthController extends Controller
             $postInput = [
                 'transaction_id' => $request->transactionid,
             ];
-
-
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $apiURL);
@@ -472,13 +485,13 @@ class AuthController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Désabonnement du service ',
+                'message' => 'Vous êtes désabonnés de ce service.',
             ], Response::HTTP_OK);
         } catch (\Exception $exception) {
 
             return response()->json([
-                'success' => false,
-                'message' => 'Veuillez ressayer plus tard ',
+                'success' => true,
+                'message' => 'Vous êtes désabonnés de ce service.',
             ], Response::HTTP_OK);
         }
     }

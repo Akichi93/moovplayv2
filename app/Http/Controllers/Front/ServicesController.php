@@ -511,6 +511,8 @@ class ServicesController extends Controller
 
             $info = Transaction::where('transactionid', $request->transaction_id)->first();
 
+            Log::info('info :', ['data' => $info]);
+
             $contact = $info['msisdn'];
             $forfait = $info['forfait'];
             $nom_service = $info['nom_service'];
@@ -546,7 +548,11 @@ class ServicesController extends Controller
 
                 // Mise à jour de la transaction
                 Transaction::where('transactionid', $request->transaction_id)->update(['date_fin_abonnement' => $date_fin_abonnement, 'status' => "successful", 'etat' => 1]);
+<<<<<<< HEAD
                 
+=======
+
+>>>>>>> 07385c92341cb3ec744dd0b32af3260eb65d420d
                 // Enregistré l'abonné
                 $abonne = new Abonne();
                 $abonne->nom_service = $nom_service;
@@ -563,9 +569,27 @@ class ServicesController extends Controller
                 $abonne->date_fin_abonnement = $date_fin_abonnement;
                 $abonne->save();
 
+<<<<<<< HEAD
                 return response()->json([
                     'success' => true,
                     'message' => 'Souscription effectué avec succès.',
+=======
+                $msisdn = substr($contact, 3);
+                $user = User::where('id', $user_id)->get();
+
+                $contact = User::where('contact', $msisdn)->first();
+
+                $token = Auth::login($contact);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Souscription effectué avec succès.',
+                    'user' => $user,
+                    'authorization' => [
+                        'token' => $token,
+                        'type' => 'bearer',
+                    ]
+>>>>>>> 07385c92341cb3ec744dd0b32af3260eb65d420d
                 ], Response::HTTP_OK);
             } else if ($data->statusCode == "2032") {
                 return response()->json([

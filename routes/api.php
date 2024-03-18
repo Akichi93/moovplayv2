@@ -44,3 +44,4 @@ Route::get('/detailservice/{service_url}', [IndexController::class, 'details']);
 Route::get('/getbanners', [IndexController::class, 'getBanners']);
 Route::post('/demandeservice', [ServicesController::class, 'demandeService']);
 Route::post('/confirmationdemande', [ServicesController::class, 'demandeWithOtp']);
+Route::post('/detailscategory/{category_url}', [ServicesController::class, 'detailsCategory']);
