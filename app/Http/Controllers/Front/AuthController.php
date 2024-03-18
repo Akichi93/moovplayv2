@@ -399,8 +399,10 @@ class AuthController extends Controller
             // $services = Service::select('credential->service_name as service_name')->get();
 
 
-            $services = Abonne::join("services", 'abonnes.service_id', '=', 'services.id')->where('abonnes.user_id', $user->id)->where('date_desabonnement', '=', null)
-                ->orderBy('id', 'desc')
+            $services = Abonne::join("services", 'abonnes.service_id', '=', 'services.id')
+                ->where('user_id', $user->id)
+                ->where('date_desabonnement', '=', null)
+                ->orderBy('abonnes.id', 'desc')
                 ->get();
 
             return response()->json([
