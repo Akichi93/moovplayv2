@@ -126,6 +126,7 @@
 																	<span aria-hidden="true">&times;</span>
 																</button>
 															</div>
+
 															<form role="form" method="POST"
 																action="{{ route('desactivate.services', service.id) }}">
 																{{csrf_field()}}
@@ -213,9 +214,9 @@
 													<!-- /.modal-dialog -->
 												</div> #}
 
-												{# <a title="Ajouter offre" href="{{ url('add-offres' , service.id) }}">
+												<a title="Ajouter offre" href="{{ url('add-offres' , service.id) }}">
 													<i class="fas fa-plus"></i>
-												</a> #}
+												</a>
 
 										</td>
 										</td>

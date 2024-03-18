@@ -20,7 +20,7 @@ class CreateAbonnesTable extends Migration
             $table->string('amount');
             $table->string('forfait');
             $table->string('msisdn');
-            $table->string('image');
+            // $table->string('image');
             $table->string('transactionid');
             $table->foreignId('user_id');
             $table->foreignId('service_id')->nullable();

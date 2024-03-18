@@ -8,6 +8,8 @@ use App\Models\Service;
 use App\Models\Categorie;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
@@ -49,12 +51,20 @@ class IndexController extends Controller
 
    public function getCategories()
    {
-      $categories = Categorie::all();
+      try {
+         $categories = Categorie::all();
 
-      return response()->json([
-         'success' => true,
-         'data' => $categories
-      ], Response::HTTP_OK);
+         return response()->json([
+            'success' => true,
+            'data' => $categories
+         ], Response::HTTP_OK);
+      } catch (\Exception $exception) {
+         Log::info('erreur :', ['data' => $exception]);
+         return response()->json([
+            'success' => false,
+            'message' => 'Veuillez ressayez plus tard.',
+         ], Response::HTTP_OK);
+      }
    }
 
    public function getServices(Request $request)
@@ -101,13 +111,20 @@ class IndexController extends Controller
 
    public function getBanners()
    {
-      $banners = Banner::all();
+      try {
+         $banners = Banner::all();
 
-
-      return response()->json([
-         'success' => true,
-         'data' => $banners
-      ], Response::HTTP_OK);
+         return response()->json([
+            'success' => true,
+            'data' => $banners
+         ], Response::HTTP_OK);
+      } catch (\Exception $exception) {
+         Log::info('erreur :', ['data' => $exception]);
+         return response()->json([
+            'success' => false,
+            'message' => 'Veuillez ressayez plus tard.',
+         ], Response::HTTP_OK);
+      }
    }
 
    public function details($service_url)
@@ -141,5 +158,15 @@ class IndexController extends Controller
             'data' => $Data
          ], Response::HTTP_OK);
       }
+   }
+
+   public function detailsCategory($category_url)
+   {
+      $Data = Categorie::where('url', $category_url)->get();
+
+      return response()->json([
+         'success' => true,
+         'data' => $Data
+      ], Response::HTTP_OK);
    }
 }

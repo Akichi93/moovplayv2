@@ -71,23 +71,46 @@ class ServiceController extends Controller
             $this->validate($request, $rules, $customMessage);
 
             if ($request->file != null) {
-                $fileNameWithTheExtension = request('file')->getClientOriginalName();
+
+                foreach ($request->file('file') as $file) {
+                    $filename = $file->getClientOriginalName();
+                    $file->move('image/service_images', $filename);
+                    $insert[] = $filename;
+                }
+
+                $service->image = $insert;
+            } else {
+                $oldImages = json_decode($servicedata['image'], true); // Récupérer les anciens noms de fichiers
+                $insert = $oldImages ?: [];
+
+                $service->image = $insert;
+            }
+
+
+            if ($request->icone != null) {
+
+                $fileNameWithTheExtension = request('icone')->getClientOriginalName();
 
                 //obtenir le nom de l'image
 
-                $fileName = pathinfo($fileNameWithTheExtension, PATHINFO_FILENAME);
+                $iconeName = pathinfo($fileNameWithTheExtension, PATHINFO_FILENAME);
 
                 // extension
-                $extension = request('file')->getClientOriginalExtension();
+                $extension = request('icone')->getClientOriginalExtension();
 
                 // creation de nouveau nom
-                $newFileName = $fileName . '_' . time() . '.' . $extension;
+                $newIconeName = $iconeName . '_' . time() . '.' . $extension;
 
-                $path = request('file')->move('image/service_images', $newFileName);
+                $path = request('icone')->move('image/service_images', $newIconeName);
+                $service->icone = $newIconeName;
             } else {
                 // Si aucun fichier n'est téléchargé, conserver l'ancienne donnée
-                $newFileName = $servicedata['image']; // Utilisation de l'ancien nom de fichier
+                $newIconeName = $servicedata['icone']; // Utilisation de l'ancien nom de fichier
+                $service->icone = $newIconeName;
             }
+
+
+
 
 
             // Création d'object
@@ -113,8 +136,9 @@ class ServiceController extends Controller
             $service->code_souscription = $data['code_souscription'];
             $service->code_desouscription = $data['code_desouscription'];
             $service->nom_service = $data['nom_service'];
-
-            $service->image = $newFileName;
+            $service->link = $data['link'];
+           
+          
             $service->service_url = Str::slug($request->input('nom_service'), "-");
             $service->credential = [
                 'service_name' => $request->service_name,
@@ -124,6 +148,7 @@ class ServiceController extends Controller
                 'url_consultation' => $request->url_consultation,
                 'bundle' =>  $array
             ];
+            $service->ressource = [];
             $service->save();
 
             $request->session()->flash('success_message', $message);
@@ -161,7 +186,6 @@ class ServiceController extends Controller
 
         $servicedata = Service::with(['offres', 'partenaires', 'categories'])->find($id);
         $servicedata = json_decode(json_encode($servicedata), true);
-        // dd($servicedata);
 
 
         $title = "Ajout d'offre ";
@@ -173,7 +197,6 @@ class ServiceController extends Controller
     {
         if ($request->isMethod('post')) {
             $data = $request->all();
-            //            dd($data);
 
             foreach ($data['attrId'] as $key => $attr) {
                 if (!empty($attr)) {

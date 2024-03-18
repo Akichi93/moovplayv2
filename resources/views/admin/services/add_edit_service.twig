@@ -193,7 +193,7 @@
 										<div class="col-md-6">
 											<div class="form-group">
 												<label for="exampleInputEmail1">Lien de la vidéo</label>
-												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez l'url de de la vidéo" name="url_consultation" {% if servicedata.credential.url_consultation is not empty %} value="{{ servicedata.credential.url_consultation }}" {% else %} value="{{ old('url_consultation') }}" {% endif %}>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez l'url de de la vidéo" name="link" {% if servicedata['link'] is not empty %} value="{{ servicedata['link'] }}" {% else %} value="{{ old('url_consultation') }}" {% endif %}>
 											</div>
 										</div>
 

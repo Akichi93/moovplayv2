@@ -26,16 +26,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $menus = Categorie::where('status','0')->get();
+        // $menus = Categorie::where('status','0')->get();
 
-        // dd($connect);
+        // // dd($connect);
 
-        Paginator::useBootstrap();
+        // Paginator::useBootstrap();
 
-        view()->share(['menus' => $menus]);
+        // view()->share(['menus' => $menus]);
 
-        // if (env('APP_ENV') !== 'local') {
-        //     $this->app['request']->server->set('HTTPS', true);
-        // }
+        if (env('APP_ENV') !== 'local') {
+            $this->app['request']->server->set('HTTPS', true);
+        }
     }
 }

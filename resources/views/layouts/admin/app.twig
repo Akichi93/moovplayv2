@@ -277,6 +277,24 @@ select.add(new Option(d));
 
 		
     <!-- Hide and show-->
+	<script>
+    $(document).ready(function(){
+        $('#type').change(function(){
+            var selectedType = $(this).val();
+            if(selectedType === 'Image') {
+                $('#image').show();
+                $('input[name="link[]"]').hide();
+            } else if(selectedType === 'Vidéo') {
+                $('input[name="link[]"]').show();
+                $('#image').hide();
+            } else {
+                $('#image').hide();
+                $('input[name="link[]"]').hide();
+            }
+        });
+    });
+</script>
+
      <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Function to toggle visibility of link and image fields based on type selection

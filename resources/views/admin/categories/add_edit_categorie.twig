@@ -68,14 +68,14 @@
 											{{ errors.first('nom_categorie') }}
 										</p>
 									</div>
-									<div class="form-group">
+									{# <div class="form-group">
 										<label for="exampleInputEmail1">url</label>
 										<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez l'url" name="url" {% if categorydata['url'] is not empty %} value="{{ categorydata['url'] }}" {% else %} value="{{ old('url ') }}" {% endif %}>
-									</div>
+									</div> #}
 
 									<div class="form-group">
 										<label for="exampleInputEmail1">Position</label>
-										<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez le numéro de la position" name="position" {% if categorydata['position'] is not empty %} value="{{ categorydata['position'] }}" {% else %} value="{{ old('position ') }}" {% endif %}>
+										<input type="number" class="form-control" id="exampleInputEmail1" placeholder="Entrez le numéro de la position" name="position" {% if categorydata['position'] is not empty %} value="{{ categorydata['position'] }}" {% else %} value="{{ old('position ') }}" {% endif %}>
 									</div>
 
 								</div>
