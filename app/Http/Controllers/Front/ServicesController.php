@@ -602,7 +602,7 @@ class ServicesController extends Controller
                             'token' => $token,
                             'type' => 'bearer',
                         ]
-                    ], Response::HTTP_OK)
+                    ], Response::HTTP_OK);
                 }
             } else if ($data->statusCode == "2032") {
                 return response()->json([

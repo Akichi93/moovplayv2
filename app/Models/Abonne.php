@@ -13,6 +13,8 @@ class Abonne extends Model
         'nom_service', 'service_name', 'amount','forfait','msisdn','forfait','transactionid','user_id','service_id','partenaire_id','date_fin_abonnement','date_abonnement'
     ];
 
+    
+
     public function service()
     {
         return $this->belongsTo(Service::class);

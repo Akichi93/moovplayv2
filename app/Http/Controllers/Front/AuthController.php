@@ -402,11 +402,21 @@ class AuthController extends Controller
             // $services = Service::select('credential->service_name as service_name')->get();
 
 
-            $data['services'] = Abonne::join("services", 'abonnes.service_id', '=', 'services.id')
-                ->where('user_id', $user->id)
-                ->where('date_desabonnement', '=', null)
-                // ->orderBy('abonnes.id', 'desc')
+            $data['services'] = DB::table('abonnes')
+                ->join('services', 'abonnes.service_id', '=', 'services.id')
+                ->where('abonnes.user_id', $user->id)
+                ->whereNull('abonnes.date_desabonnement')
                 ->get();
+
+            // $data['services'] = Abonne::with('service')
+            //     ->where('user_id', $user->id)
+            //     ->whereNull('date_desabonnement')
+            //     ->get();
+
+            Log::info('Data :', ['data' => $data['services']]);
+
+
+
             $serviceIds = Abonne::select('service_id')->join("services", 'abonnes.service_id', '=', 'services.id')
                 ->where('user_id', $user->id)
                 ->where('date_desabonnement', '=', null)
