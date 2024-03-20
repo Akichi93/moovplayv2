@@ -408,13 +408,6 @@ class AuthController extends Controller
                 ->whereNull('abonnes.date_desabonnement')
                 ->get();
 
-            // $data['services'] = Abonne::with('service')
-            //     ->where('user_id', $user->id)
-            //     ->whereNull('date_desabonnement')
-            //     ->get();
-
-            Log::info('Data :', ['data' => $data['services']]);
-
 
 
             $serviceIds = Abonne::select('service_id')->join("services", 'abonnes.service_id', '=', 'services.id')

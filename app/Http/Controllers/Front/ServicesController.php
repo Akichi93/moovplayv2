@@ -549,7 +549,7 @@ class ServicesController extends Controller
                 // Mise à jour de la transaction
                 Transaction::where('transactionid', $request->transaction_id)->update(['date_fin_abonnement' => $date_fin_abonnement, 'status' => "successful", 'etat' => 1]);
 
-                $verif = Abonne::where('contact', $contact)->where('nom_service', $nom_service)->count();
+                $verif = Abonne::where('msisdn', $contact)->where('nom_service', $nom_service)->count();
                 if ($verif == 0) {
                     // Enregistré l'abonné
                     $abonne = new Abonne();
@@ -585,7 +585,7 @@ class ServicesController extends Controller
                     ], Response::HTTP_OK);
                 } else {
 
-                    Abonne::where('contact', $contact)->where('nom_service', $nom_service)->update(['forfait' => $forfait, 'amount' => $amount, 'transactionid' => $request->transaction_id]);
+                    Abonne::where('msisdn', $contact)->where('nom_service', $nom_service)->update(['forfait' => $forfait, 'amount' => $amount, 'transactionid' => $request->transaction_id]);
 
                     $msisdn = substr($contact, 3);
                     $user = User::where('id', $user_id)->get();
