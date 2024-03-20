@@ -53,6 +53,7 @@ class ServiceController extends Controller
             $service = Service::find($id);
             $message = "Le service a ete Modifée avec succès !";
         }
+        
         if ($request->isMethod('post')) {
             $data = $request->all();
             $rules = [
@@ -75,18 +76,15 @@ class ServiceController extends Controller
                 foreach ($request->file('file') as $file) {
                     $filename = $file->getClientOriginalName();
                     $file->move('image/service_images', $filename);
-
-                    $insert[] = "$filename";
+                    $insert[] = $filename;           
                 }
+                $service->image = $insert;
             } else {
                 $oldImages = json_decode($servicedata['image'], true); // Récupérer les anciens noms de fichiers
                 $insert = $oldImages ?: [];
 
-                    $insert[] = $filename;
-                }
-
                 $service->image = $insert;
-            } 
+            }
 
 
             if ($request->icone != null) {
@@ -104,16 +102,12 @@ class ServiceController extends Controller
                 $newIconeName = $iconeName . '_' . time() . '.' . $extension;
 
                 $path = request('icone')->move('image/service_images', $newIconeName);
-
+                $service->icone = $newIconeName;
             } else {
                 // Si aucun fichier n'est téléchargé, conserver l'ancienne donnée
                 $newIconeName = $servicedata['icone']; // Utilisation de l'ancien nom de fichier
-
                 $service->icone = $newIconeName;
             }
-
-
-
 
 
             // Création d'object
@@ -140,9 +134,6 @@ class ServiceController extends Controller
             $service->code_desouscription = $data['code_desouscription'];
             $service->nom_service = $data['nom_service'];
             $service->link = $data['link'];
-
-            $service->icone = $newIconeName;
-            $service->image = json_encode($insert);
             $service->service_url = Str::slug($request->input('nom_service'), "-");
             $service->credential = [
                 'service_name' => $request->service_name,
@@ -152,13 +143,11 @@ class ServiceController extends Controller
                 'url_consultation' => $request->url_consultation,
                 'bundle' =>  $array
             ];
-            $service->ressource = [];
             $service->save();
 
             $request->session()->flash('success_message', $message);
             return redirect('/services');
-        
-    
+        }
         return view('admin.services.add_edit_service')->with(compact('title', 'servicedata', 'getPartenaires', 'getCategories'));
     }
 
@@ -191,6 +180,7 @@ class ServiceController extends Controller
 
         $servicedata = Service::with(['offres', 'partenaires', 'categories'])->find($id);
         $servicedata = json_decode(json_encode($servicedata), true);
+        // dd($servicedata);
 
 
         $title = "Ajout d'offre ";
@@ -202,6 +192,7 @@ class ServiceController extends Controller
     {
         if ($request->isMethod('post')) {
             $data = $request->all();
+            //            dd($data);
 
             foreach ($data['attrId'] as $key => $attr) {
                 if (!empty($attr)) {
