@@ -75,24 +75,18 @@ class ServiceController extends Controller
                 foreach ($request->file('file') as $file) {
                     $filename = $file->getClientOriginalName();
                     $file->move('image/service_images', $filename);
-<<<<<<< HEAD
+
                     $insert[] = "$filename";
                 }
             } else {
                 $oldImages = json_decode($servicedata['image'], true); // Récupérer les anciens noms de fichiers
                 $insert = $oldImages ?: [];
-=======
+
                     $insert[] = $filename;
                 }
 
                 $service->image = $insert;
-            } else {
-                $oldImages = json_decode($servicedata['image'], true); // Récupérer les anciens noms de fichiers
-                $insert = $oldImages ?: [];
-
-                $service->image = $insert;
->>>>>>> 07385c92341cb3ec744dd0b32af3260eb65d420d
-            }
+            } 
 
 
             if ($request->icone != null) {
@@ -110,17 +104,12 @@ class ServiceController extends Controller
                 $newIconeName = $iconeName . '_' . time() . '.' . $extension;
 
                 $path = request('icone')->move('image/service_images', $newIconeName);
-<<<<<<< HEAD
+
             } else {
                 // Si aucun fichier n'est téléchargé, conserver l'ancienne donnée
                 $newIconeName = $servicedata['icone']; // Utilisation de l'ancien nom de fichier
-=======
+
                 $service->icone = $newIconeName;
-            } else {
-                // Si aucun fichier n'est téléchargé, conserver l'ancienne donnée
-                $newIconeName = $servicedata['icone']; // Utilisation de l'ancien nom de fichier
-                $service->icone = $newIconeName;
->>>>>>> 07385c92341cb3ec744dd0b32af3260eb65d420d
             }
 
 
@@ -151,13 +140,9 @@ class ServiceController extends Controller
             $service->code_desouscription = $data['code_desouscription'];
             $service->nom_service = $data['nom_service'];
             $service->link = $data['link'];
-<<<<<<< HEAD
+
             $service->icone = $newIconeName;
             $service->image = json_encode($insert);
-=======
-           
-          
->>>>>>> 07385c92341cb3ec744dd0b32af3260eb65d420d
             $service->service_url = Str::slug($request->input('nom_service'), "-");
             $service->credential = [
                 'service_name' => $request->service_name,
@@ -172,7 +157,8 @@ class ServiceController extends Controller
 
             $request->session()->flash('success_message', $message);
             return redirect('/services');
-        }
+        
+    
         return view('admin.services.add_edit_service')->with(compact('title', 'servicedata', 'getPartenaires', 'getCategories'));
     }
 
