@@ -61,7 +61,7 @@ URL::forceRootUrl('https://demo.moovplay.com/');
 // Route::get('/resetpassword', [ClientController::class, 'resetPassword']);
 
 Route::get('/', function () {
-    return view('partenaires.login');
+    return view('welcome');
 });
 
 Route::post('/loginclient', [ClientController::class, 'loginclient']);
