@@ -39,7 +39,7 @@ class ServiceController extends Controller
 
             $message = "Le service a ete ajoutée avec succès !";
         } else {
-            $title = "Modifier partenaire";
+            $title = "Modifier service";
             $servicedata = Service::where('id', $id)->first();
             $servicedata = json_decode(json_encode($servicedata), true);
 
@@ -53,7 +53,7 @@ class ServiceController extends Controller
             $service = Service::find($id);
             $message = "Le service a ete Modifée avec succès !";
         }
-        
+
         if ($request->isMethod('post')) {
             $data = $request->all();
             $rules = [
