@@ -585,7 +585,7 @@ class ServicesController extends Controller
                     ], Response::HTTP_OK);
                 } else {
 
-                    Abonne::where('msisdn', $contact)->where('nom_service', $nom_service)->update(['forfait' => $forfait, 'amount' => $amount, 'transactionid' => $request->transaction_id]);
+                    Abonne::where('msisdn', $contact)->where('nom_service', $nom_service)->update(['forfait' => $forfait, 'amount' => $amount, 'transactionid' => $request->transaction_id,'date_desabonnement'=> null]);
 
                     $msisdn = substr($contact, 3);
                     $user = User::where('id', $user_id)->get();
@@ -676,7 +676,7 @@ class ServicesController extends Controller
 
             // POST Data
             $postInput = [
-                'transaction_id' => $request->transactionid,
+                'transaction_id' => $request->transaction_id,
             ];
 
             $ch = curl_init();
@@ -693,11 +693,11 @@ class ServicesController extends Controller
             $date =  date("Y-m-d");
 
             //  Mise à jour de la transaction
-            Transaction::where('transactionid', $request->transactionid)->update(['date_desabonnement' => $date, 'etat' => 'Desabonnement']);
+            Transaction::where('transactionid', $request->transaction_id)->update(['date_desabonnement' => $date, 'etat' => 'Desabonnement']);
 
             // Mise à jour de la table abonné
 
-            Abonne::where('transactionid', $request->transactionid)->update(['date_desabonnement' => date("Y-m-d")]);
+            Abonne::where('transactionid', $request->transaction_id)->update(['date_desabonnement' => date("Y-m-d")]);
 
             return response()->json([
                 'success' => true,
