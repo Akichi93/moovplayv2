@@ -435,25 +435,26 @@ class AuthController extends Controller
 
     public function desabonnement(Request $request)
     {
-
         $rules = [
             'transaction_id' => 'required',
-
         ];
 
         $customMessage = [
-
             'transaction_id.required' => 'Entrez le numéro de la transaction',
         ];
+
         $this->validate($request, $rules, $customMessage);
         try {
-
-            $serviceName = Transaction::select('nom_service')->where('transactionid', $request->transaction_id)->value('nom_service');
+            $transactionId = $request->transaction_id;
+            $serviceName = Transaction::select('nom_service')->where('transactionid', $transactionId)->value('nom_service');
 
             // Obtenir l'url 
             $serviceurl = Service::select('credential')->where('nom_service', $serviceName)->first();
 
+
             $apiURL = $serviceurl->credential['url_desabonnement'];
+
+
 
 
             $xuser = Service::join("partenaires", 'services.partenaire_id', '=', 'partenaires.id')
@@ -474,7 +475,7 @@ class AuthController extends Controller
 
             // POST Data
             $postInput = [
-                'transaction_id' => $request->transactionid,
+                'transaction_id' => $request->transaction_id,
             ];
 
             $ch = curl_init();
@@ -485,27 +486,33 @@ class AuthController extends Controller
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postInput));
             $result = curl_exec($ch);
+
+            // Check if URL exists
+            if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 200) {
+                $date =  date("Y-m-d");
+                //  Mise à jour de la transaction
+                Transaction::where('transactionid', $request->transaction_id)->update(['date_desabonnement' => $date, 'etat' => 'Desabonnement']);
+
+                // Mise à jour de la table abonné
+
+                Abonne::where('transactionid', $request->transaction_id)->update(['date_desabonnement' => date("Y-m-d")]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Vous êtes désabonnés de ce service.',
+                ], Response::HTTP_OK);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ce service est indisponible.',
+                ], Response::HTTP_OK);
+            }
             curl_close($ch);
-            Log::info('Desabonnement :', ['data' => $result]);
-
-            $date =  date("Y-m-d");
-
-            //  Mise à jour de la transaction
-            Transaction::where('transactionid', $request->transactionid)->update(['date_desabonnement' => $date, 'etat' => 'Desabonnement']);
-
-            // Mise à jour de la table abonné
-
-            Abonne::where('transactionid', $request->transactionid)->update(['date_desabonnement' => date("Y-m-d")]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Vous êtes désabonnés de ce service.',
-            ], Response::HTTP_OK);
         } catch (\Exception $exception) {
 
             return response()->json([
-                'success' => true,
-                'message' => 'Vous êtes désabonnés de ce service.',
+                'success' => false,
+                'message' => 'Erreur.',
             ], Response::HTTP_OK);
         }
     }

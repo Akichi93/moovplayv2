@@ -246,65 +246,72 @@ class ServicesController extends Controller
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postInput));
                 $result = curl_exec($ch);
-                curl_close($ch);
-                Log::info('Demande :', ['data' => $result]);
+                if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 200) {
+                    Log::info('Demande :', ['data' => $result]);
 
-                $info = json_decode($result);
+                    $info = json_decode($result);
 
-                $status = $info->statusCode;
+                    $status = $info->statusCode;
 
-                if ($status == "2032") {
+                    if ($status == "2032") {
+
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Le solde de l\'abonné est insuffisant.',
+                        ], Response::HTTP_OK);
+                    } else if ($status == "2084") {
+
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Vous êtes déjà inscrit ou abonné au service demandé.',
+                        ], Response::HTTP_OK);
+                    } else if ($status == "2061") {
+
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Veuillez ressayer plus tard.',
+                        ], Response::HTTP_OK);
+                    }
+
+                    // Ajouter la transaction dans la bdd
+                    $order = new Transaction();
+                    $order->order_id = $ref;
+                    $order->user_id = $user->id;
+                    $order->service_id = $request->service_id;
+                    $order->partenaire_id = $partenaire_id;
+                    $order->nom_service = $nomService;
+                    $order->forfait = $request->forfait;
+                    $order->amount = $request->amount;
+                    $order->msisdn = $mobile;
+                    $order->service_name = $servicename;
+                    $order->order_url = $order_url;
+                    $order->image = $imageService;
+                    $order->canal = "web";
+                    $order->mode_paiement = $request->mode_paiement;
+                    $order->save();
+
+                    $lastID = $order->id;
+
+                    $transaction = json_decode($result);
+
+
+                    $transaction_id = $transaction->transaction_id;
+
+
+                    // Mise à jour de la transaction
+                    Transaction::where('id', $lastID)->update(['transactionid' => $transaction_id, 'xuser' => $xuser, 'xtoken' => $xtoken]);
 
                     return response()->json([
-                        'success' => false,
-                        'message' => 'Le solde de l\'abonné est insuffisant.',
+                        'success' => true,
+                        'message' => 'La souscription a été bien effectuée.',
                     ], Response::HTTP_OK);
-                } else if ($status == "2084") {
-
+                } else {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Vous êtes déjà inscrit ou abonné au service demandé.',
-                    ], Response::HTTP_OK);
-                } else if ($status == "2061") {
-
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Veuillez ressayer plus tard.',
+                        'message' => 'Service non disponible',
                     ], Response::HTTP_OK);
                 }
-
-                // Ajouter la transaction dans la bdd
-                $order = new Transaction();
-                $order->order_id = $ref;
-                $order->user_id = $user->id;
-                $order->service_id = $request->service_id;
-                $order->partenaire_id = $partenaire_id;
-                $order->nom_service = $nomService;
-                $order->forfait = $request->forfait;
-                $order->amount = $request->amount;
-                $order->msisdn = $mobile;
-                $order->service_name = $servicename;
-                $order->order_url = $order_url;
-                $order->image = $imageService;
-                $order->canal = "web";
-                $order->mode_paiement = $request->mode_paiement;
-                $order->save();
-
-                $lastID = $order->id;
-
-                $transaction = json_decode($result);
-
-
-                $transaction_id = $transaction->transaction_id;
-
-
-                // Mise à jour de la transaction
-                Transaction::where('id', $lastID)->update(['transactionid' => $transaction_id, 'xuser' => $xuser, 'xtoken' => $xtoken]);
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'La souscription a été bien effectuée.',
-                ], Response::HTTP_OK);
+                curl_close($ch);
             } else {
                 $day = date('d');
                 $month = date('m');
@@ -390,68 +397,74 @@ class ServicesController extends Controller
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postInput));
                 $result = curl_exec($ch);
-                curl_close($ch);
-                Log::info('Demande :', ['data' => $result]);
+                if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 200) {
+                    Log::info('Demande :', ['data' => $result]);
 
-                $info = json_decode($result);
+                    $info = json_decode($result);
 
-                $status = $info->statusCode;
+                    $status = $info->statusCode;
 
-                if ($status == "2032") {
+                    if ($status == "2032") {
+
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Le solde de l\'abonné est insuffisant.',
+                        ], Response::HTTP_OK);
+                    } else if ($status == "2084") {
+
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Vous êtes déjà inscrit ou abonné au service demandé.',
+                        ], Response::HTTP_OK);
+                    } else if ($status == "2061") {
+
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Veuillez ressayer plus tard.',
+                        ], Response::HTTP_OK);
+                    }
+
+                    $id = User::where('contact', $request->contact)->value('id');
+
+                    // Ajouter la transaction dans la bdd
+                    $order = new Transaction();
+                    $order->order_id = $ref;
+                    $order->user_id = $id;
+                    $order->service_id = $request->service_id;
+                    $order->partenaire_id = $partenaire_id;
+                    $order->nom_service = $nomService;
+                    $order->forfait = $request->forfait;
+                    $order->amount = $request->amount;
+                    $order->msisdn = $mobile;
+                    $order->service_name = $servicename;
+                    $order->order_url = $order_url;
+                    $order->image = $imageService;
+                    $order->canal = "web";
+                    $order->mode_paiement = $request->mode_paiement;
+                    $order->save();
+
+                    $lastID = $order->id;
+
+                    $transaction = json_decode($result);
+
+                    $transaction_id = $transaction->transaction_id;
+
+
+                    // Mise à jour de la transaction
+                    Transaction::where('id', $lastID)->update(['transactionid' => $transaction_id, 'xuser' => $xuser, 'xtoken' => $xtoken]);
 
                     return response()->json([
-                        'success' => false,
-                        'message' => 'Le solde de l\'abonné est insuffisant.',
+                        'success' => true,
+                        'message' => 'Veuillez consulter votre messagerie.',
+                        'data' => $info,
                     ], Response::HTTP_OK);
-                } else if ($status == "2084") {
-
+                } else {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Vous êtes déjà inscrit ou abonné au service demandé.',
-                    ], Response::HTTP_OK);
-                } else if ($status == "2061") {
-
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Veuillez ressayer plus tard.',
+                        'message' => 'Ce service est indisponible.',
                     ], Response::HTTP_OK);
                 }
-
-                $id = User::where('contact', $request->contact)->value('id');
-
-                // Ajouter la transaction dans la bdd
-                $order = new Transaction();
-                $order->order_id = $ref;
-                $order->user_id = $id;
-                $order->service_id = $request->service_id;
-                $order->partenaire_id = $partenaire_id;
-                $order->nom_service = $nomService;
-                $order->forfait = $request->forfait;
-                $order->amount = $request->amount;
-                $order->msisdn = $mobile;
-                $order->service_name = $servicename;
-                $order->order_url = $order_url;
-                $order->image = $imageService;
-                $order->canal = "web";
-                $order->mode_paiement = $request->mode_paiement;
-                $order->save();
-
-                $lastID = $order->id;
-
-                $transaction = json_decode($result);
-
-
-                $transaction_id = $transaction->transaction_id;
-
-
-                // Mise à jour de la transaction
-                Transaction::where('id', $lastID)->update(['transactionid' => $transaction_id, 'xuser' => $xuser, 'xtoken' => $xtoken]);
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Veuillez consulter votre messagerie.',
-                    'data' => $info,
-                ], Response::HTTP_OK);
+                curl_close($ch);
             }
         } catch (\Exception $exception) {
             Log::info('error :', ['data' => $exception]);
@@ -535,98 +548,102 @@ class ServicesController extends Controller
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postInput));
             $result = curl_exec($ch);
-            curl_close($ch);
+            if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 200) {
+                $data = json_decode($result);
 
+                Log::info('erreur :', ['data' => $result]);
+                if ($data->statusCode === "0") {
 
-            $data = json_decode($result);
+                    $date_fin_abonnement = $data->date_fin_abonnement;
 
-            Log::info('erreur :', ['data' => $result]);
+                    // Mise à jour de la transaction
+                    Transaction::where('transactionid', $request->transaction_id)->update(['date_fin_abonnement' => $date_fin_abonnement, 'status' => "successful", 'etat' => 1]);
 
-            if ($data->statusCode === "0") {
+                    $verif = Abonne::where('msisdn', $contact)->where('nom_service', $nom_service)->count();
+                    if ($verif == 0) {
+                        // Enregistré l'abonné
+                        $abonne = new Abonne();
+                        $abonne->nom_service = $nom_service;
+                        $abonne->service_name = $service_name;
+                        $abonne->msisdn = $contact;
+                        $abonne->forfait = $forfait;
+                        $abonne->amount = $amount;
+                        // $order->image = $image;
+                        $abonne->transactionid = $request->transaction_id;
+                        $abonne->user_id = $user_id;
+                        $abonne->service_id = $service_id;
+                        $abonne->partenaire_id = $partenaire_id;
+                        $abonne->date_abonnement = date("Y-m-d");
+                        $abonne->date_fin_abonnement = $date_fin_abonnement;
+                        $abonne->save();
 
-                $date_fin_abonnement = $data->date_fin_abonnement;
+                        $msisdn = substr($contact, 3);
+                        $user = User::where('id', $user_id)->get();
 
-                // Mise à jour de la transaction
-                Transaction::where('transactionid', $request->transaction_id)->update(['date_fin_abonnement' => $date_fin_abonnement, 'status' => "successful", 'etat' => 1]);
+                        $contact = User::where('contact', $msisdn)->first();
 
-                $verif = Abonne::where('msisdn', $contact)->where('nom_service', $nom_service)->count();
-                if ($verif == 0) {
-                    // Enregistré l'abonné
-                    $abonne = new Abonne();
-                    $abonne->nom_service = $nom_service;
-                    $abonne->service_name = $service_name;
-                    $abonne->msisdn = $contact;
-                    $abonne->forfait = $forfait;
-                    $abonne->amount = $amount;
-                    // $order->image = $image;
-                    $abonne->transactionid = $request->transaction_id;
-                    $abonne->user_id = $user_id;
-                    $abonne->service_id = $service_id;
-                    $abonne->partenaire_id = $partenaire_id;
-                    $abonne->date_abonnement = date("Y-m-d");
-                    $abonne->date_fin_abonnement = $date_fin_abonnement;
-                    $abonne->save();
+                        $token = Auth::login($contact);
 
-                    $msisdn = substr($contact, 3);
-                    $user = User::where('id', $user_id)->get();
+                        return response()->json([
+                            'success' => true,
+                            'message' => 'Souscription effectué avec succès.',
+                            'user' => $user,
+                            'authorization' => [
+                                'token' => $token,
+                                'type' => 'bearer',
+                            ]
+                        ], Response::HTTP_OK);
+                    } else {
 
-                    $contact = User::where('contact', $msisdn)->first();
+                        Abonne::where('msisdn', $contact)->where('nom_service', $nom_service)->update(['forfait' => $forfait, 'amount' => $amount, 'transactionid' => $request->transaction_id, 'date_desabonnement' => null]);
 
-                    $token = Auth::login($contact);
+                        $msisdn = substr($contact, 3);
+                        $user = User::where('id', $user_id)->get();
+
+                        $contact = User::where('contact', $msisdn)->first();
+
+                        $token = Auth::login($contact);
+
+                        return response()->json([
+                            'success' => true,
+                            'message' => 'Souscription effectué avec succès.',
+                            'user' => $user,
+                            'authorization' => [
+                                'token' => $token,
+                                'type' => 'bearer',
+                            ]
+                        ], Response::HTTP_OK);
+                    }
+                } else if ($data->statusCode == "2032") {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Votre crédit est insuffisant pour souscrire à cette offre.',
+                    ], Response::HTTP_OK);
+                } else if ($data->statusCode == "2061") {
 
                     return response()->json([
-                        'success' => true,
-                        'message' => 'Souscription effectué avec succès.',
-                        'user' => $user,
-                        'authorization' => [
-                            'token' => $token,
-                            'type' => 'bearer',
-                        ]
+                        'success' => false,
+                        'message' => 'Requête invalide.',
+                    ], Response::HTTP_OK);
+                } else if ($data->statusCode == "2084") {
+
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Vous êtes déjà inscrit ou abonné au service demandé.',
                     ], Response::HTTP_OK);
                 } else {
-
-                    Abonne::where('msisdn', $contact)->where('nom_service', $nom_service)->update(['forfait' => $forfait, 'amount' => $amount, 'transactionid' => $request->transaction_id,'date_desabonnement'=> null]);
-
-                    $msisdn = substr($contact, 3);
-                    $user = User::where('id', $user_id)->get();
-
-                    $contact = User::where('contact', $msisdn)->first();
-
-                    $token = Auth::login($contact);
-
                     return response()->json([
-                        'success' => true,
-                        'message' => 'Souscription effectué avec succès.',
-                        'user' => $user,
-                        'authorization' => [
-                            'token' => $token,
-                            'type' => 'bearer',
-                        ]
+                        'success' => false,
+                        'message' => 'Service indisponible veuillez ressayez plus tard.',
                     ], Response::HTTP_OK);
                 }
-            } else if ($data->statusCode == "2032") {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Votre crédit est insuffisant pour souscrire à cette offre.',
-                ], Response::HTTP_OK);
-            } else if ($data->statusCode == "2061") {
-
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Requête invalide.',
-                ], Response::HTTP_OK);
-            } else if ($data->statusCode == "2084") {
-
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Vous êtes déjà inscrit ou abonné au service demandé.',
-                ], Response::HTTP_OK);
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Service indisponible veuillez ressayez plus tard.',
+                    'message' => 'Ce service est indisponible.',
                 ], Response::HTTP_OK);
             }
+            curl_close($ch);
         } catch (\Exception $exception) {
             Log::info('erreur :', ['data' => $exception]);
             return response()->json([
@@ -636,7 +653,7 @@ class ServicesController extends Controller
         }
     }
 
-    public function desabonnement(Request $request)
+    public function desAbonnement(Request $request)
     {
         $rules = [
             'transaction_id' => 'required',
@@ -648,67 +665,68 @@ class ServicesController extends Controller
             'transaction_id.required' => 'Entrez le numéro de la transaction',
         ];
         $this->validate($request, $rules, $customMessage);
-        try {
+        // try {
 
-            $serviceName = Transaction::select('nom_service')->where('transactionid', $request->transaction_id)->value('nom_service');
-
-            // Obtenir l'url 
-            $serviceurl = Service::select('credential')->where('nom_service', $serviceName)->first();
-
-            $apiURL = $serviceurl->credential['url_desabonnement'];
+        $serviceName = Transaction::select('nom_service')->where('transactionid', $request->transaction_id)->value('nom_service');
 
 
-            $xuser = Service::join("partenaires", 'services.partenaire_id', '=', 'partenaires.id')
-                ->where('services.nom_service', $serviceName)
-                ->value('x_user');
+        // Obtenir l'url 
+        $serviceurl = Service::select('credential')->where('nom_service', $serviceName)->first();
+
+        $apiURL = $serviceurl->credential['url_desabonnement'];
 
 
-            $xtoken = Service::join("partenaires", 'services.partenaire_id', '=', 'partenaires.id')
-                ->where('services.nom_service', $serviceName)
-                ->value('x_token');
+        $xuser = Service::join("partenaires", 'services.partenaire_id', '=', 'partenaires.id')
+            ->where('services.nom_service', $serviceName)
+            ->value('x_user');
 
-            // Headers
-            $headers = [
-                'xuser:' . $xuser,
-                'xtoken:' . $xtoken,
-                'content-type: application/json'
-            ];
 
-            // POST Data
-            $postInput = [
-                'transaction_id' => $request->transaction_id,
-            ];
+        $xtoken = Service::join("partenaires", 'services.partenaire_id', '=', 'partenaires.id')
+            ->where('services.nom_service', $serviceName)
+            ->value('x_token');
 
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $apiURL);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postInput));
-            $result = curl_exec($ch);
-            curl_close($ch);
-            Log::info('Desabonnement :', ['data' => $result]);
+        // Headers
+        $headers = [
+            'xuser:' . $xuser,
+            'xtoken:' . $xtoken,
+            'content-type: application/json'
+        ];
 
-            $date =  date("Y-m-d");
+        // POST Data
+        $postInput = [
+            'transaction_id' => $request->transaction_id,
+        ];
 
-            //  Mise à jour de la transaction
-            Transaction::where('transactionid', $request->transaction_id)->update(['date_desabonnement' => $date, 'etat' => 'Desabonnement']);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $apiURL);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postInput));
+        $result = curl_exec($ch);
+        curl_close($ch);
+        Log::info('Desabonnement :', ['data' => $result]);
 
-            // Mise à jour de la table abonné
+        $date =  date("Y-m-d");
 
-            Abonne::where('transactionid', $request->transaction_id)->update(['date_desabonnement' => date("Y-m-d")]);
+        //  Mise à jour de la transaction
+        Transaction::where('transactionid', $request->transaction_id)->update(['date_desabonnement' => $date, 'etat' => 'Desabonnement']);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Vous êtes désabonnés de ce service.',
-            ], Response::HTTP_OK);
-        } catch (\Exception $exception) {
+        // Mise à jour de la table abonné
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Vous êtes désabonnés de ce service.',
-            ], Response::HTTP_OK);
-        }
+        Abonne::where('transactionid', $request->transaction_id)->update(['date_desabonnement' => date("Y-m-d")]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Vous êtes désabonnés de ce service.',
+        ], Response::HTTP_OK);
+        // } catch (\Exception $exception) {
+
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Erreur.',
+        //     ], Response::HTTP_OK);
+        // }
     }
 }

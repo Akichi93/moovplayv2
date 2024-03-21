@@ -22,7 +22,7 @@ class Transaction extends Model
         'service_name',
         'order_url',
         'contact',
-        // 'image',
+        'transactionid',
         'canal',
         'mod_paiement',
     ];

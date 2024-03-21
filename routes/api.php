@@ -32,10 +32,10 @@ Route::group([
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
     Route::post('me', [AuthController::class, 'me']);
-
+    Route::post('/desabonnement', [AuthController::class, 'desabonnement']);
     Route::get('/profil', [AuthController::class, 'userProfile']);
     Route::get('/compte', [AuthController::class, 'compte']);
-    Route::post('/desabonnement', [AuthController::class, 'desabonnement']);
+   
 });
 
 Route::get('/getcategories', [IndexController::class, 'getCategories']);
