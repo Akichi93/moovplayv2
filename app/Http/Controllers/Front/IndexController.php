@@ -101,6 +101,18 @@ class IndexController extends Controller
          }
       }
 
+      if ($request->has('search')) {
+         $pattern = $request->search;
+
+         $regexPattern = implode('.*', str_split($pattern));
+
+         // Exécuter la requête
+         $services = Service::select('*')
+            ->whereRaw("description REGEXP '$regexPattern'")
+            ->orWhereRaw("nom_service REGEXP '$regexPattern'")
+            ->get();
+      }
+
       return response()->json([
          'success' => true,
          'data' => $services

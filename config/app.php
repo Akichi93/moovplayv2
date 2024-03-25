@@ -52,8 +52,9 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'https://demo.moovplay.com/'),
+   'url' => env('APP_URL', 'https://demo.moovplay.com/'),
 
+    
     'asset_url' => env('ASSET_URL', 'https://demo.moovplay.com/'),
 
     /*

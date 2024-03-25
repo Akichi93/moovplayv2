@@ -5,7 +5,7 @@
     'env' => 'local',
     'debug' => true,
     'url' => 'http://localhost',
-    'asset_url' => 'https://demo.moovplay.com/',
+    'asset_url' => '',
     'timezone' => 'UTC',
     'locale' => 'en',
     'fallback_locale' => 'en',
