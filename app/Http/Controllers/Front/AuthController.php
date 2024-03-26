@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\Favori;
+use App\Models\Question;
+use App\Models\Report;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
@@ -297,11 +300,13 @@ class AuthController extends Controller
     {
         try {
             $user =  JWTAuth::parseToken()->authenticate();
-            $Data = User::where('id', '=', $user->id)->get();
+            $Data['user'] = User::where('id', '=', $user->id)->first();
+
+            $Data['questions'] = Question::where('status', 0)->get();
 
             return response()->json([
                 'success' => true,
-                'user' => $Data
+                'data' => $Data
             ], Response::HTTP_OK);
         } catch (\Throwable $th) {
             //throw $th;
@@ -420,6 +425,8 @@ class AuthController extends Controller
                 ->whereNotIn('id', $serviceIds)
                 ->get();
 
+            $data['favoris'] = Favori::join("services", 'favoris.service_id', '=', 'services.id')->get();
+
 
             return response()->json([
                 'success' => true,
@@ -428,8 +435,13 @@ class AuthController extends Controller
         } catch (TokenExpiredException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Aucun token fourni',
-            ], Response::HTTP_OK);
+                'message' => 'Token expiré',
+            ], Response::HTTP_UNAUTHORIZED);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Token invalide',
+            ], Response::HTTP_UNAUTHORIZED);
         }
     }
 
@@ -508,6 +520,147 @@ class AuthController extends Controller
                 ], Response::HTTP_OK);
             }
             curl_close($ch);
+        } catch (\Exception $exception) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur.',
+            ], Response::HTTP_OK);
+        }
+    }
+
+    public function updateProfil(Request $request)
+    {
+        $user =  JWTAuth::parseToken()->authenticate();
+        User::where('id', $user->id)
+            ->update([
+                'name' => $request->name, 'firstname' => $request->firstname, 'email' => $request->email,
+                'birthday' => $request->birthday, 'place_residence' => $request->place_residence, 'genre' => $request->genre
+            ]);
+
+        $info = User::where('id', $user->id)->first();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Votre profil à été modifié avec succes.',
+            'user' => $info,
+        ], Response::HTTP_OK);
+    }
+
+    public function addFavorites(Request $request)
+    {
+        $rules = [
+            'service_id' => 'required',
+        ];
+
+        $customMessage = [
+            'service_id.required' => 'Entrez le numéro de la transaction',
+        ];
+
+        $this->validate($request, $rules, $customMessage);
+
+        try {
+            $user =  JWTAuth::parseToken()->authenticate();
+
+            $verif = Favori::where('service_id',$request->service_id)->where('user_id',$user->id)->count();
+            if($verif == 0){
+                $favoris = new Favori();
+                $favoris->service_id = $request->service_id;
+                $favoris->user_id = $user->id;
+                $favoris->save();
+    
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Vous avez ajouté ce service à vos favoris.',
+                ], Response::HTTP_OK);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Vous avez déjà ce service en favoris.',
+            ], Response::HTTP_OK);
+
+         
+        } catch (\Exception $exception) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur.',
+            ], Response::HTTP_OK);
+        }
+    }
+
+    public function addImage(Request $request)
+    {
+
+        $rules = [
+            'file' => 'required',
+            'name_file' => 'required',
+        ];
+
+        $customMessage = [
+            'file.required' => 'Entrez l\'image',
+            'name_file.required' => 'Entrez le nom de l\'image',
+        ];
+
+        $this->validate($request, $rules, $customMessage);
+        try {
+            $user =  JWTAuth::parseToken()->authenticate();
+
+            $base64Image = $request->file;
+            $imageData = base64_decode($base64Image);
+            $filename = $request->name_file; // or any other desired image extension
+            $directory = public_path('image/user_images/');
+            file_put_contents($directory . $filename, $imageData);
+            $imagePath = 'image/user_images/' . $filename;
+
+            $users = User::where('id', $user->id)
+                ->update(['image' => $request->name_file]);
+
+            $info = User::where('id', $user->id)->first();
+
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Votre image de profil à été changé avec succes.',
+                'user' => $info,
+            ], Response::HTTP_OK);
+        } catch (\Exception $exception) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur.',
+            ], Response::HTTP_OK);
+        }
+    }
+
+    public function Report(Request $request)
+    {
+        $rules = [
+            'title' => 'required',
+            'description' => 'required',
+        ];
+
+        $customMessage = [
+            'title.required' => 'Entrez l\'image',
+            'description.required' => 'Entrez le nom de l\'image',
+        ];
+
+        $this->validate($request, $rules, $customMessage);
+
+        try {
+            $user =  JWTAuth::parseToken()->authenticate();
+
+            $reports = new Report();
+            $reports->title = $request->title;
+            $reports->description = $request->description;
+            $reports->user_id = $user->id;
+            $reports->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Vous avez signalé un problème.',
+            ], Response::HTTP_OK);
         } catch (\Exception $exception) {
 
             return response()->json([

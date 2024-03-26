@@ -13,6 +13,8 @@ use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Front\ServicesController;
 use App\Http\Controllers\Admin\CategorieController;
 use App\Http\Controllers\Admin\PartenaireController;
+use App\Http\Controllers\Admin\QuestionController;
+use App\Http\Controllers\Admin\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -99,6 +101,13 @@ Route::group(['middleware' => ['admin']], function () {
     // Banner
     Route::get('/slides', [BannerController::class, 'slides']);
     Route::match(['get', 'post'], 'add-edit-slide/{id?}', [BannerController::class, 'addEditSlide']);
+
+    // Faq
+    Route::get('/questions', [QuestionController::class, 'questions']);
+    Route::match(['get', 'post'], 'add-edit-question/{id?}', [QuestionController::class, 'addEditQuestion']);
+
+     // Rport
+    Route::get('/reports', [ReportController::class, 'Reports']);
 });
 
 // Index

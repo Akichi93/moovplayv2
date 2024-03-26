@@ -35,7 +35,10 @@ Route::group([
     Route::post('/desabonnement', [AuthController::class, 'desabonnement']);
     Route::get('/profil', [AuthController::class, 'userProfile']);
     Route::get('/compte', [AuthController::class, 'compte']);
-   
+    Route::post('/updateprofil', [AuthController::class, 'updateProfil']);
+    Route::post('/addfavorite', [AuthController::class, 'addFavorites']);
+    Route::post('/addimage', [AuthController::class, 'addImage']);
+    Route::post('/report', [AuthController::class, 'Report']);
 });
 
 Route::get('/getcategories', [IndexController::class, 'getCategories']);
