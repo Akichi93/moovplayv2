@@ -68,86 +68,95 @@ class IndexController extends Controller
 
    public function getServices(Request $request)
    {
-      $user = auth()->check();
-      if ($user) {
-         $services['favoris'] = Favori::join("services", 'favoris.service_id', '=', 'services.id')
-            ->where('user_id', auth()->user()->id)
-            ->get();
+      // $user = auth()->check();
+      // if ($user) {
+      //    $services['favoris'] = Favori::join("services", 'favoris.service_id', '=', 'services.id')
+      //       ->where('user_id', auth()->user()->id)
+      //       ->get();
 
-         $services = null;
+      //    $services = null;
 
-         if ($services === null) {
-            $services = Service::all();
-         }
+      //    if ($services === null) {
+      //       $services = Service::all();
+      //    }
 
-         if ($request->has('category')) {
-            $services = Categorie::where('url', $request->category)->with('service')->get();
-         }
+      //    if ($request->has('category')) {
+      //       $services = Categorie::where('url', $request->category)->with('service')->get();
+      //    }
 
-         if ($request->has('slug')) {
-            $services = Service::with('categories')->where('service_url', $request->slug)->first();
-         }
+      //    if ($request->has('slug')) {
+      //       $services = Service::with('categories')->where('service_url', $request->slug)->first();
+      //    }
 
-         if ($request->has('limit')) {
-            $limit = $request->limit;
-            $services = Categorie::where('url', $request->category)->with('service')
-               ->get()
-               ->map(function ($query) use ($limit) {
-                  $query->setRelation('service', $query->service->take($limit));
-                  return $query;
-               });
-         }
+      //    if ($request->has('limit')) {
+      //       $limit = $request->limit;
+      //       $services = Categorie::where('url', $request->category)->with('service')
+      //          ->get()
+      //          ->map(function ($query) use ($limit) {
+      //             $query->setRelation('service', $query->service->take($limit));
+      //             return $query;
+      //          });
+      //    }
 
-         if ($request->has('sort')) {
-            if ($request->sort == 'random') {
-               $services = Service::inRandomOrder()->where('status', 0)->get();
-            }
+      //    if ($request->has('sort')) {
+      //       if ($request->sort == 'random') {
+      //          $services = Service::inRandomOrder()->where('status', 0)->get();
+      //       }
 
-            if ($request->sort == 'newer') {
-               $services = Service::orderby('id', 'asc')->where('status', 0)->get();
-            }
-         }
+      //       if ($request->sort == 'newer') {
+      //          $services = Service::orderby('id', 'asc')->where('status', 0)->get();
+      //       }
+      //    }
 
-         if ($request->has('search')) {
-            $pattern = $request->search;
+      //    if ($request->has('search')) {
+      //       $pattern = $request->search;
 
-            $characters = str_split($pattern);
+      //       $characters = str_split($pattern);
 
-            // Initialise le motif d'expression régulière
-            $pattern = '';
+      //       // Initialise le motif d'expression régulière
+      //       $pattern = '';
 
-            // Parcourt chaque caractère et les concatène avec '.*'
-            foreach ($characters as $char) {
-               $pattern .= $char . '.*';
-            }
+      //       // Parcourt chaque caractère et les concatène avec '.*'
+      //       foreach ($characters as $char) {
+      //          $pattern .= $char . '.*';
+      //       }
 
-            $pattern = rtrim($pattern, '.*');
+      //       $pattern = rtrim($pattern, '.*');
 
-            // Utilisation de l'opérateur REGEXP avec une expression régulière pour correspondre aux occurrences de 'q' et 'm' dans la même chaîne
-            // $services = Service::whereRaw("CONCAT(description, ' ', nom_service) REGEXP ?", [$pattern])
-            //    ->get();
+      //       // Utilisation de l'opérateur REGEXP avec une expression régulière pour correspondre aux occurrences de 'q' et 'm' dans la même chaîne
+      //       // $services = Service::whereRaw("CONCAT(description, ' ', nom_service) REGEXP ?", [$pattern])
+      //       //    ->get();
 
-            $services = Service::whereRaw("nom_service REGEXP ?", [$pattern])
-               ->get();
-         }
+      //       $services = Service::whereRaw("nom_service REGEXP ?", [$pattern])
+      //          ->get();
+      //    }
 
-         return response()->json([
-            'success' => true,
-            'data' => $services
-         ], Response::HTTP_OK);
-      }
+      //    return response()->json([
+      //       'success' => true,
+      //       'data' => $services
+      //    ], Response::HTTP_OK);
+      // }
       $services = null;
 
       if ($services === null) {
-         $services = Service::all();
+         $services = Service::where('status', 0)->get();
       }
 
       if ($request->has('category')) {
-         $services = Categorie::where('url', $request->category)->with('service')->get();
+         // $services = Categorie::where('url', $request->category)->with('service')->get();
+
+         $services = Categorie::where('url', $request->category)
+            ->with(['service' => function ($query) {
+               $query->where('status', 0);
+            }])
+            ->get();
       }
 
       if ($request->has('slug')) {
-         $services = Service::with('categories')->where('service_url', $request->slug)->first();
+         $services = Service::with('categories')
+            ->where('service_url', $request->slug)
+            ->where('status', 0)
+            ->first();
       }
 
       if ($request->has('limit')) {
@@ -190,6 +199,7 @@ class IndexController extends Controller
          //    ->get();
 
          $services = Service::whereRaw("nom_service REGEXP ?", [$pattern])
+            ->where('status', 0)
             ->get();
       }
 
