@@ -25,6 +25,8 @@ class ServiceController extends Controller
 
     public function addEditService(Request $request, $id = null)
     {
+
+       
         
         if ($id == "") {
             $title = 'Ajouter service';
@@ -56,7 +58,7 @@ class ServiceController extends Controller
         }
 
         if ($request->isMethod('post')) {
-
+            dd($request->all());
             $data = $request->all();
             $rules = [
                 'nom_service' => 'required',

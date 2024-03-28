@@ -3,68 +3,69 @@
 
 {% block content %}
 
-<!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper">
+	<!-- Content Wrapper. Contains page content -->
+	<div
+		class="content-wrapper">
 
-	<!-- Content Header (Page header) -->
-	<section class="content-header">
-		<div class="container-fluid">
-			<div class="row mb-2">
-				<div class="col-sm-6">
-					<h1>Partenaires</h1>
-				</div>
-				<div class="col-sm-6">
-					<ol class="breadcrumb float-sm-right">
-						<li class="breadcrumb-item">
-							<a href="#">Accueil</a>
-						</li>
-						<li class="breadcrumb-item active">Partenaires</li>
-					</ol>
+		<!-- Content Header (Page header) -->
+		<section class="content-header">
+			<div class="container-fluid">
+				<div class="row mb-2">
+					<div class="col-sm-6">
+						<h1>Partenaires</h1>
+					</div>
+					<div class="col-sm-6">
+						<ol class="breadcrumb float-sm-right">
+							<li class="breadcrumb-item">
+								<a href="#">Accueil</a>
+							</li>
+							<li class="breadcrumb-item active">Partenaires</li>
+						</ol>
+					</div>
 				</div>
 			</div>
-		</div>
-		<!-- /.container-fluid -->
-	</section>
+			<!-- /.container-fluid -->
+		</section>
 
-	<section class="content">
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col-md-6">
-					<h6 class="mb-0 text-right">
-						<a class="btn btn-primary" href="{{ url('add-edit-partenaire') }}">Ajouter</a>
-					</h6>
+		<section class="content">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-md-6">
+						<h6 class="mb-0 text-right">
+							<a class="btn btn-primary" href="{{ url('add-edit-partenaire') }}">Ajouter</a>
+						</h6>
+					</div>
+
+					<!-- /.col -->
 				</div>
-
-				<!-- /.col -->
+				<!-- /.row -->
 			</div>
-			<!-- /.row -->
-		</div>
-		<!-- /.container-fluid -->
-	</section>
-	<hr />
+			<!-- /.container-fluid -->
+		</section>
+		<hr/>
 
-	<!-- Main content -->
-	<section class="content">
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col-12">
+		<!-- Main content -->
+		<section class="content">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-12">
 
-					<div class="card">
-						<div class="card-header">
-							<h3 class="card-title">Listes des partenaires</h3>
+						<div class="card">
+							<div class="card-header">
+								<h3 class="card-title">Listes des partenaires</h3>
+							</div>
+
+							{% if app.session.has('success_message') %}
+								<div class="alert alert-success alert-block">
+									<button type="button" class="close" data-dismiss="alert">×</button>
+									<strong>{{ app.session.get('success_message') }}</strong>
+								</div>
+							{% endif %}
+
+
 						</div>
 
-						{% if app.session.has('success_message') %}
-						<div class="alert alert-success alert-block">
-							<button type="button" class="close" data-dismiss="alert">×</button>
-							<strong>{{ app.session.get('success_message') }}</strong>
-						</div>
-						{% endif %}
 
-				
-			</div>
-
-						
 						<!-- /.card-header -->
 						<div class="card-body">
 							<table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
@@ -80,119 +81,106 @@
 								</thead>
 								<tbody>
 									{% for partenaire in partenaires %}
-									<tr>
-										<td>{{ partenaire.nom_partenaire}}</td>
-										<td>{{ partenaire.nom_correspondant}}</td>
-										<td>{{ partenaire.contact_partenaire}}</td>
-										<td>{{ partenaire.email_partenaire}}</td>
-										{% if partenaire.status == 0 %}
-										<td>Actif</td>
-										{% else %}
-										<td>Désactivé</td>
-										{% endif %}
-										<td>
-											<div class="d-flex order-actions">
-												<a href="{{ url('add-edit-partenaire' , partenaire.id) }}">
-													<i class="fas fa-edit"></i>
-												</a>
-												{% if partenaire.status == 0 %}
-												<a href="#" data-toggle="modal"
-													data-target="#desactive-{{ partenaire.id }}">
-													<i class="fa fa-times"></i>
-												</a>
-												{% endif %}
+										<tr>
+											<td>{{ partenaire.nom_partenaire}}</td>
+											<td>{{ partenaire.nom_correspondant}}</td>
+											<td>{{ partenaire.contact_partenaire}}</td>
+											<td>{{ partenaire.email_partenaire}}</td>
+											{% if partenaire.status == 0 %}
+												<td>Actif</td>
+											{% else %}
+												<td>Désactivé</td>
+											{% endif %}
+											<td>
+												<div class="d-flex order-actions">
+													<a href="{{ url('add-edit-partenaire' , partenaire.id) }}">
+														<i class="fas fa-edit"></i>
+													</a>
+													&nbsp;
+																																																						&nbsp;
+													{% if partenaire.status == 0 %}
+														<a href="#" data-toggle="modal" data-target="#desactive-{{ partenaire.id }}" style="color:red">
+															<i class="fa fa-times"></i>
+														</a>
+													{% endif %}
 
-												{% if partenaire.status == 1 %}
-												<a href="#" data-toggle="modal"
-													data-target="#actif-{{ partenaire.id }}">
-													<i class="fa fa-check"></i>
-												</a>
-												{% endif %}
+													{% if partenaire.status == 1 %}
+														<a href="#" data-toggle="modal" data-target="#actif-{{ partenaire.id }}" style="color:red">
+															<i class="fa fa-check"></i>
+														</a>
+													{% endif %}
 
-												<div class="modal fade" id="desactive-{{ partenaire.id }}">
-													<div class="modal-dialog">
-														<div class="modal-content">
-															<div class="modal-header">
-																<h4 class="modal-title">Désactiver partenaire</h4>
-																<button type="button" class="close" data-dismiss="modal"
-																	aria-label="Close">
-																	<span aria-hidden="true">&times;</span>
-																</button>
+													<div class="modal fade" id="desactive-{{ partenaire.id }}">
+														<div class="modal-dialog">
+															<div class="modal-content">
+																<div class="modal-header">
+																	<h4 class="modal-title">Désactiver partenaire</h4>
+																	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+																		<span aria-hidden="true">&times;</span>
+																	</button>
+																</div>
+																<form role="form" method="POST" action="{{ route('desactivate.partenaires', partenaire.id) }}">
+																	{{csrf_field()}}
+																	<div class="modal-body">
+																		<input type="hidden" value="{{ partenaire.id }}" name="id">
+																		<p>Voulez-vous désactivé ce partenaire
+																			<b>
+																				{{ partenaire.nom_partenaire}}</b>?
+																		</p>
+																	</div>
+																	<div class="modal-footer justify-content-between">
+																		<button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+																		<button type="submit" class="btn btn-primary">Désactivé</button>
+																	</div>
+
+																</form>
+
 															</div>
-															<form role="form" method="POST"
-																action="{{ route('desactivate.partenaires', partenaire.id) }}">
-																{{csrf_field()}}
-																<div class="modal-body">
-																	<input type="hidden" value="{{ partenaire.id }}"
-																		name="id">
-																	<p>Voulez-vous désactivé ce partenaire
-																		<b>
-																			{{ partenaire.nom_partenaire}}</b>?
-																	</p>
-																</div>
-																<div class="modal-footer justify-content-between">
-																	<button type="button" class="btn btn-default"
-																		data-dismiss="modal">Fermer</button>
-																	<button type="submit"
-																		class="btn btn-primary">Désactivé</button>
-																</div>
-
-															</form>
-
+															<!-- /.modal-content -->
 														</div>
-														<!-- /.modal-content -->
+														<!-- /.modal-dialog -->
 													</div>
-													<!-- /.modal-dialog -->
-												</div>
 
-												<div class="modal fade" id="actif-{{ partenaire.id }}">
-													<div class="modal-dialog">
-														<div class="modal-content">
-															<div class="modal-header">
-																<h4 class="modal-title">Activer partenaire</h4>
-																<button type="button" class="close" data-dismiss="modal"
-																	aria-label="Close">
-																	<span aria-hidden="true">&times;</span>
-																</button>
+													<div class="modal fade" id="actif-{{ partenaire.id }}">
+														<div class="modal-dialog">
+															<div class="modal-content">
+																<div class="modal-header">
+																	<h4 class="modal-title">Activer partenaire</h4>
+																	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+																		<span aria-hidden="true">&times;</span>
+																	</button>
+																</div>
+																<form role="form" method="POST" action="{{ route('activate.partenaires', partenaire.id) }}">
+																	{{csrf_field()}}
+																	<div class="modal-body">
+																		<p>Voulez-vous activé ce partenaire
+																			<b>
+																				{{ partenaire.nom_partenaire}}</b>?
+																		</p>
+																	</div>
+																	<div class="modal-footer justify-content-between">
+																		<button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+																		<button type="submit" class="btn btn-primary">Activé</button>
+																	</div>
+																</form>
+
 															</div>
-															<form role="form" method="POST"
-																action="{{ route('activate.partenaires', partenaire.id) }}">
-																{{csrf_field()}}
-																<div class="modal-body">
-																	<p>Voulez-vous activé ce partenaire
-																		<b>
-																			{{ partenaire.nom_partenaire}}</b>?
-																	</p>
-																</div>
-																<div class="modal-footer justify-content-between">
-																	<button type="button" class="btn btn-default"
-																		data-dismiss="modal">Fermer</button>
-																	<button type="submit"
-																		class="btn btn-primary">Activé</button>
-																</div>
-															</form>
-
+															<!-- /.modal-content -->
 														</div>
-														<!-- /.modal-content -->
+														<!-- /.modal-dialog -->
 													</div>
-													<!-- /.modal-dialog -->
-												</div>
-										</td>
-										</td>
-									</tr>
-						</div>
-						</tbody>
-						</td>
+												</td>
+											</td>
+										</tr>
+									</div>
+								</tbody>
+							</td>
 						</tr>
-						{% endfor %}
-						</tbody>
-						</tfoot>
-						</table>
-					</div>
-					<!-- /.card-body -->
-				</div>
-				<!-- /.card -->
-			</div>
-			<!-- /.col -->
-		</div><!-- /.row -->
-</div><!-- /.container-fluid --></section><!-- /.content --></div><!-- /.content-wrapper -->{% endblock %}
+					{% endfor %}
+				</tbody>
+			</tfoot>
+		</table>
+	</div>
+	<!-- /.card-body -->
+</div>
+<!-- /.card --></div><!-- /.col --></div><!-- /.row --></div><!-- /.container-fluid --></section><!-- /.content --></div><!-- /.content-wrapper -->{% endblock %}

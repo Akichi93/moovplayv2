@@ -175,7 +175,11 @@
 		<!-- Bootstrap 4 -->
 		<script src="{{ asset('admin/plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
 
-		<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+		<scrip src="https://code.jquery.com/jquery-3.7.0.js"></script>
+
+	
+
+
 		{# {% stack('script-page')  %} #}
 		{% block graph %}
 			<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
@@ -323,9 +327,13 @@ select.add(new Option(d));
         });
     </script>
 
+	
+
 		{# {% stack('graph') %} #}
 		<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-		{# <script src="{{ asset('admin/dist/js/pages/dashboard.js')}}"></script> #}<script src="{{ asset('js/admin/admin_scripts.js') }}"> </script>
+		{# <script src="{{ asset('admin/dist/js/pages/dashboard.js')}}"></script> #}
+		<script src="{{ asset('js/admin/admin_scripts.js') }}"> </script>
+		<script src="{{ asset('js/admin/image_scripts.js') }}"> </script>
 
 		{# {%  yield('script') %} #}
 	</body>

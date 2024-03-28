@@ -425,7 +425,9 @@ class AuthController extends Controller
                 ->whereNotIn('id', $serviceIds)
                 ->get();
 
-            $data['favoris'] = Favori::join("services", 'favoris.service_id', '=', 'services.id')->get();
+            $data['favoris'] = Favori::join("services", 'favoris.service_id', '=', 'services.id')
+                ->where('user_id', $user->id)
+                ->get();
 
 
             return response()->json([
@@ -562,13 +564,13 @@ class AuthController extends Controller
         try {
             $user =  JWTAuth::parseToken()->authenticate();
 
-            $verif = Favori::where('service_id',$request->service_id)->where('user_id',$user->id)->count();
-            if($verif == 0){
+            $verif = Favori::where('service_id', $request->service_id)->where('user_id', $user->id)->count();
+            if ($verif == 0) {
                 $favoris = new Favori();
                 $favoris->service_id = $request->service_id;
                 $favoris->user_id = $user->id;
                 $favoris->save();
-    
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Vous avez ajouté ce service à vos favoris.',
@@ -579,8 +581,6 @@ class AuthController extends Controller
                 'success' => false,
                 'message' => 'Vous avez déjà ce service en favoris.',
             ], Response::HTTP_OK);
-
-         
         } catch (\Exception $exception) {
 
             return response()->json([

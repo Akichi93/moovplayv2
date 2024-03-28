@@ -66,11 +66,14 @@
 										<div class="col-md-6">
 											<div class="form-group">
 												<label for="exampleInputEmail1">Partenaire</label>
-												<select name="partenaire_id" id="partenaire_id" class="single-select form-control" style="width: 100%;">
-													<option value="">Selectionnez un partenaire</option>
+												<select
+													name="partenaire_id" id="partenaire_id" class="single-select form-control" style="width: 100%;">
+													{# <option value="">Selectionnez un partenaire</option> #}
 													{% for partenaire in getPartenaires %}
 
-														<option value="{{ partenaire['id'] }}">{{ partenaire['nom_partenaire'] }}</option>
+														<option value="{{ partenaire['id'] }}" {% if partenaire['id'] == servicedata['partenaire_id'] %} selected {% endif %}>
+															{{ partenaire['nom_partenaire'] }}
+														</option>
 
 													{% endfor %}
 												</select>
@@ -83,12 +86,14 @@
 										<div class="col-md-6">
 											<div class="form-group">
 												<label for="exampleInputEmail1">Catégorie</label>
-												<select name="categorie_id" id="categorie_id" class="single-select form-control" style="width: 100%;">
-													<option value="">Selectionnez une catégorie</option>
+												<select
+													name="categorie_id" id="categorie_id" class="single-select form-control" style="width: 100%;">
+													{# <option value="">Selectionnez une catégorie</option> #}
 													{% for categorie in getCategories %}
 
-														<option value="{{ categorie.id }} {% if servicedata.categorie_id is not empty and servicedata.categorie_id == categorie.id %} selected=" " {% endif %}>
-																													">{{ categorie['nom_categorie'] }}</option>
+														<option value="{{ categorie['id'] }}" {% if categorie['id'] == servicedata['categorie_id'] %} selected {% endif %}>
+															{{ categorie['nom_categorie'] }}
+														</option>
 
 													{% endfor %}
 
@@ -101,9 +106,10 @@
 										</div>
 									</div>
 
+
 									<div class="row">
 
-										<div class="col-md-6">
+										<div class="col-md-3">
 											<div class="form-group">
 												<label for="exampleInputEmail1">Nom du service</label>
 												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez l'email du correspondant" name="nom_service" {% if servicedata['nom_service'] is not empty %} value="{{ servicedata['nom_service'] }}" {% else %} value="{{ old('nom_service ') }}" {% endif %}>
@@ -112,19 +118,73 @@
 												</p>
 											</div>
 										</div>
-										<div class="col-md-6">
-											<div class="form-group">
-												<label for="file">Image</label>
-												<input type="file" class="form-control" multiple id="file" name="file[]">
+										<div>
 
-												{% if servicedata.image is not empty %}
-													<div>
-														<img style="width: 60px; margin-top: 5px;" src="">
+											{% if servicedata.image is not empty %}
+												<label for="exampleInputEmail1">Images</label>
+												<div class="image-container" style="text-align: right;margin-left: 350px">
+													{% for image in servicedata['image'] %}
+														<div class="input-group hdtuto control-group lst increment">
+															<input type="file" name="filenames[]" class="myfrm form-control">
+															<div class="input-group-btn">
+																<button class="btn btn-danger" type="button">
+																	<i class="fldemo glyphicon glyphicon-plus"></i>Supprimer</button>
+															</div>
+														</div>
 
+													{% endfor %}
+												</div>
+											{% else %}
+												<div class="input-group hdtuto control-group lst increment">
+													<input type="file" name="filenames[]" class="myfrm form-control">
+													<div class="input-group-btn">
+														<button class="btn btn-success" type="button">
+															<i class="fldemo glyphicon glyphicon-plus"></i>Ajouter
+														</button>
 													</div>
-												{% endif %}
-											</div>
+												</div>
+
+											{% endif %}
 										</div>
+										{# <div class="col-md-3">
+																																																																																																					<div class="form-group">
+																																																																																																						<label for="file">Image 1</label>
+																																																																																																						<input type="file" class="form-control" id="file" name="file1">
+																																																																																										
+																																																																																										
+																																																																																																					</div>
+																																																																																																				</div>
+																																																																																																				<div class="col-md-3">
+																																																																																																					<div class="form-group">
+																																																																																																						<label for="file">Image 2</label>
+																																																																																																						<input type="file" class="form-control" id="file" name="file2">
+																																																																																																					</div>
+																																																																																																				</div>
+																																																																																																				<div class="col-md-3">
+																																																																																																					<div class="form-group">
+																																																																																																						<label for="file">Image 3</label>
+																																																																																																						<input type="file" class="form-control" id="file" name="file3">
+																																																																																																					</div>
+																																																																																																				</div> #}
+										{# <div>
+																																																																																											{% if servicedata.image is not empty %}
+																																																																																												<div class="image-container" style="text-align: right;margin-left: 350px">
+																																																																																													{% for image in servicedata['image'] %}
+																																																																																														<div style="display: inline-block; margin-right: 153px; text-align: center;">
+																																																																																															<div>
+																																																																																																<img style="width: 130px; margin-top: 15px;" src="{{ asset('image/service_images/' ~ image) }}" alt="">
+																																																																																															</div>
+																																																																																															<div>
+																																																																																																<a class="confirmDelete text-danger" href="javascript:void(0)" record="banner-image" categoryname="{{ image }}" recordid="{{ image }}">Supprimer l'image</a>
+																																																																																															</div>
+																																																																																														</div>
+																																																																																													{% endfor %}
+																																																																																												</div>
+																																																																																												
+																																																																																											{% endif %}
+																																																																																										</div> #}
+
+
 									</div>
 
 									<div class="row">
@@ -182,8 +242,8 @@
 										</div>
 										<div class="col-md-6">
 											<div class="form-group">
-												<label for="exampleInputEmail1">Icône</label>
-												<input type="file" class="form-control" id="file" name="icone">		
+												<label for="exampleInputEmail1">Logo</label>
+												<input type="file" class="form-control" id="file" name="icone">
 											</div>
 										</div>
 
