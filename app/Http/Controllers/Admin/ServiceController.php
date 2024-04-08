@@ -107,6 +107,7 @@ class ServiceController extends Controller
                 $service->image = $insert;
             }
 
+
             if ($request->hasFile('icone')) {
                 $image_tmp = $request->file('icone');
                 if ($image_tmp->isValid()) {
@@ -282,6 +283,12 @@ class ServiceController extends Controller
         } else {
             $result = array_diff_key($oldImages[0], $files);
 
+            foreach ($request->file('filenames') as $file) {
+                $filename = $file->getClientOriginalName();
+                $file->move('image/service_images', $filename);
+                // $insert[] = $filename;
+            }
+
 
 
             $filenames = [];
@@ -306,6 +313,5 @@ class ServiceController extends Controller
         }
 
         return view('admin.services.services');
-
     }
 }
