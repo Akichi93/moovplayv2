@@ -178,7 +178,20 @@
 		<scrip src="https://code.jquery.com/jquery-3.7.0.js"></script>
 
 	
+{# <script>
+    $(document).ready(function() {
+        // Modèle de champ de fichier supplémentaire
+        var fieldHTML = '<div class="hdtuto control-group lst input-group" style="margin-top:10px"><input type="file" name="filenames[]" class="myfrm form-control"><div class="input-group-btn"><button class="btn btn-success" type="button"><i class="fldemo glyphicon glyphicon-plus"></i> Ajouter</button></div></div>';
 
+        // Attachez un gestionnaire d'événement au clic sur le bouton Supprimer
+        $('.delete-btn').click(function() {
+            // Supprimez le champ de fichier et le bouton Supprimer
+            $(this).closest('.increment').remove();
+            // Ajoutez un nouveau champ de fichier avec le bouton "Retirer"
+            $('.image-container').append(fieldHTML);
+        });
+    });
+</script> #}
 
 		{# {% stack('script-page')  %} #}
 		{% block graph %}
@@ -334,6 +347,7 @@ select.add(new Option(d));
 		{# <script src="{{ asset('admin/dist/js/pages/dashboard.js')}}"></script> #}
 		<script src="{{ asset('js/admin/admin_scripts.js') }}"> </script>
 		<script src="{{ asset('js/admin/image_scripts.js') }}"> </script>
+		<script src="{{ asset('js/admin/edit_script.js') }}"> </script>
 
 		{# {%  yield('script') %} #}
 	</body>

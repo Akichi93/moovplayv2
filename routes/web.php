@@ -28,7 +28,7 @@ use App\Http\Controllers\Admin\ReportController;
 */
 
 
-URL::forceRootUrl('https://demo.moovplay.com/');
+// URL::forceRootUrl('https://demo.moovplay.com/');
 // Route::get('/bundle', [ServicesController::class, 'bundle']);
 
 
@@ -97,6 +97,8 @@ Route::group(['middleware' => ['admin']], function () {
     Route::post('services/activate/{id}', [ServiceController::class, 'activateservice'])->name('activate.services');
     Route::match(['get', 'post'], 'add-offres/{id}', [ServiceController::class, 'addOffres']);
     Route::post('edit-offres/{id?}', [ServiceController::class, 'editOffres']);
+    Route::get('edit-images/{id?}', [ServiceController::class, 'editImages']);
+    Route::post('update-images', [ServiceController::class, 'updateImages']);
 
     // Banner
     Route::get('/slides', [BannerController::class, 'slides']);

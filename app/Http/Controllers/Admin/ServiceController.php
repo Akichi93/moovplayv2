@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Exceptions\PostTooLargeException;
 
 class ServiceController extends Controller
 {
@@ -26,8 +27,8 @@ class ServiceController extends Controller
     public function addEditService(Request $request, $id = null)
     {
 
-       
-        
+
+
         if ($id == "") {
             $title = 'Ajouter service';
             // ajout de fonctionnalités
@@ -58,61 +59,73 @@ class ServiceController extends Controller
         }
 
         if ($request->isMethod('post')) {
-            dd($request->all());
+            // dd($request->filenames);
             $data = $request->all();
             $rules = [
                 'nom_service' => 'required',
                 'categorie_id' => 'required',
                 'partenaire_id' => 'required',
-                // 'file' => 'required',
+                'filenames.*' => 'max:2048',
+                'icone' => 'required|max:1024',
+
+
             ];
 
             $customMessage = [
                 'nom_service.required' => 'Le nom du service',
                 'categorie_id.required' => 'Selectionnez une catégorie',
                 'partenaire_id.required' => 'Selectionnez un partenaire',
-                // 'file.required' => 'Selectionnez une image',
+                'icone.required' => 'Selectionnez le logo du service',
+                'icone.max' => 'La taille max du logo doi être de 1Mo',
             ];
             $this->validate($request, $rules, $customMessage);
 
-            if ($request->file != null) {
+            $maxFileSize = 1024; // Taille maximale du fichier en octets
 
-                foreach ($request->file('file') as $file) {
+            if ($request->hasFile('file')) {
+                $uploadedFile = $request->file('file');
+
+                // Vérifiez la taille du fichier
+                if ($uploadedFile->getSize() > $maxFileSize) {
+                    throw new PostTooLargeException;
+                }
+
+                // Code pour traiter le fichier uploadé si la taille est valide
+            }
+
+
+
+
+
+            if ($request->hasFile('filenames')) {
+
+                foreach ($request->file('filenames') as $file) {
                     $filename = $file->getClientOriginalName();
                     $file->move('image/service_images', $filename);
-                    $insert[] = $filename;           
+                    $insert[] = $filename;
                 }
                 $service->image = $insert;
-            } else {
-                $oldImages = json_decode($servicedata['image'], true); // Récupérer les anciens noms de fichiers
-                $insert = $oldImages ?: [];
-
-                $service->image = $insert;
             }
 
+            if ($request->hasFile('icone')) {
+                $image_tmp = $request->file('icone');
+                if ($image_tmp->isValid()) {
+                    $fileNameWithTheExtension = request('icone')->getClientOriginalName();
 
-            if ($request->icone != null) {
+                    //obtenir le nom de l'image
 
-                $fileNameWithTheExtension = request('icone')->getClientOriginalName();
+                    $iconeName = pathinfo($fileNameWithTheExtension, PATHINFO_FILENAME);
 
-                //obtenir le nom de l'image
+                    // extension
+                    $extension = request('icone')->getClientOriginalExtension();
 
-                $iconeName = pathinfo($fileNameWithTheExtension, PATHINFO_FILENAME);
+                    // creation de nouveau nom
+                    $newIconeName = $iconeName . '_' . time() . '.' . $extension;
 
-                // extension
-                $extension = request('icone')->getClientOriginalExtension();
-
-                // creation de nouveau nom
-                $newIconeName = $iconeName . '_' . time() . '.' . $extension;
-
-                $path = request('icone')->move('image/service_images', $newIconeName);
-                $service->icone = $newIconeName;
-            } else {
-                // Si aucun fichier n'est téléchargé, conserver l'ancienne donnée
-                $newIconeName = $servicedata['icone']; // Utilisation de l'ancien nom de fichier
-                $service->icone = $newIconeName;
+                    $path = request('icone')->move('image/service_images', $newIconeName);
+                    $service->icone = $newIconeName;
+                }
             }
-
 
             // Création d'object
             $periode = $data['periode'];
@@ -232,5 +245,67 @@ class ServiceController extends Controller
         $request->session()->flash('success', "Service activé.");
 
         return back();
+    }
+
+
+
+    public function editImages($id)
+    {
+        $images = Service::select('id', 'image')->find($id);
+
+        $title = "Modifier images";
+
+        return view('admin.services.edit_image')->with(compact('images', 'title'));
+    }
+
+    public function updateImages(Request $request)
+    {
+        $rules = [
+            'filenames.*' => 'required|max:2048',
+        ];
+
+        $customMessage = [
+            'filenames.required' => 'Fichier requis',
+        ];
+        $this->validate($request, $rules, $customMessage);
+
+        $id = $request->id;
+
+
+        $oldImages = Service::where('id', $id)->pluck('image')->toArray();
+
+        $files = $request->file('filenames');
+
+        if ($files == null) {
+            $images = $oldImages[0];
+            dd($images);
+        } else {
+            $result = array_diff_key($oldImages[0], $files);
+
+
+
+            $filenames = [];
+            // Traitez chaque fichier
+            foreach ($files as $index => $file) {
+
+
+                // Obtenez le nom du fichier
+                $filename = $file->getClientOriginalName();
+
+                $filenames[$index] = $filename;
+            }
+
+            $nouveauTableau = $result + $filenames;
+
+            ksort($nouveauTableau);
+
+            Service::where('id', $request->id)
+                ->update([
+                    'image' => $nouveauTableau,
+                ]);
+        }
+
+        return view('admin.services.services');
+
     }
 }

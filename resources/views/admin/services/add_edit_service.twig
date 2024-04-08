@@ -109,7 +109,7 @@
 
 									<div class="row">
 
-										<div class="col-md-3">
+										<div class="col-md-6">
 											<div class="form-group">
 												<label for="exampleInputEmail1">Nom du service</label>
 												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez l'email du correspondant" name="nom_service" {% if servicedata['nom_service'] is not empty %} value="{{ servicedata['nom_service'] }}" {% else %} value="{{ old('nom_service ') }}" {% endif %}>
@@ -118,23 +118,30 @@
 												</p>
 											</div>
 										</div>
-										<div>
 
-											{% if servicedata.image is not empty %}
+										<div
+											class="col-md-6">
+											{# {% if servicedata.image is not empty %}
+																							<label for="exampleInputEmail1">Images</label>
+																							<div class="image-container" style="text-align: right;">
+																								{% for key, image in servicedata['image'] %}
+																									<div class="input-group hdtuto control-group lst increment">
+																										<div class="row col-md-6">
+																											<input type="file" name="filenames[]" class="myfrm form-control">
+																										</div>
+																										<div class="row col-md-6">
+																											<div class="image-container">
+																												<img style="width: 100px; margin-top: 15px; display: inline-block;" src="{{ asset('image/service_images/' ~ image) }}" alt="" data-file="{{ image }}" data-size="YOUR_FILE_SIZE_HERE" data-type="YOUR_FILE_TYPE_HERE">
+																											</div>
+																											
+																										</div>
+																									</div>
+																								{% endfor %}
+											
+																							</div>
+																						{% else %} #}
+											{% if servicedata.image is empty %}
 												<label for="exampleInputEmail1">Images</label>
-												<div class="image-container" style="text-align: right;margin-left: 350px">
-													{% for image in servicedata['image'] %}
-														<div class="input-group hdtuto control-group lst increment">
-															<input type="file" name="filenames[]" class="myfrm form-control">
-															<div class="input-group-btn">
-																<button class="btn btn-danger" type="button">
-																	<i class="fldemo glyphicon glyphicon-plus"></i>Supprimer</button>
-															</div>
-														</div>
-
-													{% endfor %}
-												</div>
-											{% else %}
 												<div class="input-group hdtuto control-group lst increment">
 													<input type="file" name="filenames[]" class="myfrm form-control">
 													<div class="input-group-btn">
@@ -143,49 +150,33 @@
 														</button>
 													</div>
 												</div>
-
 											{% endif %}
-										</div>
-										{# <div class="col-md-3">
-																																																																																																					<div class="form-group">
-																																																																																																						<label for="file">Image 1</label>
-																																																																																																						<input type="file" class="form-control" id="file" name="file1">
-																																																																																										
-																																																																																										
-																																																																																																					</div>
-																																																																																																				</div>
-																																																																																																				<div class="col-md-3">
-																																																																																																					<div class="form-group">
-																																																																																																						<label for="file">Image 2</label>
-																																																																																																						<input type="file" class="form-control" id="file" name="file2">
-																																																																																																					</div>
-																																																																																																				</div>
-																																																																																																				<div class="col-md-3">
-																																																																																																					<div class="form-group">
-																																																																																																						<label for="file">Image 3</label>
-																																																																																																						<input type="file" class="form-control" id="file" name="file3">
-																																																																																																					</div>
-																																																																																																				</div> #}
-										{# <div>
-																																																																																											{% if servicedata.image is not empty %}
-																																																																																												<div class="image-container" style="text-align: right;margin-left: 350px">
-																																																																																													{% for image in servicedata['image'] %}
-																																																																																														<div style="display: inline-block; margin-right: 153px; text-align: center;">
-																																																																																															<div>
-																																																																																																<img style="width: 130px; margin-top: 15px;" src="{{ asset('image/service_images/' ~ image) }}" alt="">
-																																																																																															</div>
-																																																																																															<div>
-																																																																																																<a class="confirmDelete text-danger" href="javascript:void(0)" record="banner-image" categoryname="{{ image }}" recordid="{{ image }}">Supprimer l'image</a>
-																																																																																															</div>
-																																																																																														</div>
-																																																																																													{% endfor %}
-																																																																																												</div>
-																																																																																												
-																																																																																											{% endif %}
-																																																																																										</div> #}
 
+
+										</div>
+										{# <>{# <div class="col-md-3"> #}
 
 									</div>
+
+
+									{# <div>
+																																																																																																																																																																																																											{% if servicedata.image is not empty %}
+																																																																																																																																																																																																												<div class="image-container" style="text-align: right;margin-left: 350px">
+																																																																																																																																																																																																													{% for image in servicedata['image'] %}
+																																																																																																																																																																																																														<div style="display: inline-block; margin-right: 153px; text-align: center;">
+																																																																																																																																																																																																															<div>
+																																																																																																																																																																																																																<img style="width: 130px; margin-top: 15px;" src="{{ asset('image/service_images/' ~ image) }}" alt="">
+																																																																																																																																																																																																															</div>
+																																																																																																																																																																																																															<div>
+																																																																																																																																																																																																																<a class="confirmDelete text-danger" href="javascript:void(0)" record="banner-image" categoryname="{{ image }}" recordid="{{ image }}">Supprimer l'image</a>
+																																																																																																																																																																																																															</div>
+																																																																																																																																																																																																														</div>
+																																																																																																																																																																																																													{% endfor %}
+																																																																																																																																																																																																												</div>
+																																																																																																																																																																																																												
+																																																																																																																																																																																																											{% endif %}
+																																																																																																																																																																																																										</div> #}
+
 
 									<div class="row">
 										<div class="col-md-6">
@@ -338,4 +329,5 @@
 		<!-- /.container-fluid -->
 	</section>
 	<!-- /.content -->
-</div><!-- /.content-wrapper -->{% endblock %}
+</div>
+<!-- /.content-wrapper -->{% endblock %}
