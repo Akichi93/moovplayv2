@@ -279,7 +279,6 @@ class ServiceController extends Controller
 
         if ($files == null) {
             $images = $oldImages[0];
-            dd($images);
         } else {
             $result = array_diff_key($oldImages[0], $files);
 
@@ -312,6 +311,9 @@ class ServiceController extends Controller
                 ]);
         }
 
-        return view('admin.services.services');
+        // return view('admin.services.services');
+        $message = "Les images du service ont été Modifée avec succès !";
+        $request->session()->flash('success_message', $message);
+        return redirect('/services');
     }
 }

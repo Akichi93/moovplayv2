@@ -34,8 +34,8 @@ class AppServiceProvider extends ServiceProvider
 
         // view()->share(['menus' => $menus]);
 
-        // if (env('APP_ENV') !== 'local') {
-        //     $this->app['request']->server->set('HTTPS', true);
-        // }
+        if (env('APP_ENV') !== 'local') {
+            $this->app['request']->server->set('HTTPS', true);
+        }
     }
 }

@@ -28,7 +28,7 @@ use App\Http\Controllers\Admin\ReportController;
 */
 
 
-// URL::forceRootUrl('https://demo.moovplay.com/');
+URL::forceRootUrl('https://demo.moovplay.com/');
 // Route::get('/bundle', [ServicesController::class, 'bundle']);
 
 
