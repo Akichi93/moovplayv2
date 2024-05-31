@@ -9,6 +9,7 @@ use App\Models\Categorie;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\Chaine;
 use App\Models\Favori;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
@@ -203,6 +204,16 @@ class IndexController extends Controller
    public function detailsCategory($category_url)
    {
       $Data = Categorie::where('url', $category_url)->get();
+
+      return response()->json([
+         'success' => true,
+         'data' => $Data
+      ], Response::HTTP_OK);
+   }
+
+   public function getChannels()
+   {
+      $Data = Chaine::all();
 
       return response()->json([
          'success' => true,

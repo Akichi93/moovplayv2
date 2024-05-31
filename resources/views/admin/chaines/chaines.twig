@@ -1,0 +1,124 @@
+{% extends "layouts.admin.app" %}
+
+
+{% block content %}
+
+	<!-- Content Wrapper. Contains page content -->
+	<div
+		class="content-wrapper">
+
+		<!-- Content Header (Page header) -->
+		<section class="content-header">
+			<div class="container-fluid">
+				<div class="row mb-2">
+					<div class="col-sm-6">
+						<h1>Chaines</h1>
+					</div>
+					<div class="col-sm-6">
+						<ol class="breadcrumb float-sm-right">
+							<li class="breadcrumb-item">
+								<a href="#">Accueil</a>
+							</li>
+							<li class="breadcrumb-item active">Chaînes</li>
+						</ol>
+					</div>
+				</div>
+			</div>
+			<!-- /.container-fluid -->
+		</section>
+
+		<section class="content">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-md-6">
+						<h6 class="mb-0 text-right">
+							<a class="btn btn-primary" href="{{ url('add-edit-chaine') }}">Ajouter</a>
+						</h6>
+					</div>
+
+					<!-- /.col -->
+				</div>
+				<!-- /.row -->
+			</div>
+			<!-- /.container-fluid -->
+		</section>
+		<hr/>
+
+		<!-- Main content -->
+		<section class="content">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-12">
+
+						<div class="card">
+							<div class="card-header">
+								<h3 class="card-title">Listes des chaînes</h3>
+							</div>
+							<!-- /.card-header -->
+							<div class="card-body">
+								<table id="example1" class="table table-bordered table-striped">
+									<thead>
+										<tr>
+											<th>Titre</th>
+											<th>image</th>
+											<th>Description</th>
+											<th>Actions</th>
+										</tr>
+									</thead>
+									<tbody>
+										{% for slide in chaines %}
+											<tr>
+												<td>{{ slide.title}}</td>
+												<td>
+													<img src="image/chaine_images/{{ slide.image }}" style="height:100px" class="img-fluid img-reponsive">
+												</td>
+												<td>{{ slide.description}}</td>
+												<td>
+													<div class="d-flex order-actions">
+														<a href="{{ url('add-edit-chaine' , slide.id) }}">
+															<i class="fas fa-edit"></i>
+														</a>
+														{# <a href="#" data-toggle="modal" data-target="#modal-default-{{ slide.id }}">
+															<i class="fas fa-trash-alt"></i>
+														</a> #}
+
+														<div class="modal fade" id="modal-default-{{ slide.id }}">
+															<div class="modal-dialog">
+																<div class="modal-content">
+																	<div class="modal-header">
+																		<h4 class="modal-title">Desactiver slide</h4>
+																		<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+																			<span aria-hidden="true">&times;</span>
+																		</button>
+																	</div>
+																	<div class="modal-body">
+																		<p>Voulez-vous supprimer cette chaine
+																			<b>
+																				{{ slide.nom_categorie}}</b>?</p>
+																	</div>
+																	<div class="modal-footer justify-content-between">
+																		<button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+																		<button type="button" class="btn btn-primary">Supprimer</button>
+																	</div>
+																</div>
+																<!-- /.modal-content -->
+															</div>
+															<!-- /.modal-dialog -->
+														</div>
+													</td>
+												</td>
+											</tr>
+										</div>
+									</tbody>
+								</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</tfoot>
+			</table>
+		</div>
+		<!-- /.card-body -->
+	</div>
+	<!-- /.card -->
+</div>
+<!-- /.col --></div><!-- /.row --></div><!-- /.container-fluid --></section><!-- /.content --></div><!-- /.content-wrapper -->{% endblock %}

@@ -1,0 +1,113 @@
+{% extends "layouts.admin.app" %}
+
+
+{% block content %}
+
+	<!-- Content Wrapper. Contains page content -->
+	<div
+		class="content-wrapper">
+
+		<!-- Content Header (Page header) -->
+		<section class="content-header">
+			<div class="container-fluid">
+				<div class="row mb-2">
+					<div class="col-sm-6">
+						<h1>Partenaires</h1>
+					</div>
+					<div class="col-sm-6">
+						<ol class="breadcrumb float-sm-right">
+							<li class="breadcrumb-item">
+								<a href="#">Accueil</a>
+							</li>
+							<li class="breadcrumb-item active">Chaines</li>
+						</ol>
+					</div>
+				</div>
+			</div>
+			<!-- /.container-fluid -->
+		</section>
+
+
+		<hr/>
+
+		<!-- Main content -->
+		<!-- Main content -->
+			<section class="content"> <div class="container-fluid">
+				<div
+					class="row">
+					<!-- left column -->
+					<div
+						class="col-md-12">
+						<!-- general form elements -->
+						<div class="card card-primary">
+							<div class="card-header">
+								<h3 class="card-title">{{ titles }}</h3>
+							</div>
+							<!-- /.card-header -->
+							<!-- form start -->
+							<form {% if chainedata['id'] is empty %} action="{{ url('add-edit-chaine') }}" {% else %} action="{{ url('add-edit-chaine' , chainedata['id']) }}" {% endif %} method="POST" enctype="multipart/form-data">
+								{{csrf_field()}}
+
+								<div class="card-body">
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="exampleInputEmail1">Titre</label>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez le nom du partenaire" name="title" 
+												{% if chainedata['title'] is not empty %} value="{{ chainedata['title'] }}" {% else %} value="{{ old('title') }}" {% endif %}>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="exampleInputEmail1">Image</label>
+												<input type="file" class="form-control" id="exampleInputEmail1"  name="image" {% if chainedata['image'] is not empty %} value="{{ chainedata['image'] }}" {% else %} value="{{ old('image ') }}" {% endif %}>
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="exampleInputEmail1">Lien</label>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez le lien de la vidéo" name="link" {% if chainedata['link'] is not empty %} value="{{ chainedata['link'] }}" {% else %} value="{{ old('link ') }}" {% endif %}>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="exampleInputEmail1">Description</label>
+                                                <textarea class="form-control" name="description" rows="3" placeholder="Entrez la description ...">{{ chainedata['description'] }}</textarea>
+											</div>
+										</div>
+									</div>
+
+									
+
+
+								</div>
+								<!-- /.card-body -->
+
+								<div class="card-footer">
+									<button type="submit" class="btn btn-primary">{{ titles }}</button>
+								</div>
+							</form>
+						</div>
+						<!-- /.card -->
+
+						<!-- general form elements -->
+
+
+					</div>
+					<!--/.col (left) -->
+
+				</div>
+				<!-- /.row -->
+			</div>
+			<!-- /.container-fluid -->
+		</section>
+		<!-- /.content -->
+		<!-- /.container-fluid -->
+	</section>
+	<!-- /.content -->
+</div>
+<!-- /.content-wrapper -->{% endblock %}

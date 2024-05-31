@@ -12,6 +12,7 @@ use App\Http\Controllers\Front\ClientController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Front\ServicesController;
 use App\Http\Controllers\Admin\CategorieController;
+use App\Http\Controllers\Admin\ChaineController;
 use App\Http\Controllers\Admin\PartenaireController;
 use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\Admin\ReportController;
@@ -30,37 +31,6 @@ use App\Http\Controllers\Admin\ReportController;
 
 URL::forceRootUrl('https://demo.moovplay.com/');
 // Route::get('/bundle', [ServicesController::class, 'bundle']);
-
-
-// // Users Register Form Submit
-// Route::post('/clientregister', [ClientController::class, 'register'])->name('otp.generate');
-// Route::post('/clientforgot', [ClientController::class, 'forgot'])->name('otp.forgot');
-// Route::post('/uploadfile', [ClientController::class, 'uploadfile'])->name('upload.file');
-
-// Route::get('/compte', [ClientController::class, 'compte']);
-// Route::get('/profil', [ClientController::class, 'profil']);
-// Route::get('/changepassword', [ClientController::class, 'changepassword']);
-// Route::post('/logoutclient', [ClientController::class, 'logoutClient']);
-// Route::post('/updateinfo', [ClientController::class, 'updateinfo']);
-// Route::post('/updatepassword', [ClientController::class, 'updatepassword']);
-// Route::get('/verification/{id}', [ClientController::class, 'verification'])->name('verification');
-// Route::get('/verificationreset/{id}', [ClientController::class, 'verificationreset'])->name('verificationreset');
-// Route::post('/otplogin', [ClientController::class, 'loginWithOtp'])->name('otp.getlogin');
-// Route::post('/otpreset', [ClientController::class, 'resetWithOtp'])->name('otp.getreset');
-
-// Route::post('/desabonnement', [ClientController::class, 'desabonnement'])->name('desabonnement');
-
-// // Route::post('/otpdemande', [ServicesController::class, 'demandeWithOtp'])->name('otp.getdemande');
-
-// // Route::post('/demandeservice', [OrderController::class, 'demandeService'])->name('demande.service');
-// Route::get('/demandeotp/{order_url}', [OrderController::class, 'demandeotp'])->name('demandeotp');
-
-// Route::post('/resendotp', [ClientController::class, 'resendOtp'])->name('otp.resendotp');
-
-
-// // Users Login/Register Page
-// Route::get('/inscription', [ClientController::class, 'userLoginRegister']);
-// Route::get('/resetpassword', [ClientController::class, 'resetPassword']);
 
 Route::get('/', function () {
     return view('welcome');
@@ -108,8 +78,12 @@ Route::group(['middleware' => ['admin']], function () {
     Route::get('/questions', [QuestionController::class, 'questions']);
     Route::match(['get', 'post'], 'add-edit-question/{id?}', [QuestionController::class, 'addEditQuestion']);
 
-     // Rport
+     // Report
     Route::get('/reports', [ReportController::class, 'Reports']);
+
+    // Chaine
+    Route::get('/chaines', [ChaineController::class, 'chaines']);
+    Route::match(['get', 'post'], 'add-edit-chaine/{id?}', [ChaineController::class, 'addEditChaine']);
 });
 
 // Index
