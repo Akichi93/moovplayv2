@@ -10,6 +10,6 @@ class Chaine extends Model
     use HasFactory;
 
     protected $fillable = [
-        'title', 'link', 'image','description'
+        'title', 'link', 'image','description','link_complete'
     ];
 }

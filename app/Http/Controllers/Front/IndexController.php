@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers\Front;
 
+use App\Models\User;
 use App\Models\Offre;
+use App\Models\Abonne;
 use App\Models\Banner;
+use App\Models\Chaine;
+use App\Models\Favori;
 use App\Models\Service;
 use App\Models\Categorie;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Models\Chaine;
-use App\Models\Favori;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -219,5 +222,47 @@ class IndexController extends Controller
          'success' => true,
          'data' => $Data
       ], Response::HTTP_OK);
+   }
+
+   public function updateSubscription(Request $request)
+   {
+      $data = $request->all();
+
+      foreach ($data as $subscriptionData) {
+
+         // Extraire le contact en supprimant les 3 premiers caractères
+         $contact = substr($subscriptionData['msisdn'], 3);
+
+         // Rechercher le service correspondant
+         $service = Service::where('service_name', $subscriptionData['service_name'])->first();
+
+         // Rechercher l'utilisateur correspondant
+         $user = User::where('contact', $contact)->first();
+
+         // Vérifier si l'utilisateur existe
+         if (!$user) {
+            // Si l'utilisateur n'existe pas, créer un nouvel utilisateur
+            $user = User::create([
+               'contact' => '225' . $contact,
+               'status' => 0,
+            ]);
+         }
+
+         // Mettre à jour ou créer la transaction
+         Transaction::updateOrCreate(
+            ['msisdn' => $subscriptionData['msisdn']],
+            [
+               'nom_service' => $service['nom_service'],
+               'forfait' => $subscriptionData['forfait'],
+               'amount' => $subscriptionData['amount'],
+               'transaction_id' => $subscriptionData['transaction_id'],
+               'service_name' => $subscriptionData['service_name'],
+               'date_fin_abonnement' => $subscriptionData['date_fin_abonnement'],
+               'user_id' => $user->id,
+               'service_id' => $service->id,
+               'partenaire_id' => $service->partenaire_id,
+            ]
+         );
+      }
    }
 }

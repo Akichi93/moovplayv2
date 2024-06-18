@@ -49,3 +49,5 @@ Route::post('/demandeservice', [ServicesController::class, 'demandeService']);
 Route::post('/confirmationdemande', [ServicesController::class, 'demandeWithOtp']);
 Route::post('/detailscategory/{category_url}', [ServicesController::class, 'detailsCategory']);
 Route::get('/getchannels', [IndexController::class, 'getChannels']);
+
+Route::post('/updatesubscription', [IndexController::class, 'updateSubscription']);

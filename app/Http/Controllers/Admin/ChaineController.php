@@ -42,12 +42,14 @@ class ChaineController extends Controller
                 'title' => 'required',
                 'image' => 'required',
                 'link' => 'required',
+                'link_complete' => 'required',
             ];
 
             $customMessage = [
                 'title.required' => 'Le titre est requis',
                 'image.required' => "Entrez l'image",
                 'link.required' => "Entrez le lien de la vidéo",
+                'link_complete.required' => "Entrez le lien de la vidéo",
             ];
             $this->validate($request, $rules, $customMessage);
 
@@ -64,6 +66,7 @@ class ChaineController extends Controller
 
             $chaine->title = $data['title'];
             $chaine->link = $data['link'];
+            $chaine->link_complete = $data['link_complete'];
             $chaine->description = $data['description'];
             $chaine->save();
 

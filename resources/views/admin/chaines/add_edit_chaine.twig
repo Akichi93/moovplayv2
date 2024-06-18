@@ -81,6 +81,16 @@
 										</div>
 									</div>
 
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="exampleInputEmail1">Lien complet</label>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez le lien de la vidéo" name="link_complete" {% if chainedata['link_complete'] is not empty %} value="{{ chainedata['link_complete'] }}" {% else %} value="{{ old('link_complete ') }}" {% endif %}>
+											</div>
+										</div>
+										
+									</div>
+
 									
 
 
